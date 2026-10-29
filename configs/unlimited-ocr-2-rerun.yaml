@@ -1,0 +1,42 @@
+# Reviewable inference plan; no requests are made by loading this configuration.
+# Server URL / GPU deployment belongs to the inference environment.
+model: Unlimited-OCR-2
+source_predictions: ../data/predictions/results/Unlimited-OCR-2
+source_pdfs: ../data/annotations/sources
+output: ../artifacts/inference/unlimitedocr2_official_retry
+documents:
+  - id: rd_545b7a21
+    expected_pages: 37
+    previous_observed_pages: 11
+    previous_completion_tokens: 60000
+  - id: rd_567fbc16
+    expected_pages: 38
+    previous_observed_pages: 7
+    previous_completion_tokens: 60000
+inference:
+  protocol: official_multi_page
+  temperature: 0.0
+  skip_special_tokens: false
+  max_model_len: 131072
+  # Allocate from actual prompt size; never use GT text length to tune the budget.
+  max_tokens_policy: max_model_len_minus_actual_prompt_tokens_minus_margin
+  prompt_margin_tokens: 700
+  no_repeat_processor: DeepseekOCRNoRepeatNGramLogitProcessor
+  ngram_size: 35
+  ngram_window_size: 1024
+server_environment:
+  # Names match the customized SGLang distribution in the official README.
+  SGLANG_UOCR_EANABLE_DOC_LIMIT: "1"
+  SGLANG_UOCR_DOC_GUNDAM_PAGE_WINDOW: "10"
+  SGLANG_UOCR_DOC_BASE_PAGE_WINDOW: "10"
+  SGLANG_UOCR_MAX_PAGE_TOKENS: "20000"
+fallback:
+  protocol: separate_overlapping_page_requests
+  window_pages: 10
+  overlap_pages: 1
+  experiment_label_suffix: chunked
+acceptance:
+  expected_page_markers_must_match: true
+  finish_reason_must_not_be_length: true
+  preserve_raw_response_and_request_parameters: true
+  preserve_original_baseline: true

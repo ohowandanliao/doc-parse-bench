@@ -1,0 +1,19 @@
+# Standard mode runs both official benchmarks with native chart semantics.
+# Policies are assigned in profiles.py; this file only describes data and scheduling.
+profile: standard
+annotations: ../data/annotations
+output: ../artifacts/runs/standard
+jobs: 2
+models:
+  MinerU:
+    adapter: MinerU
+    source: ../data/predictions/results/MinerU
+  NaviDC-OCR:
+    adapter: NaviDC-OCR
+    source: ../data/predictions/results/NaviDC-OCR
+  OvisOCR2:
+    adapter: OvisOCR2
+    source: ../data/predictions/results/OvisOCR2
+  Unlimited-OCR-2:
+    adapter: Unlimited-OCR-2
+    source: ../data/predictions/results/Unlimited-OCR-2

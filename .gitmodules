@@ -1,0 +1,6 @@
+[submodule "vendor/OmniDocBench"]
+	path = vendor/OmniDocBench
+	url = https://github.com/opendatalab/OmniDocBench.git
+[submodule "vendor/Qwen-Doc"]
+	path = vendor/Qwen-Doc
+	url = https://github.com/Tongyi-Zhiwen/Qwen-Doc.git
