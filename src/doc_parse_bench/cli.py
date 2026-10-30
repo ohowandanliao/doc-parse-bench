@@ -41,6 +41,7 @@ def build_parser() -> argparse.ArgumentParser:
     anno.add_argument("output", type=Path)
     anno.add_argument("--annotations", type=Path)
     anno.add_argument("--document-map", type=Path)
+    anno.add_argument("--dataset-version", help="数据版本标签，例如 v1.1；不改变评测模式")
     pred = sub.add_parser("import-pred", help="模型输出转统一结构")
     pred.add_argument("source", type=Path)
     pred.add_argument("output", type=Path)
@@ -119,15 +120,30 @@ def main(argv=None):
             result = run_profile(args.config, {key: getattr(args, key) for key in keys})
         elif args.command == "import-gt":
             result = import_annotations(
-                args.source, args.output, args.annotations, args.document_map
+                args.source, args.output, args.annotations, args.document_map, args.dataset_version
             )
-            result = {k: v for k, v in result.items() if k not in {"sources", "issues"}}
+            result = {
+                k: v
+                for k, v in result.items()
+                if k
+                not in {
+                    "sources",
+                    "issues",
+                    "pdf_sources",
+                    "document_annotations",
+                    "output_documents_sha256",
+                }
+            }
         elif args.command == "import-pred":
             result = import_predictions(args.source, args.output, args.model, args.document_map)
             result = {k: v for k, v in result.items() if k != "sources"}
         elif args.command == "export-gt":
             result = export_gt(args.source, args.output, args.chart_policy)
-            result = {k: v for k, v in result.items() if not k.endswith("_files")}
+            result = {
+                k: v
+                for k, v in result.items()
+                if not k.endswith("_files") and k != "source_documents_sha256"
+            }
         elif args.command == "export-pred":
             result = export_predictions(args.source, args.output, args.chart_policy, args.context)
             result.pop("context_events", None)
@@ -190,7 +206,12 @@ def prepare_from_config(path: Path) -> dict:
     context = config.get("context_policy", "native")
     document_map = resolve(config["document_map"]) if config.get("document_map") else None
     gt = output / "gt_ir"
-    audit = import_annotations(resolve(config["annotations"]), gt, document_map=document_map)
+    audit = import_annotations(
+        resolve(config["annotations"]),
+        gt,
+        document_map=document_map,
+        dataset_version=config.get("dataset_version"),
+    )
     export_gt(gt / "documents", output / "gt", policy)
     models = {}
     for tag, model in config["models"].items():

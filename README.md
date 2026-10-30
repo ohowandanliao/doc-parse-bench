@@ -90,8 +90,10 @@ docbench compare-xlsx \
 历史第 13、14 行各有八项非 CDM 指标复现；第 1 行尚有差异，未宣称整张表复现。详见 [验收记录](docs/validation.md)。
 
 - [评测口径](docs/evaluation.md)：旧集真实模型范围、图表偏向、引擎共存和指标。
+- [MPDocBench](docs/MPDocBench.md)：文档级 GT、模型合并、跨页／标题树／图片指标及单独运行。
 - [数据质量](docs/quality.md)：审核结果、重复样本与合并条件。
 - [数据契约](docs/data-contract.md)：整页快照、坐标、页码和关系。
+- [新增标注与版本管理](docs/annotation-workflow.md)：后续批次接入、审核、冻结版本、来源留痕和复评。
 - [模型适配](docs/model-adapters.md)：官方格式依据与合页边界。
 - [架构](docs/architecture.md)：模块职责和开发方式。
 - [截断重跑](docs/inference.md)：Unlimited OCR 2 的重跑方案。

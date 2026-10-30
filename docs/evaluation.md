@@ -1,5 +1,7 @@
 # 评测口径
 
+MPDocBench 的独立操作说明见 [MPDocBench](MPDocBench.md)，包括文档级 GT、跨页关系、HeadTEDS、FigureF1 和已有结果位置。
+
 ## 旧版 129 篇中实际有哪些模型
 
 旧包保存了 13 条链路的预测：MinerU 开源 3.1.14／3.4.4、MinerU＋full、三条 POPO truefix 链路，以及七条 P2T／标题规则／renderer 变体。这些主要属于同一个 MinerU 技术家族，不是 13 种独立 OCR 模型。

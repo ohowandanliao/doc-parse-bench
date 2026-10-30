@@ -55,7 +55,12 @@ def run(config_path: Path, overrides: dict | None = None) -> dict:
         return collect_reports(reports, output / "summary")
     prepared = output / "prepared"
     document_map = path(config["document_map"]) if config.get("document_map") else None
-    import_annotations(path(config["annotations"]), prepared / "gt_ir", document_map=document_map)
+    import_annotations(
+        path(config["annotations"]),
+        prepared / "gt_ir",
+        document_map=document_map,
+        dataset_version=config.get("dataset_version"),
+    )
     export_gt(prepared / "gt_ir/documents", prepared / "gt", "native")
     for name, model in config["models"].items():
         ir = prepared / "pred_ir" / name

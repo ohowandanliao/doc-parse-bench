@@ -3,8 +3,9 @@
 from pathlib import Path
 
 from .context import infer_context, relation_groups, render_document
-from .io import fresh_directory, write_json
+from .io import fresh_directory, read_json, sha256, write_json
 from .markdown import merge_tables, render_page, table_html
+from .provenance import conversion_provenance, fingerprint
 from .schema import VISUAL_TYPES, Block, Document, load_documents
 
 CATEGORIES = {
@@ -78,6 +79,14 @@ def export_gt(source: Path, output: Path, chart_policy: str = "native") -> dict:
     documents = load_documents(source)
     if any(d.metadata.get("origin") != "annotations" for d in documents):
         raise ValueError("export-gt 只接受标注数据")
+    source_hashes = {p.name: sha256(p) for p in sorted(source.glob("*.json"))}
+    audit_path = source.parent / "audit.json"
+    audit = read_json(audit_path) if audit_path.exists() else {}
+    # A sidecar from before manual edits must not be claimed as the current input audit.
+    linked_audit = bool(audit.get("output_documents_sha256") == source_hashes)
+    versions = {d.metadata.get("dataset_version") for d in documents}
+    if len(versions) != 1:
+        raise ValueError("同一次 GT 导出包含多个 dataset_version，请先整理版本")
     output = fresh_directory(output)
     omnidocbench, mpdocbench, page_manifest, document_manifest = [], [], {}, {}
     for doc in documents:
@@ -157,7 +166,18 @@ def export_gt(source: Path, output: Path, chart_policy: str = "native") -> dict:
         "mpdocbench_files": document_manifest,
         "documents": len(documents),
         "pages": len(omnidocbench),
+        "dataset_version": next(iter(versions)),
+        "conversion": conversion_provenance(),
+        "source_documents_sha256": source_hashes,
+        "source_documents_fingerprint": fingerprint(source_hashes),
+        "source_dataset_sha256": audit.get("dataset_sha256") if linked_audit else None,
+        "source_audit_sha256": sha256(audit_path) if linked_audit else None,
+        "gt_sha256": {
+            name: sha256(output / name / "gt.json") for name in ("OmniDocBench", "MPDocBench")
+        },
     }
+    if linked_audit:
+        write_json(output / "source_audit.json", audit)
     write_json(output / "manifest.json", report)
     return report
 

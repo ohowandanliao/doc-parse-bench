@@ -49,17 +49,20 @@ def test_real_gt_page_counts_and_cross_page_export(tmp_path):
     if not source.exists():
         pytest.skip("本地标注包未提供")
     audit = import_annotations(source, tmp_path / "ir")
-    assert (audit["documents"], audit["pages"], audit["patch_pages"], audit["chain_pages"]) == (
-        81,
-        597,
-        551,
-        46,
+    runs = list((source / "runs").glob("*/page_*/result.json"))
+    patch_pages = sum(
+        (source / "annotations" / p.parent.parent.name / (p.parent.name + ".json")).exists()
+        for p in runs
     )
+    assert audit["documents"] == len({p.parent.parent.name for p in runs})
+    assert audit["pages"] == len(runs)
+    assert audit["patch_pages"] == patch_pages
+    assert audit["chain_pages"] == len(runs) - patch_pages
     assert not audit["issues"]
     export_gt(tmp_path / "ir/documents", tmp_path / "export")
     mpdocbench = read_json(tmp_path / "export/MPDocBench/gt.json")
-    assert len(mpdocbench) == 81
-    assert sum(len(d["page_info"]["width"]) for d in mpdocbench) == 597
+    assert len(mpdocbench) == audit["documents"]
+    assert sum(len(d["page_info"]["width"]) for d in mpdocbench) == audit["pages"]
     for doc in mpdocbench:
         ids = {b["anno_id"] for b in doc["layout_dets"]}
         orders = {b["anno_id"]: b["order"] for b in doc["layout_dets"]}

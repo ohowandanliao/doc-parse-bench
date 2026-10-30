@@ -9,6 +9,8 @@
 
 两者 completion_tokens 都是 60000；原始结果尾部分别有空 header 块、公式 token 的大量重复。应排查重复退化和预算，而不是仅提高 max_tokens。
 
+本地原始输出的具体证据：`rd_545b7a21` 中 `header[132, 132, 132, 132]` 重复出现 1079 次，末尾仍在重复；`rd_567fbc16` 最后 3000 个字符中 `varepsilon` 出现 272 次。这已经存在于 `raw` 字符串中，不是合页后生成的内容。它们说明至少这两份存在复读，不能据此断言其余 79 份全部正常。OvisOCR2 的 27 页重复尾部是另一组输出异常。
+
 推荐顺序：
 
 1. 先对齐官方 `Unlimited-OCR-2/infer.py` 的生成参数：temperature=0、保留 special tokens、启用 `DeepseekOCRNoRepeatNGramLogitProcessor`，多页 ngram_size=35/window_size=1024。已有结果没有保存完整请求参数，不能断言旧推理已经启用了这些设置。

@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from .io import fresh_directory, read_json, sha256, write_json
+from .provenance import conversion_provenance, fingerprint
 from .schema import Block, Document, Page
 
 
@@ -11,7 +12,11 @@ def _page_from_path(path: Path) -> int:
 
 
 def import_annotations(
-    root: Path, output: Path, annotations: Path | None = None, document_map: Path | None = None
+    root: Path,
+    output: Path,
+    annotations: Path | None = None,
+    document_map: Path | None = None,
+    dataset_version: str | None = None,
 ) -> dict:
     """Support both annotations/ and annotated/, or an explicitly supplied path."""
     runs = root / "runs"
@@ -36,9 +41,32 @@ def import_annotations(
         "blocks": 0,
         "issues": [],
         "sources": [],
+        "dataset_version": dataset_version,
+        "conversion": conversion_provenance(),
+        "pdf_sources": [],
+        "document_annotations": [],
+        "document_map_sha256": sha256(document_map) if document_map else None,
     }
     for doc_id, paths in grouped.items():
-        dimensions = _pdf_dimensions(root / "sources" / f"{doc_id}.pdf")
+        pdf_path = root / "sources" / f"{doc_id}.pdf"
+        report["pdf_sources"].append(
+            {
+                "document": doc_id,
+                "path": str(pdf_path),
+                "sha256": sha256(pdf_path) if pdf_path.exists() else None,
+            }
+        )
+        document_annotation = annotations / doc_id / "document.json"
+        if document_annotation.exists():
+            report["document_annotations"].append(
+                {
+                    "document": doc_id,
+                    "path": str(document_annotation),
+                    "sha256": sha256(document_annotation),
+                    "snapshot": read_json(document_annotation),
+                }
+            )
+        dimensions = _pdf_dimensions(pdf_path)
         pages = []
         for path in sorted(paths, key=lambda p: _page_from_path(p.parent)):
             number = _page_from_path(path.parent)
@@ -61,6 +89,9 @@ def import_annotations(
             report["blocks"] += len(blocks)
             report["sources"].append(
                 {
+                    "document": doc_id,
+                    "page": number,
+                    "selected_source": "patch" if patch else "chain",
                     "path": str(path),
                     "sha256": sha256(path),
                     "patch": str(patch) if patch else None,
@@ -97,6 +128,8 @@ def import_annotations(
             "continuity": "unknown",
             **mapping.get(doc_id, {}),
         }
+        if dataset_version is not None:
+            metadata["dataset_version"] = dataset_version
         original_pages = metadata.get("original_page_numbers")
         if original_pages is not None:
             if len(original_pages) != len(pages) or len(set(original_pages)) != len(pages):
@@ -118,6 +151,22 @@ def import_annotations(
     report["relations"] = sum(
         len(Document.load(p).relations) for p in (output / "documents").glob("*.json")
     )
+    report["dataset_sha256"] = fingerprint(
+        {
+            "pages": [
+                {k: s[k] for k in ("document", "page", "sha256", "patch_sha256")}
+                for s in report["sources"]
+            ],
+            "pdfs": [{k: s[k] for k in ("document", "sha256")} for s in report["pdf_sources"]],
+            "confirmations": [
+                {k: s[k] for k in ("document", "sha256")} for s in report["document_annotations"]
+            ],
+            "document_map_sha256": report["document_map_sha256"],
+        }
+    )
+    report["output_documents_sha256"] = {
+        p.name: sha256(p) for p in sorted((output / "documents").glob("*.json"))
+    }
     write_json(output / "audit.json", report)
     return report
 
