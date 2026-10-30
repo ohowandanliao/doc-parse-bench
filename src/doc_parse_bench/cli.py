@@ -14,6 +14,7 @@ from .history import compare_workbook
 from .pipeline import run as run_profile
 from .predictions import MODELS, import_predictions
 from .quality import audit_quality
+from .repetition import audit_repetition
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -101,6 +102,15 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("output", type=Path)
     audit.add_argument("--legacy-pdfs", type=Path)
     audit.add_argument("--current-pdfs", type=Path)
+    repetition = sub.add_parser("audit-repetition", help="检查四模型原始输出的长连续重复并保存证据")
+    repetition.add_argument("source", type=Path, help="包含各模型子目录的原始 JSON 目录")
+    repetition.add_argument("output", type=Path)
+    repetition.add_argument(
+        "--evaluated", type=Path, help="prepared/pred/，比较重复是否进入评测 Markdown"
+    )
+    repetition.add_argument(
+        "--ground-truth", type=Path, help="统一 GT documents/，补充重复单元在 GT 中出现次数"
+    )
     return parser
 
 
@@ -185,6 +195,8 @@ def main(argv=None):
             result = compare_workbook(args.workbook, args.run, args.tag, args.output)
         elif args.command == "audit-quality":
             result = audit_quality(args.source, args.output, args.legacy_pdfs, args.current_pdfs)
+        elif args.command == "audit-repetition":
+            result = audit_repetition(args.source, args.output, args.evaluated, args.ground_truth)
         else:
             result = prepare_from_config(args.config)
         print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -11,6 +11,8 @@
 
 本地原始输出的具体证据：`rd_545b7a21` 中 `header[132, 132, 132, 132]` 重复出现 1079 次，末尾仍在重复；`rd_567fbc16` 最后 3000 个字符中 `varepsilon` 出现 272 次。这已经存在于 `raw` 字符串中，不是合页后生成的内容。它们说明至少这两份存在复读，不能据此断言其余 79 份全部正常。OvisOCR2 的 27 页重复尾部是另一组输出异常。
 
+四模型已补做相同规则的全量复读筛查，统计范围和原文证据见 [重复输出检查](output-quality.md)。本次 Unlimited OCR 2 命中两份文档的 6 页；OvisOCR2 更广的内部循环检查命中 42 页，范围比此前的 27 页尾部检查更大。
+
 推荐顺序：
 
 1. 先对齐官方 `Unlimited-OCR-2/infer.py` 的生成参数：temperature=0、保留 special tokens、启用 `DeepseekOCRNoRepeatNGramLogitProcessor`，多页 ngram_size=35/window_size=1024。已有结果没有保存完整请求参数，不能断言旧推理已经启用了这些设置。

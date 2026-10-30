@@ -97,5 +97,6 @@ docbench compare-xlsx \
 - [模型适配](docs/model-adapters.md)：官方格式依据与合页边界。
 - [架构](docs/architecture.md)：模块职责和开发方式。
 - [截断重跑](docs/inference.md)：Unlimited OCR 2 的重跑方案。
+- [重复输出检查](docs/output-quality.md)：四模型复读证据、统一筛查规则与原文报告。
 
 开发检查：`pytest -q`、`ruff check src tests`、`ruff format --check src tests`。分步导入／导出及单后端命令保留为开发工具；业务使用优先选择两个固定模式。

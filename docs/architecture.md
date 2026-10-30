@@ -39,6 +39,7 @@ flowchart LR
 | `profiles.py` | standard／legacy 的固定默认值与显式覆盖规则 |
 | `pipeline.py` | 按固定模式完成数据准备、评分与报告 |
 | `quality.py` | 检查结构完整性、关系确认记录及旧新 PDF／页面重复 |
+| `repetition.py` | 只读检查原始输出与评测 Markdown 的长连续重复，保存原文证据 |
 | `history.py` | 读取历史 xlsx，对已完成的跑分逐列比较 |
 | `cli.py` | 参数解析和工作流编排 |
 
