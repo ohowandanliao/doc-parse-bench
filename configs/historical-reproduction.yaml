@@ -1,0 +1,11 @@
+# Explicit old Markdown dataset and historical evaluator; not a preprocessing mode.
+profile: legacy
+input_format: markdown
+backends: [legacy_compat]
+ground_truth: ../data/legacy/groundtruth
+output: ../artifacts/runs/historical-reproduction
+models:
+  P2T-1.5:
+    source: ../data/legacy/results/outputs/13_p2t1.5.0_mineru3.1.14_fix
+  P2T-1.5-TitleRules:
+    source: ../data/legacy/results/outputs/14_p2t1.5.0_mineru3.1.14_fix_B9rules

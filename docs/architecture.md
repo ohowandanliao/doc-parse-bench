@@ -1,5 +1,10 @@
 # 架构
 
+standard／legacy 只选择预测前处理预设；数据和评测器由配置独立指定。
+同一份标注数据可以运行官方 OmniDocBench 页面评测和 MPDocBench 文档评测，
+旧 Markdown 输入可以显式选择 legacy_compat。所有后端都额外计算既有 AgentBuilder 分项与 title。
+模型 chart_analysis 在推理阶段开启，图片归一化／details 展开在预测前处理执行，均不改写计分算法。
+
 ```mermaid
 flowchart LR
     A[标注 runs + 整页快照] --> B[统一文档结构]
@@ -10,12 +15,14 @@ flowchart LR
     D --> H[原生或保守上下文合并]
     H --> I[文档 Markdown]
     E --> J[官方 OmniDocBench 子进程]
-    G --> J
+    G --> P[可选图片替换与 details 展开]
+    P --> J
     F --> K[官方 MPDocBench 子进程]
-    I --> K
+    I --> Q[同一前处理预设]
+    Q --> K
     J --> L[指标 + title + provenance]
     K --> L
-    M[历史 Markdown] --> N[原 fix 清洗 + 旧版评测]
+    M[显式选择历史 Markdown] --> N[可选前处理 + legacy_compat]
     N --> L
 ```
 
@@ -36,8 +43,8 @@ flowchart LR
 | `benchmark.py` | 批量评分、状态记录及 CSV／Markdown 汇总 |
 | `compatibility/cleaning.py` | 本工程维护的图片替换、details 清洗及独立开关 |
 | `compatibility/engine/` | 吸收的历史匹配与指标最小实现，保留来源许可与复现约束 |
-| `profiles.py` | standard／legacy 的固定默认值与显式覆盖规则 |
-| `pipeline.py` | 按固定模式完成数据准备、评分与报告 |
+| `profiles.py` | standard／legacy 前处理预设与独立评测默认值 |
+| `pipeline.py` | 独立选择输入格式、前处理和评测器，生成报告 |
 | `quality.py` | 检查结构完整性、关系确认记录及旧新 PDF／页面重复 |
 | `repetition.py` | 只读检查原始输出与评测 Markdown 的长连续重复，保存原文证据 |
 | `history.py` | 读取历史 xlsx，对已完成的跑分逐列比较 |

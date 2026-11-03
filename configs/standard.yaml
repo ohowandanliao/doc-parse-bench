@@ -1,6 +1,8 @@
 # Standard mode runs both official benchmarks with native chart semantics.
 # Policies are assigned in profiles.py; this file only describes data and scheduling.
 profile: standard
+input_format: annotations
+backends: [OmniDocBench, MPDocBench]
 annotations: ../data/annotations
 output: ../artifacts/runs/standard
 jobs: 2

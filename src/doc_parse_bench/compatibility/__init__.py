@@ -16,7 +16,14 @@ def prepare_legacy(
     if not files:
         raise ValueError(f"没有 Markdown 预测：{source}")
     output = fresh_directory(output)
-    audit = {"profile": "legacy", "documents": len(files), "changed": 0, "sources": []}
+    audit = {
+        "input_format": "markdown",
+        "replace_embedded_images": options.replace_embedded_images,
+        "expand_chart_details": options.expand_chart_details,
+        "documents": len(files),
+        "changed": 0,
+        "sources": [],
+    }
     for path in files:
         raw = path.read_text(encoding="utf-8")
         fixed = normalize_markdown(raw, options)

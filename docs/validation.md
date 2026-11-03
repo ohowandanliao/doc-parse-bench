@@ -48,8 +48,18 @@ title 兼容测试覆盖历史输出包中全部可与 129 篇 GT 对齐的 Mark
 
 这些是新 GT、native 图表模式、原生上下文策略，不能和旧版 chart-table 的 129 篇分数直接横比。MinerU 和 NaviDC 的已有输出都没有标题 level，适配时记录为缺失原生层级的默认一级；title／HeadTEDS 受此影响。
 
-两种固定模式的工作流也已实际验证：standard 用真实双页标注和预测跑完两个官方后端；legacy 对第 13、14 行各 129 篇重跑。吸收进工程的历史实现与原实现的已验证指标一致；1677 份历史 title 得分作为回归参考保留。关闭图片替换同时保留 details 清洗的独立开关已测试。
+此前已验证两类数据工作流：新标注用真实双页样本跑完两个官方后端；旧 Markdown 对第 13、14 行各 129 篇重跑（现显式命名 legacy_compat，与 legacy 前处理开关独立）。吸收进工程的历史实现与原实现的已验证指标一致；1677 份历史 title 得分作为回归参考保留。关闭图片替换同时保留 details 清洗的独立开关已测试。
 
 MPDocBench 的一张完整续表在预测中有 5731 个单元格，官方 Python APTED 路径运行半小时以上。新增的精确求解器与官方解析／代价定义共用，1590 项真实表格分数及 160 项随机比较全部一致；真实分数对账耗时约 6.7 秒，容差 1e-10。测试另覆盖 rowspan、colspan、空单元格和嵌套单元格文本。未用超时零分或近似距离代替精确结果。
 
 正式结果统一在 `artifacts/benchmark/baseline/`，包含四模型各自的 OmniDocBench／MPDocBench 报告与汇总 CSV／JSON／Markdown。Unlimited OCR 2 的页面覆盖率为 540/597，缺失 57 页明确作为空预测；文档级保留原始截断内容。FormulaCDM 本次均未计算，官方 Overall 留空。被精确求解器替代的长时间运行任务已停止，不作为失败分数混入正式汇总。
+
+## 前处理与评测器解耦验证
+
+2026-11-03：standard／legacy 预设调整为只在 base64 图片替换和图表 details 展开两项上不同；
+数据格式与评测器由配置显式选择，所有后端统一附加既有 AgentBuilder 分项。
+33 项测试通过。真实小样本分别用 standard、legacy 前处理跑完两个官方后端（4 项），
+GT 哈希和原生评测配置一致；该样本未触发前处理内容变更，两组得分也一致。
+历史 legacy_compat 评测器另用一份旧 Markdown 实际跑通。
+验证记录与报告在 `artifacts/smoke/decoupled-preprocessing/`，其中 `verification.json`
+记录配置、GT 和分数的逐后端核对；没有重跑全量，也没有补入历史 Excel 分数。

@@ -12,6 +12,14 @@ from ..io import fresh_directory, read_json, sha256, write_json
 from ..metrics import compute_title_score, extract_title_lines, finite, summarize
 
 
+def canonical_backend(backend: str) -> str:
+    """Accept old commands without confusing historical scoring with preprocessing."""
+    backend = "legacy_compat" if backend == "legacy" else backend
+    if backend not in {"OmniDocBench", "MPDocBench", "legacy_compat"}:
+        raise ValueError(f"未知评测器：{backend}")
+    return backend
+
+
 def evaluate(
     backend: str,
     gt: Path,
@@ -23,7 +31,9 @@ def evaluate(
     figure: bool = False,
     relations: bool = False,
     exact_teds: bool = False,
+    preprocessing: dict | None = None,
 ) -> dict:
+    backend = canonical_backend(backend)
     gt, predictions = gt.resolve(), predictions.resolve()
     if (figure or relations) and backend != "MPDocBench":
         raise ValueError("--figure 和 --relations 仅适用于 MPDocBench")
@@ -41,12 +51,12 @@ def evaluate(
         PROJECT_ROOT
         / "vendor"
         / ("OmniDocBench" if backend == "OmniDocBench" else "Qwen-Doc/MPDocBench")
-        if backend != "legacy"
+        if backend != "legacy_compat"
         else ENGINE_ROOT
     )
     if not root.is_dir():
         raise ValueError("缺少评测子模块，请运行 git submodule update --init --recursive")
-    if backend == "legacy":
+    if backend == "legacy_compat":
         expected = {p.name for p in gt.glob("*.md")}
         title_gt = gt
     else:
@@ -101,7 +111,9 @@ def evaluate(
         "end2end_eval": {
             "metrics": metrics,
             "dataset": {
-                "dataset_name": "md2md_dataset" if backend == "legacy" else "end2end_dataset",
+                "dataset_name": "md2md_dataset"
+                if backend == "legacy_compat"
+                else "end2end_dataset",
                 "ground_truth": {"data_path": str(gt)},
                 "prediction": {"data_path": str(staged)},
                 "match_method": "quick_match",
@@ -144,7 +156,7 @@ def evaluate(
         }
     title_scores = [s["title"] for s in scores.values() if s["title"] is not None]
     title = round(sum(title_scores) / len(title_scores), 4) if title_scores else None
-    flat = summarize(raw, title)
+    flat = summarize(raw, title, backend)
     _attach_element_scores(results[0].parent, backend, scores)
     for values in scores.values():
         weights = {
@@ -160,7 +172,7 @@ def evaluate(
             else None
         )
     # Keep old JSON names as aliases for consumers of the historical pipeline.
-    if backend == "legacy":
+    if backend == "legacy_compat":
         aliases = {
             "text_block": "text_accuracy",
             "table": "table_accuracy",
@@ -189,6 +201,8 @@ def evaluate(
     )
     provenance = {
         "backend": backend,
+        "preprocessing": preprocessing,
+        "evaluation_unit": "page" if backend == "OmniDocBench" else "document",
         "commit": commit.stdout.strip() if commit.returncode == 0 else "vendored-legacy",
         "expected": len(expected),
         "provided": len(expected) - len(missing),
@@ -203,12 +217,18 @@ def evaluate(
         "gt_sha256": sha256(gt) if gt.is_file() else {p.name: sha256(p) for p in gt.glob("*.md")},
         "cdm_enabled": cdm,
         "title_metric": "historical-v1; level=.3/content=.7",
+        "agentbuilder_weights": {
+            "text_accuracy": 0.3,
+            "table_teds": 0.3,
+            "reading_order_accuracy": 0.3,
+            "title": 0.1,
+        },
         "figure_enabled": figure,
         "relation_metrics_enabled": relations,
         "teds_solver": "compiled-exact-tree-edit" if exact_teds else "upstream-apted",
         "complete_official_score": cdm and (backend != "MPDocBench" or figure),
     }
-    if backend == "legacy":
+    if backend == "legacy_compat":
         fingerprint = hashlib.sha256()
         for path in sorted(ENGINE_ROOT.rglob("*.py")):
             fingerprint.update(str(path.relative_to(ENGINE_ROOT)).encode())
@@ -225,7 +245,10 @@ def evaluate(
     (output / "report.md").write_text(
         f"# {backend} 评测\n\n覆盖率：{len(expected) - len(missing)}/{len(expected)}；"
         f"缺失按空预测：{len(missing)}。\n\n| 指标 | 得分 |\n| --- | --- |\n{rows}\n\n"
-        "FormulaCDM 未计算时官方 Overall 留空。FigureF1 和关系指标按本次配置启用。\n",
+        "AgentBuilder 为自定义加权分：文本/TEDS/顺序/title 权重为 0.3/0.3/0.3/0.1，"
+        "三条评测路径均计算，各自使用本后端的分项和聚合单位；不能跨后端直接比较。\n\n"
+        "title 为自定义扩展，与 MPDocBench 的 HeadTEDS 分别报告。"
+        "omnidocbench_overall 仅适用于 OmniDocBench，FormulaCDM 未计算时留空。\n",
         encoding="utf-8",
     )
     return flat

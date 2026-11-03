@@ -20,8 +20,14 @@ from .repetition import audit_repetition
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="docbench", description="混合文档解析评测")
     sub = parser.add_subparsers(dest="command", required=True)
-    run = sub.add_parser("run", help="按 standard / legacy 固定模式完成准备和评测")
+    run = sub.add_parser("run", help="按配置选择数据和评测器，standard / legacy 仅选择前处理")
     run.add_argument("config", type=Path)
+    run.add_argument(
+        "--legacy",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="启用图表 details 展开和 base64 图片替换预设；不改变数据或评测器",
+    )
     for flag, target, help_text in (
         ("replace-images", "replace_embedded_images", "替换嵌入的 base64 图片"),
         ("expand-details", "expand_chart_details", "展开历史图表 details"),
@@ -68,7 +74,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     charts.add_argument("--pdf-dir", type=Path)
     run = sub.add_parser("evaluate", help="运行官方评测并补充旧版 title 分数")
-    run.add_argument("--backend", choices=["OmniDocBench", "MPDocBench", "legacy"], required=True)
+    run.add_argument(
+        "--backend",
+        choices=["OmniDocBench", "MPDocBench", "legacy_compat", "legacy"],
+        required=True,
+    )
     run.add_argument("--gt", type=Path, required=True)
     run.add_argument("--pred", type=Path, required=True)
     run.add_argument("--output", type=Path, required=True)
@@ -127,7 +137,9 @@ def main(argv=None):
                 "formula_cdm",
                 "exact_teds",
             )
-            result = run_profile(args.config, {key: getattr(args, key) for key in keys})
+            result = run_profile(
+                args.config, {key: getattr(args, key) for key in keys}, args.legacy
+            )
         elif args.command == "import-gt":
             result = import_annotations(
                 args.source, args.output, args.annotations, args.document_map, args.dataset_version

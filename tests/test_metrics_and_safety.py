@@ -74,3 +74,23 @@ def test_official_overall_uses_three_modules_and_excludes_reading_order():
         "reading_order": {"all": {"Edit_dist": {"ALL_page_avg": 0.99}}},
     }
     assert summarize(raw, 0.2)["omnidocbench_overall"] == pytest.approx(0.8)
+
+
+@pytest.mark.parametrize("backend", ["OmniDocBench", "MPDocBench", "legacy"])
+def test_agentbuilder_is_shared_but_official_overall_is_backend_specific(backend):
+    raw = {
+        "text_block": {"all": {"Edit_dist": {"ALL_page_avg": 0.1}}},
+        "table": {"all": {"TEDS": {"all": 0.8}}},
+        "reading_order": {"all": {"Edit_dist": {"ALL_page_avg": 0.3}}},
+        "display_formula": {"all": {"CDM": {"all": 0.4}}},
+        "merged_table": {"all": {"TEDS": {"all": 0.05}}},
+        "head": {"all": {"HeadTEDS": {"all": 0.02}}},
+    }
+    metrics = summarize(raw, 0.6, backend)
+    assert metrics["agentbuilder_overall"] == 0.78
+    assert metrics["title"] == 0.6
+    assert metrics["head_teds"] == 0.02
+    if backend == "OmniDocBench":
+        assert metrics["omnidocbench_overall"] == pytest.approx(0.7)
+    else:
+        assert metrics["omnidocbench_overall"] is None

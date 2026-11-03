@@ -64,7 +64,7 @@ def finite(value):
     return number if math.isfinite(number) else None
 
 
-def summarize(raw: dict, title: float | None) -> dict:
+def summarize(raw: dict, title: float | None, backend: str = "OmniDocBench") -> dict:
     """Keep original distances and similarities; never substitute formula edit for CDM."""
     metrics = {}
     module_names = {
@@ -110,6 +110,8 @@ def summarize(raw: dict, title: float | None) -> dict:
     # Reading order and the custom title score are reported separately.
     required = ("text_accuracy", "formula_cdm", "table_teds")
     metrics["omnidocbench_overall"] = (
-        sum(metrics[k] for k in required) / 3 if all(k in metrics for k in required) else None
+        sum(metrics[k] for k in required) / 3
+        if backend == "OmniDocBench" and all(k in metrics for k in required)
+        else None
     )
     return metrics

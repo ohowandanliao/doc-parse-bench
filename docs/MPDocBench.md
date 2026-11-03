@@ -1,6 +1,6 @@
 # MPDocBench 使用说明
 
-standard 模式会同时运行 OmniDocBench 和 MPDocBench；本页说明 MPDocBench 的文档输入、跨页指标和报告。数据版本流程见 [新增标注与版本管理](annotation-workflow.md)。
+默认 standard／legacy 两份配置都会运行 OmniDocBench 和 MPDocBench；本页说明 MPDocBench 的文档输入、跨页指标和报告。数据版本流程见 [新增标注与版本管理](annotation-workflow.md)。
 
 ## 输入单位与 GT
 

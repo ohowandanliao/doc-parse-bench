@@ -1,9 +1,21 @@
-# Historical mode preserves the supplied 129-document scoring behavior.
+# Same dataset and evaluators as standard; only the preprocessing preset changes.
+# Model chart_analysis must already have been enabled when predictions were produced.
 profile: legacy
-ground_truth: ../data/legacy/groundtruth
-output: ../artifacts/runs/legacy
+input_format: annotations
+backends: [OmniDocBench, MPDocBench]
+annotations: ../data/annotations
+output: ../artifacts/runs/legacy-preprocessing
+jobs: 2
 models:
-  P2T-1.5:
-    source: ../data/legacy/results/outputs/13_p2t1.5.0_mineru3.1.14_fix
-  P2T-1.5-TitleRules:
-    source: ../data/legacy/results/outputs/14_p2t1.5.0_mineru3.1.14_fix_B9rules
+  MinerU:
+    adapter: MinerU
+    source: ../data/predictions/results/MinerU
+  NaviDC-OCR:
+    adapter: NaviDC-OCR
+    source: ../data/predictions/results/NaviDC-OCR
+  OvisOCR2:
+    adapter: OvisOCR2
+    source: ../data/predictions/results/OvisOCR2
+  Unlimited-OCR-2:
+    adapter: Unlimited-OCR-2
+    source: ../data/predictions/results/Unlimited-OCR-2

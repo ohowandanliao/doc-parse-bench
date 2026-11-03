@@ -110,4 +110,4 @@ docbench evaluate --backend MPDocBench \
   --figure --relations --allow-missing
 ```
 
-OmniDocBench 用对应的 `OmniDocBench` 路径和后端名。两套的单位、关系和指标说明见 [评测口径](evaluation.md)。旧版 129 篇保持独立 legacy 集合，统一质量标准、补标和去重之前不直接并入新版本。
+OmniDocBench 用对应的 `OmniDocBench` 路径和后端名。两套的单位、关系和指标说明见 [评测口径](evaluation.md)。旧版 129 篇保持独立历史集合（legacy_compat 评测器），统一质量标准、补标和去重之前不直接并入新版本。

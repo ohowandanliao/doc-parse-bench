@@ -14,35 +14,48 @@ source .venv/bin/activate
 
 只有两个官方上游是 submodule：`vendor/OmniDocBench/` 与 `vendor/Qwen-Doc/`，MPDocBench 位于后者的 `MPDocBench/`。模型适配、合页、图片清洗和历史兼容逻辑都由本工程维护，不依赖原代码包或 Documents 下的模型工程。
 
-## 两种固定模式
+## 前处理与评测
+
+`standard` 和 `legacy` 只选择前处理默认值。数据集、评测器和 AgentBuilder 扩展相互独立：
+
+| 设置 | standard | legacy |
+| --- | --- | --- |
+| base64 图片引用替换 | 关闭 | 开启 |
+| 图表 details 内容展开 | 关闭 | 开启 |
+| 数据集与原生评测器 | 由 YAML 指定 | 使用相同 YAML 时不变 |
+| 文本／表格／公式／阅读顺序／title 分项 | 均保留 | 均保留 |
+| AgentBuilder 总分 | 计算 | 使用相同权重计算 |
 
 ```bash
+# 同一份数据、同样的 OmniDocBench／MPDocBench 评测器
+# 对比实验需在 YAML 中指定不同的 output，已有输出目录不会覆盖。
 docbench run configs/standard.yaml
+docbench run configs/standard.yaml --legacy
+# 等价的完整配置，使用独立输出目录
 docbench run configs/legacy.yaml
 ```
 
-| 默认设置 | standard | legacy |
-| --- | --- | --- |
-| 评测引擎 | 官方 OmniDocBench ＋ MPDocBench | 本工程的历史兼容实现 |
-| 评测数据 | 新标注的页面／文档 GT | 旧 129 篇 Markdown GT |
-| 图表任务 | chart 与真正 table 区分 | 保留历史 chart 转表格口径 |
-| 额外 base64 图片替换 | 关闭，结构化视觉块已统一渲染 | 开启 |
-| details 清洗 | 关闭 | 开启原 fix 规则 |
-| 文档合并 | 使用模型原生关系 | 保留原文档 Markdown |
-| title | 开启 | 开启 |
-| 标题树／图片／跨页指标 | MPDocBench 开启 | 不适用 |
-| 缺失预测 | 按空预测计分并报告 | 保持历史评分语义并报告 |
-| FormulaCDM | 关闭，官方 Overall 留空 | 关闭，官方 Overall 留空 |
-| 大表格 TEDS 精确加速 | 开启，复用上游解析与编辑成本 | 默认使用历史实现 |
+`--legacy` 开启已有图表内容展开及图片替换；`--no-legacy` 关闭该预设。
+仍可用 `--replace-images`、`--expand-details` 单独覆盖。模型的 `chart_analysis` 要在生成预测时开启，
+本工程不会自动调用模型，也不会从图片占位符虚构图表数据。native／chart-table 任务语义仍需与 GT 对齐。
 
-模式在 `profiles.py` 中已赋好默认值。YAML 主要填写输入、输出和模型；直接选择模式即可运行。需要实验时可显式覆盖：
+默认两份配置都使用新标注数据和官方 OmniDocBench／MPDocBench 评测器。
+OmniDocBench 按页，MPDocBench 按文档及跨页关系分别报告；两者均附加 AgentBuilder 分项和总分。
+原生匹配、计分公式以及 AgentBuilder 权重不会随前处理预设变化。
+已有细则包括文本准确度、表格准确度、TEDS、TEDS-S、公式编辑距离／准确度、FormulaCDM（启用时）、
+阅读顺序准确度、title 和 AgentBuilder 总分；缺少的指标保持为空，不填入历史分数。
+
+旧 129 篇 Markdown 的复现使用单独配置，显式选择历史兼容评测器：
 
 ```bash
-docbench run configs/standard.yaml --merge-context
-docbench run configs/legacy.yaml --no-replace-images
+docbench run configs/historical-reproduction.yaml
 ```
 
-也可覆盖 `--expand-details`、`--allow-missing`、`--cdm`、`--exact-teds` 及其 `--no-*` 形式。覆盖值记录到 `run.json`，不生成额外的模式名。FormulaCDM 需要 TeX Live 等系统依赖。历史 Markdown 无法推断跨页关系，legacy 不接受 `--merge-context`。
+该配置的 `input_format: markdown` 与 `backends: [legacy_compat]` 决定历史输入和评测逻辑，
+与 `profile: standard/legacy` 无关。旧命令 `evaluate --backend legacy` 保留为 `legacy_compat` 的兼容别名。
+
+`--merge-context`、`--allow-missing`、`--cdm`、`--exact-teds` 也可独立覆盖，最终选项写入 `run.json`。
+FormulaCDM 需要 TeX Live 等系统依赖；历史 Markdown 输入缺少页面关系，不能启用跨页推断。
 
 输出目录必须为空，复跑时修改 YAML 中的 `output`。standard 产物：
 
@@ -99,4 +112,4 @@ docbench compare-xlsx \
 - [截断重跑](docs/inference.md)：Unlimited OCR 2 的重跑方案。
 - [重复输出检查](docs/output-quality.md)：四模型复读证据、统一筛查规则与原文报告。
 
-开发检查：`pytest -q`、`ruff check src tests`、`ruff format --check src tests`。分步导入／导出及单后端命令保留为开发工具；业务使用优先选择两个固定模式。
+开发检查：`pytest -q`、`ruff check src tests`、`ruff format --check src tests`。分步导入／导出及单后端命令保留为开发工具；业务使用优先选择 YAML 配置和独立前处理开关。

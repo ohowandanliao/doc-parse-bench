@@ -2,6 +2,42 @@
 
 MPDocBench 的独立操作说明见 [MPDocBench](MPDocBench.md)，包括文档级 GT、跨页关系、HeadTEDS、FigureF1 和已有结果位置。
 
+## 模式、评测器与 AgentBuilder
+
+standard／legacy 只决定前处理默认值，不选择数据集或计分算法。
+`input_format` 和数据路径选择输入，`backends` 选择评测器；AgentBuilder 是统一附加的分项与加权分。
+
+| 评测器 | 输入 | 原生逻辑 | AgentBuilder |
+| --- | --- | --- | --- |
+| OmniDocBench | 标注数据导出的页面 GT | 官方页面匹配与指标 | 附加既有分项、title、总分 |
+| MPDocBench | 同批数据导出的文档与关系 GT | 官方文档／跨页指标 | 附加既有分项、title、总分 |
+| legacy_compat | 显式选择旧 Markdown GT | 历史衍生实现 | 附加既有分项、title、总分 |
+
+三种评测器均可搭配 standard 或 legacy 前处理。默认 `standard.yaml` 与 `legacy.yaml`
+使用相同数据和两个官方后端，只改变图片替换／details 展开开关。
+旧数据与历史匹配器在 `historical-reproduction.yaml` 显式指定，不由 legacy 开关隐式选择。
+
+两个官方后端共享部分指标名称，但输入单位、匹配结果、样本权重不同；
+MPDocBench 还包含跨页续接、HeadTEDS、FigureF1 和关系指标。
+同一权重得到的是各后端自己的 AgentBuilder 自定义分数，不能跨数据集／后端直接排名。
+原生匹配及计分不因 AgentBuilder 扩展或 legacy 前处理发生改写。
+
+## 输入处理与计分的独立关系
+
+`chart_analysis` 是模型推理阶段的能力开关，图片替换和 details 展开是预测输入处理，
+OmniDocBench／MPDocBench／历史衍生实现负责计分，title／AgentBuilder 是计分后的扩展。
+开启图表识别或图片替换，不会自动切换评测器、启用 title 或改变 AgentBuilder 权重。
+本工程读取已有预测，不会在运行评测时自动开启模型的 `chart_analysis` 或重新推理。
+
+图片替换 `--replace-images` 和 details 展开 `--expand-details` 都可独立覆盖模式默认值；
+standard 默认关闭这两项，legacy 默认开启。两种预设的计分和其他评测默认值相同。
+图片替换仅把嵌入的 base64 图片引用归一化为占位符，不负责图表识别，也不替换任意图片路径。
+details 展开会把符合规则的图表附带表格提取为正文；它与图片引用归一化是不同处理。
+
+模块独立不代表分数不受影响：前处理会改变评测输入，所以同一算法的分数可能变化。
+尤其 native GT 把 chart 作为视觉对象，而 chart-table GT 要求图表数据表，必须显式对齐任务口径；
+不能仅因开启 chart_analysis 就把图表转录表计入 native 的普通表格指标。
+
 ## 旧版 129 篇中实际有哪些模型
 
 旧包保存了 13 条链路的预测：MinerU 开源 3.1.14／3.4.4、MinerU＋full、三条 POPO truefix 链路，以及七条 P2T／标题规则／renderer 变体。这些主要属于同一个 MinerU 技术家族，不是 13 种独立 OCR 模型。
@@ -22,7 +58,7 @@ xlsx 还列了五条共享链路：`mineru_vlm`、`fastgpt_sf`、`sf-1.4.0`、`m
 
 ## 旧逻辑如何与新版融合
 
-融合统一的数据入口、预测适配、title 扩展、报告和运行管理。standard 模式使用固定版本的官方 OmniDocBench／MPDocBench；legacy 模式使用本工程吸收的历史 md2md 匹配和清洗逻辑，以便复现历史 xlsx。这样可以在同一项目操作，但分数仍带有明确的评测器版本和任务口径。原服务、标注 agent、一次性脚本不作为运行依赖保留。
+融合统一的数据入口、预测适配、title 扩展、报告和运行管理。评测器由 `backends` 独立指定；官方 OmniDocBench／MPDocBench 使用固定上游版本，`legacy_compat` 使用本工程吸收的历史 md2md 匹配逻辑。这样可以在同一项目操作，但分数仍带有明确的评测器版本和任务口径。原服务、标注 agent、一次性脚本不作为运行依赖保留。
 
 不应把旧代码直接覆盖到官方子模块。旧版还有具体的计分差异：整个文档的预测表格为空或格式不匹配时，`Md2MdDataset` 只打印提示，不创建缺失表格样本；新版结构化 GT 路径会为漏掉的 GT 表格构造匹配并扣分。旧总分在 title 加入前聚合的问题也单独兼容。将这些行为“合并成一个算法”会破坏历史可比性，也会把旧缺陷带入新评测。
 
@@ -34,7 +70,7 @@ xlsx 还列了五条共享链路：`mineru_vlm`、`fastgpt_sf`、`sf-1.4.0`、`m
 | chart-table | chart 需要人工确认的数据表 | 使用模型已识别的数据表，缺少的仍是视觉块 | 保留图表数据提取任务 |
 | 统一图表增强 | GT 数据表必须审核，预测走同一个外部 provider | 每个模型用相同 provider 对自己的视觉区域识别图表 | 单列为模型＋增强链路，不与原始模型混排 |
 
-旧版 Markdown GT 已经把统计图变成了表格，因此 `--backend legacy` 保持这一口径。打开 MinerU `chart_analysis` 是推理参数，不能靠后处理给其他模型虚构等价输出；模型本来已输出 Markdown／HTML 图表数据时才可无损转换。
+旧版 Markdown GT 已经把统计图变成了表格，因此 `--backend legacy_compat` 保持这一口径。打开 MinerU `chart_analysis` 是推理参数，不能靠后处理给其他模型虚构等价输出；模型本来已输出 Markdown／HTML 图表数据时才可无损转换。
 
 当前新 GT 的 197 个 chart 块全部没有 text/html 数据表，所以不能直接导出 chart-table GT。已有模式应使用旧 GT；新数据要先补充人工确认的图表数据表。
 
@@ -86,9 +122,13 @@ docbench augment-charts artifacts/prepared/baseline/pred_ir/OvisOCR2/documents \
 | `agentbuilder_overall` | 0.3 文本＋0.3 TEDS＋0.3 顺序＋0.1 title，可用项权重归一化 |
 | `omnidocbench_overall` | 官方 v1.5+ 的 `(文本准确度 + TEDS + FormulaCDM)/3`，0–1 标度 |
 
-阅读顺序、title 不并入官方 Overall；AgentBuilder 总分单独命名。CDM 缺失时 `omnidocbench_overall=null`，不能把上游旧版 `total_score`（它用公式编辑距离）当作官方分数。换百分制展示时统一乘 100。
+阅读顺序、自定义 title 不并入 OmniDocBench 官方 Overall；AgentBuilder 总分单独命名。CDM 缺失时 `omnidocbench_overall=null`，不能把上游旧版 `total_score`（它用公式编辑距离）当作官方分数。换百分制展示时统一乘 100。
 
-旧流水线有一个顺序问题：总体 `overall` 在算入 title 前已聚合，实际只使用文本／TEDS／顺序，逐文档 overall 则包含 title。legacy 后端保留原聚合值到 `overall` 和 `legacy_stage_overall`；明确包含 title 的新值用 `agentbuilder_overall`。第 13 行基线分别为 0.9442 与 0.9211，不将二者混为同一指标。
+`omnidocbench_overall` 只对 OmniDocBench 后端计算，MPDocBench 和 legacy_compat 保持为空。
+AgentBuilder 使用各后端的普通 `text_accuracy`、`table_teds`、`reading_order_accuracy` 和扩展 `title`；
+不自动用 MPDocBench 的 merged 分项或 HeadTEDS 替换。它没有覆盖 MPDocBench 的全部能力。
+
+旧流水线有一个顺序问题：总体 `overall` 在算入 title 前已聚合，实际只使用文本／TEDS／顺序，逐文档 overall 则包含 title。legacy_compat 后端保留原聚合值到 `overall` 和 `legacy_stage_overall`；明确包含 title 的新值用 `agentbuilder_overall`。第 13 行基线分别为 0.9442 与 0.9211，不将二者混为同一指标。
 
 历史 title 完整保留：文本去 Unicode 空白／标点／符号；标题内容相似度降序贪心配对；GT 层级整体平移、预测层级额外压缩空档；层级／内容权重 0.3／0.7；分母 `max(GT 数, 预测数)`；两边都无标题返回 None，不参与均值。OmniDocBench 的 title 按页面平均，MPDocBench 和旧版按文档平均；比较时保留聚合单位，不能混用。
 
@@ -102,14 +142,22 @@ GT 与预测的导出 manifest 都有 chart_policy 时，不允许混用。原�
 
 ## FormulaCDM
 
-本机未安装完整公式渲染系统依赖，模式默认只计算公式编辑距离。`--cdm` 会先检查对应后端的 `pdflatex`（新 OmniDocBench）或 `xelatex`（MPDocBench／legacy）；其余依赖按官方文档安装。历史公式评分记录保存在本地 `data/legacy/formula_cdm/`；兼容实现已收入 `compatibility/engine/`，不再依赖原代码包。
+本机未安装完整公式渲染系统依赖，模式默认只计算公式编辑距离。`--cdm` 会先检查对应后端的 `pdflatex`（新 OmniDocBench）或 `xelatex`（MPDocBench／legacy_compat）；其余依赖按官方文档安装。历史公式评分记录保存在本地 `data/legacy/formula_cdm/`；兼容实现已收入 `compatibility/engine/`，不再依赖原代码包。
 
 ## 固定模式与开关
 
-只有 standard 与 legacy 两种模式，完整默认值在 `profiles.py` 中确定；入口为 `docbench run configs/standard.yaml` 或 `docbench run configs/legacy.yaml`。图片替换、details 展开、保守跨页推断、缺失处理和 CDM 仍可独立覆盖，最终选项写入 `run.json`。这些覆盖属于同一模式下的显式实验参数，不扩展为一组需要用户自行拼装的评测模式。
+standard 与 legacy 是两种前处理预设，完整默认值在 `profiles.py` 中确定；可以用 `docbench run configs/standard.yaml --legacy` 切换。同一配置的数据和评测器不变，输出目录需独立。图片替换、details 展开、保守跨页推断、缺失处理和 CDM 仍可独立覆盖，最终选项写入 `run.json`。
 
 standard 的视觉块由统一结构渲染，不默认再执行历史 base64 替换；legacy 默认执行两步 fix 清洗。两者均可显式覆盖，避免把历史文本替换规则自动施加到新的结构化评测。
 
-standard 对大表格默认启用精确 TEDS 加速：HTML 解析、节点构造、插入／删除及文本替换代价仍使用上游定义，距离由编译的 Zhang–Shasha 动态规划精确求解，不做裁剪或近似。小表继续使用上游 APTED；`--no-exact-teds` 可全部恢复 APTED。求解器记录在 provenance，且已对 1590 项真实表格分数逐项验证一致（容差 1e-10）。legacy 默认不启用该加速。
+standard 对大表格默认启用精确 TEDS 加速：HTML 解析、节点构造、插入／删除及文本替换代价仍使用上游定义，距离由编译的 Zhang–Shasha 动态规划精确求解，不做裁剪或近似。小表继续使用上游 APTED；`--no-exact-teds` 可全部恢复 APTED。求解器记录在 provenance，且已对 1590 项真实表格分数逐项验证一致（容差 1e-10）。legacy 前处理预设使用相同的加速默认值，前处理开关不改变求解器。
 
 历史 FormulaCDM 只有在当前与基线公式匹配对 `(img_id, gt, pred)` 完全一致、并且同一渲染环境／配置下才可以继承。随包提供的历史分数没有全部原始匹配对，不能只按模型名称或 xlsx 行号自动继承。原表分数原样保留在 `data/legacy/results/`。
+
+## 既有 AgentBuilder 细则分
+
+所有后端统一展示文本准确度、表格准确度、表格 TEDS／TEDS-S、阅读顺序准确度、
+公式编辑距离／准确度、FormulaCDM（启用时）、自定义 title 和 AgentBuilder 总分。
+它们来自本次后端分项或既有 title 实现，不改写上游匹配、公式和聚合。
+CSV `文档解析效果-badcases分析202608.csv` 是问题与审核记录，不包含数值评分公式；
+当前未据此新增标题漏识别率、误识别率或人工备注评分，也不补入历史 Excel 分数。
