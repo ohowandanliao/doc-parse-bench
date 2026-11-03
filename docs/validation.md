@@ -63,3 +63,17 @@ GT 哈希和原生评测配置一致；该样本未触发前处理内容变更�
 历史 legacy_compat 评测器另用一份旧 Markdown 实际跑通。
 验证记录与报告在 `artifacts/smoke/decoupled-preprocessing/`，其中 `verification.json`
 记录配置、GT 和分数的逐后端核对；没有重跑全量，也没有补入历史 Excel 分数。
+
+## 已有全量结果的前处理对照
+
+已有四模型的 standard／legacy 对照补充到 `artifacts/reports/standard-vs-legacy/`：
+`summary.md` 展示 16 组完整分项，`comparison.md` 和 `comparison.json` 展示差异。
+对应运行目录为 `artifacts/runs/standard/` 与 `artifacts/runs/legacy-preprocessing/`。
+standard 的 8 组经 GT、title GT、预测文件集合和哈希核对，与原 baseline 输入一致，复用已有分数。
+legacy 前处理改变 MinerU 的 33 个页面输入、对应 6 个文档输入，两个后端重新全量评分；
+另外三个模型的 6 组输入完全一致，保留原指标开关并复用，来源写入各自 provenance 的 `score_reuse`。
+
+本批变化全部由 base64 图片引用替换触发，未触发 details 展开；
+未重新调用 OCR，也没有核实原推理是否启用 chart_analysis，不能把这次对照视为 chart_analysis 的开关实验。
+原始 baseline、预测文件及 UOCR2 缺失 57 页的计分语义保留。
+逐项输入差异见 legacy 运行目录的 `input-comparison.json`，完成状态见两份运行目录的 `completion.json`。
