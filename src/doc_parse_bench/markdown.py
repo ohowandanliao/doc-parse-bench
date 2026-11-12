@@ -120,8 +120,11 @@ def render_block(block: Block, page: int, chart_policy: str = "native") -> str:
                 return table_html(content)
         if block.bbox:
             coords = "_".join(str(round(c * 1000)) for c in block.bbox)
-            return f"![](page{page}_{coords}.jpg)"
-        return block.metadata.get("original_markdown", "![image](image)")
+            marker = f"![](page{page}_{coords}.jpg)"
+        else:
+            marker = block.metadata.get("original_markdown", "![image](image)")
+        details = block.metadata.get("visual_details", "")
+        return marker + ("\n\n" + details if details else "")
     if block.type == "table":
         return table_html(block.html or block.text)
     if block.type == "title":

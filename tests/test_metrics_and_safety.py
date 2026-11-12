@@ -6,7 +6,12 @@ from doc_parse_bench.backends.runner import evaluate
 from doc_parse_bench.charts import augment_charts
 from doc_parse_bench.exporters import export_gt, export_predictions
 from doc_parse_bench.io import read_json, write_json
-from doc_parse_bench.metrics import compute_title_score, extract_title_lines, summarize
+from doc_parse_bench.metrics import (
+    compute_title_score,
+    extract_title_lines,
+    normalize_report_metrics,
+    summarize,
+)
 from doc_parse_bench.schema import Block, Document, Page
 
 
@@ -76,8 +81,46 @@ def test_official_overall_uses_three_modules_and_excludes_reading_order():
     assert summarize(raw, 0.2)["omnidocbench_overall"] == pytest.approx(0.8)
 
 
-@pytest.mark.parametrize("backend", ["OmniDocBench", "MPDocBench", "legacy"])
-def test_agentbuilder_is_shared_but_official_overall_is_backend_specific(backend):
+MP_COMPLETE = {
+    "text_edit": 0.1,
+    "merged_text_edit": 0.2,
+    "formula_cdm": 0.0,
+    "table_teds": 0.6,
+    "merged_table_teds": 0.5,
+    "figure_f1": 0.4,
+    "reading_order_edit": 0.3,
+    "head_teds": 0.2,
+}
+
+
+def test_mp_official_overall_averages_eight_tasks_and_keeps_computed_zero():
+    metrics = {
+        **MP_COMPLETE,
+        "title": 1.0,
+        "text_relation_f1": 1.0,
+        "table_relation_f1": 1.0,
+        "agentbuilder_overall": 1.0,
+    }
+    normalized = normalize_report_metrics(metrics, "MPDocBench")
+    assert normalized["mpdocbench_overall"] == pytest.approx(4.1 / 8)
+    assert normalized["agentbuilder_overall"] is None
+    assert normalized["omnidocbench_overall"] is None
+
+
+@pytest.mark.parametrize("missing", MP_COMPLETE)
+def test_mp_official_overall_requires_every_task_and_never_reweights_missing(missing):
+    metrics = {name: value for name, value in MP_COMPLETE.items() if name != missing}
+    metrics.update(formula_edit=0.0, formula_accuracy=1.0, mpdocbench_overall=1.0)
+    assert normalize_report_metrics(metrics, "MPDocBench")["mpdocbench_overall"] is None
+
+
+@pytest.mark.parametrize("backend", ["OmniDocBench", "legacy", "legacy_compat"])
+def test_mp_official_overall_cannot_be_generated_from_another_backend(backend):
+    assert normalize_report_metrics(MP_COMPLETE, backend)["mpdocbench_overall"] is None
+
+
+@pytest.mark.parametrize("backend", ["OmniDocBench", "MPDocBench", "legacy", "legacy_compat"])
+def test_agentbuilder_only_uses_omnidocbench_source_metrics(backend):
     raw = {
         "text_block": {"all": {"Edit_dist": {"ALL_page_avg": 0.1}}},
         "table": {"all": {"TEDS": {"all": 0.8}}},
@@ -87,10 +130,80 @@ def test_agentbuilder_is_shared_but_official_overall_is_backend_specific(backend
         "head": {"all": {"HeadTEDS": {"all": 0.02}}},
     }
     metrics = summarize(raw, 0.6, backend)
-    assert metrics["agentbuilder_overall"] == 0.78
     assert metrics["title"] == 0.6
     assert metrics["head_teds"] == 0.02
     if backend == "OmniDocBench":
+        assert metrics["agentbuilder_overall"] == 0.78
         assert metrics["omnidocbench_overall"] == pytest.approx(0.7)
     else:
+        assert metrics["agentbuilder_overall"] is None
         assert metrics["omnidocbench_overall"] is None
+        if backend in {"legacy", "legacy_compat"}:
+            assert metrics["historical_weighted_overall"] == 0.78
+
+
+def test_agentbuilder_remains_available_without_cdm_and_never_substitutes_formula_edit():
+    raw = {
+        "text_block": {"all": {"Edit_dist": {"ALL_page_avg": 0.1}}},
+        "table": {"all": {"TEDS": {"all": 0.8}}},
+        "reading_order": {"all": {"Edit_dist": {"ALL_page_avg": 0.3}}},
+        "display_formula": {"all": {"Edit_dist": {"ALL_page_avg": 0.2}}},
+    }
+    metrics = summarize(raw, 0.6, "OmniDocBench")
+    assert metrics["agentbuilder_overall"] == 0.78
+    assert metrics["formula_accuracy"] == 0.8
+    assert metrics.get("formula_cdm") is None
+    assert metrics["omnidocbench_overall"] is None
+
+
+def test_normalize_recomputes_stale_page_score_and_keeps_zero_weight_components():
+    original = {
+        "text_accuracy": 0.9,
+        "table_teds": 0.8,
+        "reading_order_accuracy": None,
+        "title": 0.0,
+        "formula_accuracy": 1.0,
+        "formula_cdm": None,
+        "agentbuilder_overall": 1.0,
+        "omnidocbench_overall": 1.0,
+    }
+    normalized = normalize_report_metrics(original, "OmniDocBench")
+    assert normalized["agentbuilder_overall"] == pytest.approx(0.7286)
+    assert normalized["title"] == 0.0
+    assert normalized["omnidocbench_overall"] is None
+    assert original["agentbuilder_overall"] == 1.0
+
+
+@pytest.mark.parametrize("backend", ["MPDocBench", "legacy", "legacy_compat"])
+def test_normalize_rejects_stored_cross_backend_agentbuilder_scores(backend):
+    original = {
+        "agentbuilder_overall": 0.9999,
+        "text_accuracy": 0.9,
+        "table_teds": 0.8,
+        "reading_order_accuracy": 0.7,
+        "title": 0.6,
+        "omnidocbench_overall": 0.99,
+    }
+    normalized = normalize_report_metrics(original, backend)
+    assert normalized["agentbuilder_overall"] is None
+    assert normalized["omnidocbench_overall"] is None
+    assert normalized["title"] == 0.6
+    assert original["agentbuilder_overall"] == 0.9999
+    if backend in {"legacy", "legacy_compat"}:
+        assert normalized["historical_weighted_overall"] == 0.9999
+
+
+def test_normalize_preserves_historical_aggregate_when_called_again():
+    original = {
+        "agentbuilder_overall": None,
+        "historical_weighted_overall": 0.55,
+        "legacy_stage_overall": 0.8,
+        "text_accuracy": 0.9,
+        "table_teds": 0.8,
+        "reading_order_accuracy": 0.7,
+        "title": 0.6,
+    }
+    normalized = normalize_report_metrics(original, "legacy_compat")
+    assert normalized["agentbuilder_overall"] is None
+    assert normalized["historical_weighted_overall"] == 0.55
+    assert normalized["legacy_stage_overall"] == 0.8

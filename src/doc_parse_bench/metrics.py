@@ -6,6 +6,94 @@ import unicodedata
 
 import Levenshtein
 
+AGENTBUILDER_WEIGHTS = {
+    "text_accuracy": 0.3,
+    "table_teds": 0.3,
+    "reading_order_accuracy": 0.3,
+    "title": 0.1,
+}
+
+AGENTBUILDER_V2_WEIGHTS = {
+    "text_accuracy": 0.3,
+    "table_teds": 0.3,
+    "reading_order_accuracy": 0.3,
+    "title_tree_v2": 0.1,
+}
+
+
+def agentbuilder_v2_score(metrics: dict, source_backend: str) -> float | None:
+    """Fixed weights; require all four scores and the Omni page content evaluator."""
+    if source_backend != "OmniDocBench":
+        raise ValueError("AgentBuilder-v2 的内容分项必须来自 OmniDocBench")
+    scores = {key: finite(metrics.get(key)) for key in AGENTBUILDER_V2_WEIGHTS}
+    if any(value is None for value in scores.values()):
+        return None
+    if any(not 0 <= value <= 1 for value in scores.values()):
+        raise ValueError("AgentBuilder-v2 分项必须位于 [0,1]")
+    return sum(scores[key] * weight for key, weight in AGENTBUILDER_V2_WEIGHTS.items())
+
+
+def agentbuilder_score(metrics: dict) -> float | None:
+    """Aggregate the selected page metrics; a computed zero is a present score."""
+    present = {
+        key: (value, weight)
+        for key, weight in AGENTBUILDER_WEIGHTS.items()
+        if (value := finite(metrics.get(key))) is not None
+    }
+    return (
+        round(
+            sum(value * weight for value, weight in present.values())
+            / sum(weight for _, weight in present.values()),
+            4,
+        )
+        if present
+        else None
+    )
+
+
+def normalize_report_metrics(metrics: dict, backend: str) -> dict:
+    """Normalize old and new reports without admitting other backends to AgentBuilder."""
+    backend = "legacy_compat" if backend == "legacy" else backend
+    if backend not in {"OmniDocBench", "MPDocBench", "legacy_compat"}:
+        raise ValueError(f"未知评测器：{backend}")
+    result = dict(metrics)
+    former_score = result.get("agentbuilder_overall")
+    result["agentbuilder_overall"] = (
+        agentbuilder_score(result) if backend == "OmniDocBench" else None
+    )
+    if backend == "legacy_compat" and result.get("historical_weighted_overall") is None:
+        result["historical_weighted_overall"] = (
+            finite(former_score) if finite(former_score) is not None else agentbuilder_score(result)
+        )
+    required = ("text_accuracy", "formula_cdm", "table_teds")
+    scores = [finite(result.get(key)) for key in required]
+    result["omnidocbench_overall"] = (
+        sum(scores) / 3
+        if backend == "OmniDocBench" and all(score is not None for score in scores)
+        else None
+    )
+    mp_modules = (
+        "text_edit",
+        "merged_text_edit",
+        "formula_cdm",
+        "table_teds",
+        "merged_table_teds",
+        "figure_f1",
+        "reading_order_edit",
+        "head_teds",
+    )
+    mp_scores = [finite(result.get(name)) for name in mp_modules]
+    result["mpdocbench_overall"] = (
+        sum(
+            1 - score if name.endswith("_edit") else score
+            for name, score in zip(mp_modules, mp_scores)
+        )
+        / len(mp_modules)
+        if backend == "MPDocBench" and all(score is not None for score in mp_scores)
+        else None
+    )
+    return result
+
 
 def extract_title_lines(markdown: str) -> list[tuple[int, str]]:
     # Preserve the historical ATX extraction, including its whitespace behavior.
@@ -99,19 +187,4 @@ def summarize(raw: dict, title: float | None, backend: str = "OmniDocBench") -> 
                 if suffix == "edit":
                     metrics[f"{name}_accuracy"] = 1 - score
     metrics["title"] = title
-    weights = {"text_accuracy": 0.3, "table_teds": 0.3, "reading_order_accuracy": 0.3, "title": 0.1}
-    present = {key: value for key, value in weights.items() if metrics.get(key) is not None}
-    metrics["agentbuilder_overall"] = (
-        round(sum(metrics[k] * w for k, w in present.items()) / sum(present.values()), 4)
-        if present
-        else None
-    )
-    # Official v1.5+ Overall averages text accuracy, FormulaCDM and table TEDS.
-    # Reading order and the custom title score are reported separately.
-    required = ("text_accuracy", "formula_cdm", "table_teds")
-    metrics["omnidocbench_overall"] = (
-        sum(metrics[k] for k in required) / 3
-        if backend == "OmniDocBench" and all(k in metrics for k in required)
-        else None
-    )
-    return metrics
+    return normalize_report_metrics(metrics, backend)

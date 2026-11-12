@@ -9,6 +9,7 @@ from .backends.runner import evaluate
 from .benchmark import benchmark, collect_reports
 from .charts import augment_charts
 from .compatibility import prepare_legacy
+from .compatibility.cleaning import CleaningOptions
 from .exporters import export_gt, export_predictions
 from .history import compare_workbook
 from .pipeline import run as run_profile
@@ -61,9 +62,27 @@ def build_parser() -> argparse.ArgumentParser:
         exporter.add_argument("--chart-policy", choices=["native", "chart-table"], default="native")
         if name == "export-pred":
             exporter.add_argument("--context", choices=["native", "conservative"], default="native")
-    legacy = sub.add_parser("prepare-legacy", help="保留历史 fix 清洗口径")
-    legacy.add_argument("source", type=Path)
-    legacy.add_argument("output", type=Path)
+    for command, historical_default, help_text in (
+        ("prepare-markdown", False, "独立处理 Markdown；图片替换与 details 清洗分别选择"),
+        ("prepare-legacy", True, "历史 fix 预设；默认同时替换图片和清洗 details"),
+    ):
+        cleaner = sub.add_parser(command, help=help_text)
+        cleaner.add_argument("source", type=Path)
+        cleaner.add_argument("output", type=Path, help="新的输出目录，不覆盖原始 Markdown")
+        cleaner.add_argument(
+            "--replace-images",
+            dest="replace_embedded_images",
+            action=argparse.BooleanOptionalAction,
+            default=historical_default,
+            help="仅替换嵌入的 base64 图片引用，不恢复坐标、不识别图片内容",
+        )
+        cleaner.add_argument(
+            "--expand-details",
+            dest="expand_chart_details",
+            action=argparse.BooleanOptionalAction,
+            default=historical_default,
+            help="应用历史 details 规则，可能以内部内容替掉图片；不启用模型 chart_analysis",
+        )
     charts = sub.add_parser("augment-charts", help="从人工审核表格或显式 provider 增强图表")
     charts.add_argument("source", type=Path)
     charts.add_argument("output", type=Path)
@@ -73,7 +92,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--provider", nargs="+", help="JSON stdin/stdout provider 命令，不通过 shell"
     )
     charts.add_argument("--pdf-dir", type=Path)
-    run = sub.add_parser("evaluate", help="运行官方评测并补充旧版 title 分数")
+    run = sub.add_parser("evaluate", help="运行原生评测；AgentBuilder 独立榜仅从 OmniDocBench 生成")
     run.add_argument(
         "--backend",
         choices=["OmniDocBench", "MPDocBench", "legacy_compat", "legacy"],
@@ -99,9 +118,14 @@ def build_parser() -> argparse.ArgumentParser:
     batch.add_argument("--cdm", action="store_true")
     batch.add_argument("--figure", action="store_true")
     batch.add_argument("--relations", action="store_true")
-    collect = sub.add_parser("collect", help="汇总已完成评测，不重跑指标")
+    collect = sub.add_parser("collect", help="从已有结果生成三个独立榜，不重跑指标")
     collect.add_argument("reports", type=Path, nargs="+")
     collect.add_argument("--output", type=Path, required=True)
+    rescore = sub.add_parser(
+        "rescore-agentbuilder", help="复测旧标题分和总分，生成 AgentBuilder-v2"
+    )
+    rescore.add_argument("--inputs", type=Path, required=True, help="冻结输入及历史报告清单 JSON")
+    rescore.add_argument("--output", type=Path, required=True, help="新的结果目录")
     compare = sub.add_parser("compare-xlsx", help="将已完成的旧版跑分与 XLSX 逐列对账")
     compare.add_argument("workbook", type=Path)
     compare.add_argument("run", type=Path)
@@ -169,8 +193,12 @@ def main(argv=None):
         elif args.command == "export-pred":
             result = export_predictions(args.source, args.output, args.chart_policy, args.context)
             result.pop("context_events", None)
-        elif args.command == "prepare-legacy":
-            result = prepare_legacy(args.source, args.output)
+        elif args.command in {"prepare-markdown", "prepare-legacy"}:
+            result = prepare_legacy(
+                args.source,
+                args.output,
+                CleaningOptions(args.replace_embedded_images, args.expand_chart_details),
+            )
             result.pop("sources", None)
         elif args.command == "augment-charts":
             result = augment_charts(
@@ -203,6 +231,10 @@ def main(argv=None):
             )
         elif args.command == "collect":
             result = collect_reports(args.reports, args.output)
+        elif args.command == "rescore-agentbuilder":
+            from .agentbuilder_v2 import rescore_agentbuilder
+
+            result = rescore_agentbuilder(args.inputs, args.output)
         elif args.command == "compare-xlsx":
             result = compare_workbook(args.workbook, args.run, args.tag, args.output)
         elif args.command == "audit-quality":

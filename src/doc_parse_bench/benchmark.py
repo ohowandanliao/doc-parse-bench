@@ -6,6 +6,8 @@ from pathlib import Path
 
 from .backends.runner import canonical_backend, evaluate
 from .io import fresh_directory, read_json, write_json
+from .leaderboards import write_leaderboards
+from .metrics import normalize_report_metrics
 
 
 def benchmark(
@@ -105,6 +107,16 @@ def collect_reports(reports: list[Path], output: Path) -> dict:
                     "expected": origin["expected"],
                     "provided": origin["provided"],
                     "preprocessing_profile": preprocessing_profile,
+                    **(
+                        {"dataset_version": origin["dataset_version"]}
+                        if origin.get("dataset_version")
+                        else {}
+                    ),
+                    **(
+                        {"gt_sha256": origin["gt_sha256"]}
+                        if isinstance(origin.get("gt_sha256"), str)
+                        else {}
+                    ),
                     **read_json(path),
                 }
             )
@@ -117,11 +129,14 @@ def collect_reports(reports: list[Path], output: Path) -> dict:
 
 def _write_summary(rows: list[dict], output: Path) -> None:
     rows = [
-        {
-            "preprocessing_profile": "unspecified",
-            **row,
-            "backend": canonical_backend(row["backend"]),
-        }
+        normalize_report_metrics(
+            {
+                "preprocessing_profile": "unspecified",
+                **row,
+                "backend": canonical_backend(row["backend"]),
+            },
+            canonical_backend(row["backend"]),
+        )
         for row in rows
     ]
     rows.sort(key=lambda row: (row["backend"], row["model"], row["preprocessing_profile"]))
@@ -132,121 +147,4 @@ def _write_summary(rows: list[dict], output: Path) -> None:
             writer.writeheader()
             writer.writerows(rows)
     write_json(output / "summary.json", rows)
-    lines = [
-        "# 评测结果",
-        "",
-        "standard／legacy 只选择前处理预设；数据和评测器由配置独立指定。",
-        "AgentBuilder 分项对所有后端均附加计算，不改变原生匹配与计分。",
-        "不同数据集、后端或聚合单位的分数不能直接横比；未保存前处理预设的旧报告记为 unspecified。",
-    ]
-    specifications = {
-        "OmniDocBench": (
-            "OmniDocBench（按页）",
-            "原生分项；FormulaCDM 未计算时，OmniDocBench 官方 Overall 留空。",
-            [
-                "text_edit",
-                "formula_cdm",
-                "table_teds",
-                "table_teds_s",
-                "reading_order_edit",
-                "omnidocbench_overall",
-            ],
-        ),
-        "MPDocBench": (
-            "MPDocBench（按文档）",
-            "原生分项包含跨页内容、标题树、图像和关系；不套用 OmniDocBench 的官方 Overall 公式。",
-            [
-                "text_edit",
-                "merged_text_edit",
-                "formula_cdm",
-                "table_teds",
-                "merged_table_teds",
-                "figure_f1",
-                "reading_order_edit",
-                "head_teds",
-                "text_relation_f1",
-                "table_relation_f1",
-            ],
-        ),
-        "legacy_compat": (
-            "legacy_compat · 历史衍生评测器（按文档，与 legacy 前处理预设独立）",
-            "历史兼容分项，保留旧匹配、清洗及聚合行为。",
-            [
-                "text_accuracy",
-                "table_accuracy",
-                "table_teds",
-                "table_teds_s",
-                "reading_order_accuracy",
-                "formula_edit",
-                "formula_cdm",
-            ],
-        ),
-    }
-
-    def table(group, columns):
-        lines.extend(
-            [
-                "",
-                "| " + " | ".join(columns) + " |",
-                "| " + " | ".join(["---"] * len(columns)) + " |",
-            ]
-        )
-        for row in group:
-            values = []
-            for column in columns:
-                value = row.get(column)
-                values.append(
-                    "—"
-                    if value is None
-                    else f"{value:.4f}"
-                    if isinstance(value, float)
-                    else str(value)
-                )
-            lines.append("| " + " | ".join(values) + " |")
-
-    for backend, (title, description, native_columns) in specifications.items():
-        group = [row for row in rows if row["backend"] == backend]
-        if not group:
-            continue
-        lines.extend(["", f"## {title}", "", description])
-        table(group, ["model", "preprocessing_profile", "expected", "provided", *native_columns])
-        lines.extend(
-            [
-                "",
-                "AgentBuilder 自定义扩展（使用上述后端分项；title 为自定义标题分）：",
-            ]
-        )
-        table(
-            group,
-            [
-                "model",
-                "preprocessing_profile",
-                "text_accuracy",
-                "table_accuracy",
-                "table_teds",
-                "table_teds_s",
-                "reading_order_accuracy",
-                "formula_accuracy",
-                "formula_edit",
-                "formula_cdm",
-                "title",
-                "agentbuilder_overall",
-            ],
-        )
-        if backend == "legacy_compat":
-            lines.extend(
-                [
-                    "",
-                    "历史兼容总分（旧程序在加入 title 前计算）：",
-                ]
-            )
-            table(group, ["model", "preprocessing_profile", "legacy_stage_overall"])
-    lines.extend(
-        [
-            "",
-            "AgentBuilder = 0.3 × 文本准确度 + 0.3 × 表格 TEDS + 0.3 × 阅读顺序准确度 + 0.1 × title。",
-            "缺失分项时按可用权重归一化；title 在 OmniDocBench 按页平均，在 MPDocBench 和 legacy_compat 按文档平均。",
-            "AgentBuilder 不替代各后端原生指标；HeadTEDS、跨页续接和 FigureF1 等不包含在此加权分内。",
-        ]
-    )
-    (output / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_leaderboards(rows, output)

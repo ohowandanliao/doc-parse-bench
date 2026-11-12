@@ -7,7 +7,15 @@ from .io import fresh_directory, read_json, sha256, write_json
 from .markdown import parse_markdown, table_html
 from .schema import Block, Document, Page
 
-MODELS = ("MinerU", "NaviDC-OCR", "OvisOCR2", "Unlimited-OCR-2", "Markdown")
+MODELS = (
+    "MinerU",
+    "MinerU-3.x",
+    "MinerU-4.x",
+    "NaviDC-OCR",
+    "OvisOCR2",
+    "Unlimited-OCR-2",
+    "Markdown",
+)
 TYPE_ALIASES = {
     "equation": "formula",
     "equation_isolated": "formula",
@@ -181,6 +189,10 @@ def import_predictions(
                     blocks = parse_markdown(item.get("md", ""), number)
                 else:
                     raw_blocks = item["blocks"]
+                    if model in {"MinerU-3.x", "MinerU-4.x"}:
+                        from .mineru_native import expand_block
+
+                        raw_blocks = [child for b in raw_blocks for child in expand_block(b)]
                     blocks = [
                         _convert_block(b, number, n, model)
                         for n, b in enumerate(raw_blocks)
@@ -216,6 +228,10 @@ def import_predictions(
                     block.metadata["level_source"] = "default_missing_native_level"
         if model in {"MinerU", "NaviDC-OCR"}:
             _native_merge_prev(doc)
+        elif model in {"MinerU-3.x", "MinerU-4.x"}:
+            from .mineru_native import attach_continuations
+
+            attach_continuations(doc)
         for page in doc.pages:
             tail = [b.text.strip() for b in page.blocks[-100:] if b.text.strip()]
             if len(tail) >= 20 and len(set(tail[-20:])) == 1:

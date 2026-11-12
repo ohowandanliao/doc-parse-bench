@@ -59,7 +59,8 @@ def has_markdown_table(content):
     return False
 
 
-def process_content(content, replace_embedded_images=True):
+def process_chart_details(content: str) -> str:
+    """Apply the historical details rules without replacing embedded images."""
     # Pattern: ![alt](url) + <details><summary>...</summary>...</details>
     paired_re = re.compile(
         r"!\[([^\]]*)\]\(([^)]*)\)\s*<details>\s*<summary>([^<]*)</summary>\s*(.*?)</details>",
@@ -86,6 +87,13 @@ def process_content(content, replace_embedded_images=True):
         re.DOTALL,
     )
     content = standalone_re.sub("", content)
+
+    return content
+
+
+def process_content(content: str, replace_embedded_images: bool = True) -> str:
+    """Compatibility wrapper for the original postprocess.py combined behavior."""
+    content = process_chart_details(content)
 
     # Pass 3: replace base64 inline images with unified placeholder
     # 匹配 ![alt](data:image/...;base64,...) 格式

@@ -9,7 +9,14 @@ from pathlib import Path
 
 from ..compatibility import ENGINE_ROOT, PROJECT_ROOT, historical_overall
 from ..io import fresh_directory, read_json, sha256, write_json
-from ..metrics import compute_title_score, extract_title_lines, finite, summarize
+from ..metrics import (
+    AGENTBUILDER_WEIGHTS,
+    compute_title_score,
+    extract_title_lines,
+    finite,
+    normalize_report_metrics,
+    summarize,
+)
 
 
 def canonical_backend(backend: str) -> str:
@@ -32,11 +39,14 @@ def evaluate(
     relations: bool = False,
     exact_teds: bool = False,
     preprocessing: dict | None = None,
+    cache_latex_success: bool = False,
 ) -> dict:
     backend = canonical_backend(backend)
     gt, predictions = gt.resolve(), predictions.resolve()
     if (figure or relations) and backend != "MPDocBench":
         raise ValueError("--figure 和 --relations 仅适用于 MPDocBench")
+    if cache_latex_success and backend != "OmniDocBench":
+        raise ValueError("LaTeX 成功结果缓存仅适用于 OmniDocBench")
     tex_engine = "pdflatex" if backend == "OmniDocBench" else "xelatex"
     if cdm and shutil.which(tex_engine) is None:
         raise ValueError(f"FormulaCDM 需要 {tex_engine}/TeX Live；当前环境尚未安装")
@@ -108,6 +118,7 @@ def evaluate(
     config = {
         "enable_cdm": cdm,
         "exact_teds": exact_teds,
+        "cache_latex_success": cache_latex_success,
         "end2end_eval": {
             "metrics": metrics,
             "dataset": {
@@ -159,18 +170,7 @@ def evaluate(
     flat = summarize(raw, title, backend)
     _attach_element_scores(results[0].parent, backend, scores)
     for values in scores.values():
-        weights = {
-            "text_accuracy": 0.3,
-            "table_teds": 0.3,
-            "reading_order_accuracy": 0.3,
-            "title": 0.1,
-        }
-        present = {k: w for k, w in weights.items() if values.get(k) is not None}
-        values["agentbuilder_overall"] = (
-            round(sum(values[k] * w for k, w in present.items()) / sum(present.values()), 4)
-            if present
-            else None
-        )
+        values.update(normalize_report_metrics(values, backend))
     # Keep old JSON names as aliases for consumers of the historical pipeline.
     if backend == "legacy_compat":
         aliases = {
@@ -195,7 +195,7 @@ def evaluate(
                     for key, value in aliases.items()
                 }
             )
-            values["overall"] = values.get("agentbuilder_overall")
+            values["overall"] = values.get("historical_weighted_overall")
     commit = subprocess.run(
         ["git", "-C", str(root), "rev-parse", "HEAD"], text=True, capture_output=True
     )
@@ -217,16 +217,23 @@ def evaluate(
         "gt_sha256": sha256(gt) if gt.is_file() else {p.name: sha256(p) for p in gt.glob("*.md")},
         "cdm_enabled": cdm,
         "title_metric": "historical-v1; level=.3/content=.7",
-        "agentbuilder_weights": {
-            "text_accuracy": 0.3,
-            "table_teds": 0.3,
-            "reading_order_accuracy": 0.3,
-            "title": 0.1,
-        },
+        "agentbuilder_weights": AGENTBUILDER_WEIGHTS if backend == "OmniDocBench" else None,
+        "agentbuilder_source_backend": "OmniDocBench" if backend == "OmniDocBench" else None,
+        "leaderboards": (
+            ["AgentBuilder", "OmniDocBench"]
+            if backend == "OmniDocBench"
+            else ["MPDocBench"]
+            if backend == "MPDocBench"
+            else []
+        ),
         "figure_enabled": figure,
         "relation_metrics_enabled": relations,
         "teds_solver": "compiled-exact-tree-edit" if exact_teds else "upstream-apted",
-        "complete_official_score": cdm and (backend != "MPDocBench" or figure),
+        "cache_latex_success": cache_latex_success,
+        "complete_official_score": flat.get(
+            "mpdocbench_overall" if backend == "MPDocBench" else "omnidocbench_overall"
+        )
+        is not None,
     }
     if backend == "legacy_compat":
         fingerprint = hashlib.sha256()
@@ -241,14 +248,23 @@ def evaluate(
     rows = "\n".join(
         f"| {key} | {value:.6f} |" if value is not None else f"| {key} | unavailable |"
         for key, value in flat.items()
+        if backend != "MPDocBench"
+        or key not in {"agentbuilder_overall", "title", "omnidocbench_overall"}
+    )
+    explanation = (
+        "AgentBuilder 独立榜固定使用 OmniDocBench 页面匹配结果，文本/TEDS/顺序/title 权重为 "
+        "0.3/0.3/0.3/0.1。FormulaCDM 未计算时原生 Overall 留空。"
+        if backend == "OmniDocBench"
+        else "MPDocBench 官方 Overall 为文本、合并文本、公式 CDM、表格 TEDS、合并表格 TEDS、"
+        "FigureF1、阅读顺序与 HeadTEDS 八项的等权平均，编辑距离先转为准确率；缺项留空。"
+        "自定义 title 仅作为诊断保留在 JSON。"
+        if backend == "MPDocBench"
+        else "历史兼容分项与 historical_weighted_overall 单独保留，不进入三个正式榜。"
     )
     (output / "report.md").write_text(
         f"# {backend} 评测\n\n覆盖率：{len(expected) - len(missing)}/{len(expected)}；"
         f"缺失按空预测：{len(missing)}。\n\n| 指标 | 得分 |\n| --- | --- |\n{rows}\n\n"
-        "AgentBuilder 为自定义加权分：文本/TEDS/顺序/title 权重为 0.3/0.3/0.3/0.1，"
-        "三条评测路径均计算，各自使用本后端的分项和聚合单位；不能跨后端直接比较。\n\n"
-        "title 为自定义扩展，与 MPDocBench 的 HeadTEDS 分别报告。"
-        "omnidocbench_overall 仅适用于 OmniDocBench，FormulaCDM 未计算时留空。\n",
+        f"{explanation}\n",
         encoding="utf-8",
     )
     return flat

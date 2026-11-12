@@ -14,6 +14,7 @@ def main():
     root = Path(root).resolve()
     sys.path.insert(0, str(root))
     exact_teds = config.pop("exact_teds", False)
+    cache_latex_success = config.pop("cache_latex_success", False)
     if not config.pop("enable_cdm", False):
         # Avoid importing optional image/TeX renderer dependencies when CDM is off.
         # Fail if the evaluator attempts to invoke the disabled metric.
@@ -51,11 +52,24 @@ def main():
             importlib.import_module(
                 "src.metrics.cal_metric"
             )._teds_pair_worker = omnidocbench_pair_worker
+    latex_cache = None
+    if cache_latex_success:
+        if backend != "OmniDocBench":
+            raise ValueError("LaTeX 成功结果缓存仅适用于 OmniDocBench")
+        from .latex_cache import install as install_latex_cache
+
+        latex_cache = install_latex_cache(
+            importlib.import_module("src.core.preprocess.text_postprocess")
+        )
     task_config = config["end2end_eval"]
     dataset = DATASET_REGISTRY.get(task_config["dataset"]["dataset_name"])(task_config)
     EVAL_TASK_REGISTRY.get("end2end_eval")(
         dataset, task_config["metrics"], task_config["dataset"]["ground_truth"]["data_path"], "eval"
     )
+    if latex_cache is not None:
+        Path("latex_cache.json").write_text(
+            json.dumps(latex_cache.cache_info()._asdict(), indent=2)
+        )
 
 
 if __name__ == "__main__":

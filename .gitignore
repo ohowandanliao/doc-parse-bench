@@ -9,3 +9,5 @@ __pycache__/
 artifacts/
 archives/
 data/
+/pack[1-4]_*docs.tar.gz
+/for_标题分数/
