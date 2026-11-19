@@ -2,6 +2,9 @@
 
 这是一条独立的评测入口，专门检查 PDF2Text 的 `keep_appendix`、`keep_header_footer`、`image_analysis` 和 `chart_analysis`。它不读取、不修改 TreeTitle-v2、AgentBuilder-v2、OmniDocBench 或 MPDocBench 的分数。
 
+当前 129 份 `3.1-ft` 与 `3.1-origin` 结果、指标解释、image/chart 合并诊断和
+image 覆盖率案例见 [2026-11-20 结果报告](feature-evaluation-129-20261119.md)。
+
 这条专项只使用 129 份旧 PDF；当前 81 份 `annotated-20261111` GT 不参与。
 
 ## 三个 129 GT 版本
