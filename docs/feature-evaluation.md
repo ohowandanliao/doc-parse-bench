@@ -172,6 +172,10 @@ python3 tools/collect_mineru_middle_json.py \
 
 矩阵主指标是开关清除率：附录页、边缘块、生成 image span、chart body 分别按过滤前单元统计。image/chart 的输出覆盖率只说明模型是否产生了可清除内容，不宣称图内文字或图表数值准确率。
 
+评分器还会在 `metrics.json` 中写入独立的 `combined_visual` 诊断：以
+`chart_analysis=true` 的视觉输出为唯一预测集合，分别给出类型严格和只看视觉
+位置两种 image+chart 口径；它不替换四个功能的主分数。
+
 已有的 `5 × 129` `/v1/pdfparse` 最终 JSON 可以继续用于旧 Markdown 代理复核，但不能替代上述 raw middle_json。它没有逐块类型、嵌套 chart body 或生成 span。
 
 ## 标题规则实验（单独一条）

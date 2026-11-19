@@ -28,6 +28,19 @@ B: image_analysis=true
 `chart` 和内部对照 `controls/image_off`。因此一个上游是 `129 × 2 = 258`
 次 MinerU 解析任务，而不是五组各跑一遍。
 
+`bc_xxx` 是评测内部 ID，不是 PDF 文件名。source 的对应关系在
+`artifacts/legacy-features-20261118/records.json` 的 `document_id` / `source_name`
+字段中；例如：
+
+```bash
+jq -r '.records[] | select(.document_id == "bc_078") |
+  [.document_id, (.source_name + ".pdf")] | @tsv' \
+  artifacts/legacy-features-20261118/records.json
+```
+
+会得到 `bc_078    广东城规院_惠玩甘青_7.pdf`。下面的案例表均同时给出这两个
+名字，PDF 都在 `data/legacy/dataset/pdf/source/`。
+
 image 与 chart 的 on/off 评分必须使用同一份 B 识别结果。`image` 组关闭
 `chart_analysis`，所以 chart 会降级为 image；`chart` 组开启它，所以 chart
 保留为 chart。这个设计保证了开关清除率是成对的，也决定了 image 和 chart 的
@@ -161,6 +174,29 @@ GT 的 135 个 image 视觉块由 102 个普通 image 和 33 个 seal 组成。�
 
 四个合并粒度最明显的文档（`bc_078`、`bc_059`、`bc_077`、`bc_065`）贡献了
 15 个 coverage 差值中的 12 个；`bc_062` 再贡献 2 个，剩余差异来自少量文档。
+
+## 按 source 复核的代表性掉分案例
+
+不逐条列 129 份，只列能代表主要根因的样本。页码是 source PDF 的物理页码；
+预测框和 GT 的具体 bbox 可在结果包的 `ft/ir/`、`origin/ir/` 和
+`per_document.csv` 中继续追踪。
+
+| bc ID | source PDF | 页码 | 看到的现象 | 根因归类 |
+| --- | --- | ---: | --- | --- |
+| `bc_078` | `广东城规院_惠玩甘青_7.pdf` | 1 | source 是 2×2 四张照片；ft 输出上下两条宽框，origin 输出四个单图框。 | 相邻图片合并，单图 IoU 和逐图描述都受影响。 |
+| `bc_077` | `广东城规院_惠玩甘青_4.pdf` | 1 | source 是左右两张照片；ft 输出一个横跨两图的框，origin 拆开。 | 图片粒度过粗，ft 两张都无法按 IoU 命中。 |
+| `bc_059` | `依爱消防_工程维修手册_44.pdf` | 44 | source 底部有四张并排电路照片；ft 合成一个宽框，origin 四框全部命中。 | 小图拼排导致合并框覆盖多个 GT。 |
+| `bc_065` | `依爱消防_电气火灾监控系统_5.pdf` | 1 | source 有三张线路/示意图；ft 只命中一个合并框，origin 命中三张。 | 多图布局下的检测粒度差异。 |
+| `bc_016` | `4-1统计图3.pdf` | 9、10、11、15、24 | source 中有普通图；两版在相同位置输出 `raw_type=chart`。 | image→chart 类型混淆；严格 image 分低、chart precision 也被拖低。 |
+| `bc_062` | `依爱消防_电气火灾监控系统_2.pdf` | 1 | 两版都找到 2/3 个图；ft 无生成内容，origin 生成 Mermaid。 | 同框的内容生成差异；coverage 只认非空，不判断 Mermaid 正确性。 |
+| `bc_003` | `1-3单元格内换行1.pdf` | 20、21 | source 从普通正文切换到评估报告附录，页眉从 `T/CCUA 005—202` 变成 `T/CCUA 005—2023`，页码同时有 `14`、`第1页/共6页`、物理页 `15`。 | 两版共同漏掉格式变化后的 header/page number，属于上游边缘块识别问题。 |
+| `bc_014` | `4-1统计图1.pdf` | 1、4、6 | source 页眉含统计公报标识、页脚页码，且页面内图表密集；其中一个 GT image 被输出成 chart。 | 边缘块/视觉类型同时存在，chart 误报与 image 漏检相互对应。 |
+| `bc_019` | `4-3扫描2.pdf` | 1、3、5、8 | source 是扫描合同和大量红色印章；很多 seal 没有独立视觉框。 | 扫描/印章小目标漏框，属于 image 子类 seal 的召回问题。 |
+
+从全量统计看，header/footer 的两版共同缺口主要集中在
+`bc_003`、`bc_010`、`bc_016`、`bc_017`：合计漏 69 个 header 和 54 个 page
+number。它们解释了绝大部分 header/footer 低召回；ft 与 origin 在这里几乎没有
+差异。image 的模型差异则集中在多图拼排、扫描印章和 image→chart 混淆三类。
 
 ### image/chart 类型混淆例子
 

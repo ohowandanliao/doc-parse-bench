@@ -261,6 +261,85 @@ def _match(
     return pairs
 
 
+def _match_visual_types(
+    expected: list[dict], predicted: list[tuple[int, Block]], *, strict_types: bool
+) -> list[tuple[dict, Block]]:
+    """Match the combined image/chart view, optionally enforcing visual types."""
+    if not strict_types:
+        return _match(expected, predicted, visual=True)
+
+    candidates = []
+    for i, gt in enumerate(expected):
+        for j, (page, block) in enumerate(predicted):
+            if page != gt["page"]:
+                continue
+            predicted_is_chart = block.type == "chart"
+            expected_is_chart = gt["type"] == "chart"
+            if expected_is_chart != predicted_is_chart:
+                continue
+            if not expected_is_chart and block.metadata.get("raw_type") == "chart":
+                continue
+            score = _iou(gt.get("bbox"), block.bbox)
+            if score >= 0.5:
+                candidates.append((-score, i, j))
+    used_expected, used_predicted, pairs = set(), set(), []
+    for _, i, j in sorted(candidates):
+        if i not in used_expected and j not in used_predicted:
+            used_expected.add(i)
+            used_predicted.add(j)
+            pairs.append((expected[i], predicted[j][1]))
+    return pairs
+
+
+def _visual_output(block: Block) -> bool:
+    """Whether a visual block carries analysis output in the combined view."""
+    if block.type == "chart":
+        return _chart_payload(block)
+    return bool(_generated(block))
+
+
+def _f1(numerator: int, predicted: int, expected: int) -> float | None:
+    precision = _rate(numerator, predicted)
+    recall = _rate(numerator, expected)
+    if precision is None or recall is None or precision + recall == 0:
+        return None
+    return 2 * precision * recall / (precision + recall)
+
+
+def _combined_visual(gt: dict, document: Document) -> dict:
+    """Score image and chart as one visual inventory without double counting."""
+    expected = gt["image_blocks"] + gt["chart_blocks"]
+    predicted = _blocks(document, {"image", "seal", "chart"})
+    strict_pairs = _match_visual_types(expected, predicted, strict_types=True)
+    location_pairs = _match_visual_types(expected, predicted, strict_types=False)
+    strict_image = sum(item["type"] != "chart" for item, _ in strict_pairs)
+    strict_chart = sum(item["type"] == "chart" for item, _ in strict_pairs)
+    location_image = sum(item["type"] != "chart" for item, _ in location_pairs)
+    location_chart = sum(item["type"] == "chart" for item, _ in location_pairs)
+    image_as_chart = sum(
+        item["type"] != "chart" and block.type == "chart" for item, block in location_pairs
+    )
+    chart_as_image = sum(
+        item["type"] == "chart" and block.type != "chart" for item, block in location_pairs
+    )
+    return {
+        "gt": len(expected),
+        "image_gt": len(gt["image_blocks"]),
+        "chart_gt": len(gt["chart_blocks"]),
+        "predicted": len(predicted),
+        "strict_matched": len(strict_pairs),
+        "strict_image_matched": strict_image,
+        "strict_chart_matched": strict_chart,
+        "strict_gt_with_output": sum(_visual_output(block) for _, block in strict_pairs),
+        "location_matched": len(location_pairs),
+        "location_image_matched": location_image,
+        "location_chart_matched": location_chart,
+        "location_gt_with_output": sum(_visual_output(block) for _, block in location_pairs),
+        "image_as_chart": image_as_chart,
+        "chart_as_image": chart_as_image,
+    }
+
+
 def _appendix(gt: dict, on: Document, off: Document) -> dict:
     expected = set(gt["appendix"]["pages"])
     retained = {page.number for page in on.pages}
@@ -429,6 +508,68 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
         }
         per_document[feature] = rows
 
+    combined_rows = {}
+    combined_totals = Counter()
+    for doc_id in source["subsets"]["union"]:
+        row = _combined_visual(by_id[doc_id], load("chart", doc_id))
+        combined_rows[doc_id] = row
+        combined_totals.update(row)
+    metrics["combined_visual"] = {
+        "documents": len(combined_rows),
+        "on_group": "chart",
+        "counts": dict(combined_totals),
+        "strict_type": {
+            "recall": {
+                "numerator": combined_totals["strict_matched"],
+                "denominator": combined_totals["gt"],
+                "rate": _rate(combined_totals["strict_matched"], combined_totals["gt"]),
+            },
+            "precision": {
+                "numerator": combined_totals["strict_matched"],
+                "denominator": combined_totals["predicted"],
+                "rate": _rate(combined_totals["strict_matched"], combined_totals["predicted"]),
+            },
+            "f1": _f1(
+                combined_totals["strict_matched"],
+                combined_totals["predicted"],
+                combined_totals["gt"],
+            ),
+            "output_coverage": {
+                "numerator": combined_totals["strict_gt_with_output"],
+                "denominator": combined_totals["gt"],
+                "rate": _rate(combined_totals["strict_gt_with_output"], combined_totals["gt"]),
+            },
+        },
+        "location_only": {
+            "recall": {
+                "numerator": combined_totals["location_matched"],
+                "denominator": combined_totals["gt"],
+                "rate": _rate(combined_totals["location_matched"], combined_totals["gt"]),
+            },
+            "precision": {
+                "numerator": combined_totals["location_matched"],
+                "denominator": combined_totals["predicted"],
+                "rate": _rate(combined_totals["location_matched"], combined_totals["predicted"]),
+            },
+            "f1": _f1(
+                combined_totals["location_matched"],
+                combined_totals["predicted"],
+                combined_totals["gt"],
+            ),
+            "output_coverage": {
+                "numerator": combined_totals["location_gt_with_output"],
+                "denominator": combined_totals["gt"],
+                "rate": _rate(combined_totals["location_gt_with_output"], combined_totals["gt"]),
+            },
+        },
+        "image_recall_with_chart_confusion": {
+            "numerator": combined_totals["location_image_matched"],
+            "denominator": combined_totals["image_gt"],
+            "rate": _rate(combined_totals["location_image_matched"], combined_totals["image_gt"]),
+        },
+    }
+    per_document["combined_visual"] = combined_rows
+
     output = fresh_directory(output)
     write_json(output / "metrics.json", metrics)
     write_json(output / "per_document.json", per_document)
@@ -445,6 +586,8 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
         "| --- | ---: | --- | ---: | ---: |",
     ]
     for feature, values in metrics.items():
+        if feature == "combined_visual":
+            continue
         for label in ("clear_rate", *MEASURES[feature]):
             value = values[label]
             rate = "不可计分" if value["rate"] is None else f"{value['rate']:.2%}"
@@ -452,6 +595,39 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
                 f"| {feature} | {values['documents']} | `{label}` | "
                 f"{value['numerator']} / {value['denominator']} | {rate} |"
             )
+    combined = metrics["combined_visual"]
+    lines.extend(
+        [
+            "",
+            "## image + chart 合并诊断",
+            "",
+            "合并只使用 `chart_analysis=true` 的 chart 组，避免 image 组降级后的重复计数。",
+            "",
+            "| 口径 | 召回 | 精确率 | F1 | 输出覆盖 |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for label, values in (
+        ("类型严格", combined["strict_type"]),
+        ("只看视觉位置", combined["location_only"]),
+    ):
+        recall = values["recall"]
+        precision = values["precision"]
+        coverage = values["output_coverage"]
+        f1 = values["f1"]
+        lines.append(
+            f"| {label} | {recall['numerator']}/{recall['denominator']} "
+            f"({recall['rate']:.2%}) | {precision['numerator']}/{precision['denominator']} "
+            f"({precision['rate']:.2%}) | {f1:.2%} | "
+            f"{coverage['numerator']}/{coverage['denominator']} ({coverage['rate']:.2%}) |"
+        )
+    lines.extend(
+        [
+            "",
+            f"image GT 被 chart 框覆盖：{combined['counts']['image_as_chart']}；"
+            f"chart GT 被 image 框覆盖：{combined['counts']['chart_as_image']}。",
+        ]
+    )
     lines.extend(["", "清除率检测关闭前已有的输出；image/chart 的覆盖率仅统计是否产出内容。", ""])
     (output / "report.md").write_text("\n".join(lines), encoding="utf-8")
     return {"output": str(output), "metrics": metrics}

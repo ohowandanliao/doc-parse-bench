@@ -127,3 +127,7 @@ def test_build_and_score_feature_matrix_with_two_raw_sources(tmp_path):
     assert result["metrics"]["image"]["on_output_coverage"]["rate"] == 1.0
     assert result["metrics"]["chart"]["on_output_coverage"]["rate"] == 1.0
     assert result["metrics"]["chart"]["off_downgrade_rate"]["rate"] == 1.0
+    combined = result["metrics"]["combined_visual"]
+    assert combined["strict_type"]["recall"]["rate"] == 1.0
+    assert combined["location_only"]["output_coverage"]["rate"] == 1.0
+    assert combined["counts"]["image_as_chart"] == 0
