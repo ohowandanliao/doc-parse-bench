@@ -53,13 +53,18 @@ def build_parser() -> argparse.ArgumentParser:
     anno.add_argument("--dataset-version", help="数据版本标签，例如 v1.1；不改变评测模式")
     feature_gt = sub.add_parser(
         "build-feature-gt",
-        help="从 2026-11-18 结构化 GT 与旧 Markdown 建立四项能力 GT",
+        help="从 legacy-129-markdown-v1 与 legacy-129-annotated-v2 建立 legacy-129-feature-v3",
     )
     feature_gt.add_argument("new_source", type=Path, help="新 GT tar 包或已解压目录")
     feature_gt.add_argument("old_groundtruth", type=Path, help="旧 129 Markdown GT 目录")
     feature_gt.add_argument("output", type=Path, help="新的四项能力 GT 输出目录")
     feature_gt.add_argument("--old-pdf-dir", type=Path, help="旧 129 PDF 目录，用于页数对账")
     feature_gt.add_argument("--dataset-version", default="legacy-features-20261118")
+    feature_gt.add_argument(
+        "--include-structured",
+        action="store_true",
+        help="额外保留展开的 structured/ 文档；默认只生成轻量 feature-v3 GT",
+    )
     feature_eval = sub.add_parser(
         "evaluate-features",
         help="评测附录、页眉页脚、image analysis、chart analysis 四项能力",
@@ -210,6 +215,7 @@ def main(argv=None):
                 args.output,
                 args.old_pdf_dir,
                 args.dataset_version,
+                args.include_structured,
             )
         elif args.command == "evaluate-features":
             result = evaluate_features(args.gt, args.pred, args.output, args.allow_missing)

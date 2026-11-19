@@ -1,0 +1,133 @@
+{
+  "schema_version": "doc-parse-bench.feature-gt.v1",
+  "kind": "feature_ground_truth",
+  "gt_version": "legacy-129-feature-v3",
+  "gt_lineage": {
+    "legacy_markdown": {
+      "version": "legacy-129-markdown-v1",
+      "path": "/Users/yixuan/Documents/doc-parse-bench/data/legacy/groundtruth",
+      "role": "historical_content_and_chart_candidate_source"
+    },
+    "annotated_structured": {
+      "version": "legacy-129-annotated-v2",
+      "path": "/Users/yixuan/Documents/doc-parse-bench/legacy_129_pack_20261118.tar.gz",
+      "role": "title_and_structure_primary_ground_truth"
+    },
+    "feature_derived": {
+      "version": "legacy-129-feature-v3",
+      "role": "four_pdf2text_feature_evaluation_only"
+    }
+  },
+  "dataset_version": "legacy-features-20261118",
+  "documents": 129,
+  "source": {
+    "new_source": "/Users/yixuan/Documents/doc-parse-bench/legacy_129_pack_20261118.tar.gz",
+    "new_source_sha256": "257221b7a6025905f8ae6c310b5d09b0ac260500c704d04c33eaf4d136bdb945",
+    "old_groundtruth": "/Users/yixuan/Documents/doc-parse-bench/data/legacy/groundtruth",
+    "old_pdf_dir": "/Users/yixuan/Documents/doc-parse-bench/data/legacy/dataset/pdf/source",
+    "document_mapping": "natural bc_001..bc_129 order to sorted old Markdown stems; PDF page counts verified"
+  },
+  "features": [
+    "appendix",
+    "header_footer",
+    "image_analysis",
+    "chart_analysis"
+  ],
+  "materialization": {
+    "structured_documents_included": false,
+    "structured_source_retained_in": "/Users/yixuan/Documents/doc-parse-bench/legacy_129_pack_20261118.tar.gz"
+  },
+  "summary": {
+    "old": {
+      "documents": 129,
+      "heading_count": 580,
+      "image_references": 104,
+      "image_reference_documents": 37,
+      "image_placeholder_count": 57,
+      "table_count": 304,
+      "appendix_documents": 2,
+      "chart_candidate_documents": 12
+    },
+    "new": {
+      "documents": 129,
+      "pages": 372,
+      "titles": 593,
+      "marginal_blocks": 801,
+      "header_footer_blocks": 528,
+      "page_number_blocks": 273,
+      "image_blocks": 135,
+      "seal_blocks": 33,
+      "chart_blocks": 56,
+      "visual_blocks": 191,
+      "appendix_documents": 4,
+      "patch_pages": 314,
+      "chain_pages": 58
+    },
+    "comparison": {
+      "title": {
+        "preferred": "new",
+        "reason": "new GT has block-level types, levels, bboxes, and title-sync edits; old Markdown only has headings"
+      },
+      "appendix": {
+        "preferred": "new",
+        "reason": "new GT gives page/block boundaries; old Markdown is a useful text cross-check"
+      },
+      "header_footer": {
+        "preferred": "new",
+        "reason": "old Markdown does not retain reliable header/footer/page-number types"
+      },
+      "image_analysis": {
+        "preferred": "hybrid",
+        "reason": "new GT supplies visual block locations; old Markdown only supplies image placeholders and no image-content transcription"
+      },
+      "chart_analysis": {
+        "preferred": "hybrid_candidate",
+        "reason": "new GT supplies chart locations but chart text/html is empty; old Markdown contains mixed chart/table conversions that still require manual chart-level review",
+        "review_required": true
+      }
+    },
+    "coverage": {
+      "appendix": {
+        "status": "supported_boundary_proxy",
+        "documents": 4,
+        "pages": 48,
+        "old_markdown_cross_check_documents": 2
+      },
+      "header_footer": {
+        "status": "structured_retention_proxy",
+        "new_header_footer_blocks": 528,
+        "new_page_number_blocks": 273,
+        "old_markdown_typed_blocks": 0
+      },
+      "image_analysis": {
+        "status": "visual_block_retention_proxy",
+        "new_image_and_seal_blocks": 135,
+        "new_image_blocks": 102,
+        "new_seal_blocks": 33,
+        "old_markdown_reference_documents": 37,
+        "strict_content_accuracy": false
+      },
+      "chart_analysis": {
+        "location_status": "structured_location_proxy",
+        "content_status": "legacy_markdown_candidate_only",
+        "new_chart_blocks": 56,
+        "old_candidate_documents": 12,
+        "strict_content_accuracy": false
+      }
+    }
+  },
+  "import_audit": {
+    "documents": 129,
+    "pages": 372,
+    "patch_pages": 314,
+    "chain_pages": 58,
+    "issues": [
+      {
+        "document": "bc_013",
+        "block": "candidate.block.p15.0000",
+        "target": "candidate.block.p15.0000",
+        "issue": "invalid_page_direction"
+      }
+    ]
+  }
+}

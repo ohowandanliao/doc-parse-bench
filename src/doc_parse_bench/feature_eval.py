@@ -35,6 +35,9 @@ from .schema import (
 FEATURE_GT_SCHEMA = "doc-parse-bench.feature-gt.v1"
 FEATURE_EVAL_SCHEMA = "doc-parse-bench.feature-eval.v1"
 DEFAULT_DATASET_VERSION = "legacy-features-20261118"
+FEATURE_GT_VERSION = "legacy-129-feature-v3"
+LEGACY_MARKDOWN_GT_VERSION = "legacy-129-markdown-v1"
+ANNOTATED_GT_VERSION = "legacy-129-annotated-v2"
 FEATURES = ("appendix", "header_footer", "image_analysis", "chart_analysis")
 # Keep the broad marker for the old Markdown audit, but use the exact
 # PDF2Text filter vocabulary for the behavior denominator.  PDF2Text's
@@ -313,15 +316,27 @@ def build_feature_ground_truth(
     output: Path,
     old_pdf_dir: Path | None = None,
     dataset_version: str = DEFAULT_DATASET_VERSION,
+    include_structured: bool = False,
 ) -> dict:
-    """Materialize a reproducible hybrid GT and an old/new comparison report."""
+    """Materialize the compact v3 GT and an old/new comparison report.
+
+    The v2 structured source is already retained in its original tar archive.
+    v3 therefore keeps only the feature records by default; ``include_structured``
+    is a debugging option for a local expanded copy.
+    """
     old_paths = _old_names(old_groundtruth)
     output = fresh_directory(output)
     old_pdf_dir = old_pdf_dir or old_groundtruth.parent / "dataset" / "pdf" / "source"
     with _annotation_root(new_source) as root:
-        ir = output / "structured"
-        import_report = import_annotations(root, ir, dataset_version=dataset_version)
-        documents = load_documents(ir / "documents")
+        if include_structured:
+            ir = output / "structured"
+            import_report = import_annotations(root, ir, dataset_version=dataset_version)
+            documents = load_documents(ir / "documents")
+        else:
+            with tempfile.TemporaryDirectory(prefix="docbench-feature-ir-") as directory:
+                ir = Path(directory) / "structured"
+                import_report = import_annotations(root, ir, dataset_version=dataset_version)
+                documents = load_documents(ir / "documents")
     documents.sort(key=lambda doc: _natural_id(doc.id))
     if len(documents) != len(old_paths):
         raise ValueError(f"新旧 GT 文档数不一致：new={len(documents)}, old={len(old_paths)}")
@@ -473,6 +488,23 @@ def build_feature_ground_truth(
     manifest = {
         "schema_version": FEATURE_GT_SCHEMA,
         "kind": "feature_ground_truth",
+        "gt_version": FEATURE_GT_VERSION,
+        "gt_lineage": {
+            "legacy_markdown": {
+                "version": LEGACY_MARKDOWN_GT_VERSION,
+                "path": str(old_groundtruth.resolve()),
+                "role": "historical_content_and_chart_candidate_source",
+            },
+            "annotated_structured": {
+                "version": ANNOTATED_GT_VERSION,
+                "path": str(new_source.resolve()),
+                "role": "title_and_structure_primary_ground_truth",
+            },
+            "feature_derived": {
+                "version": FEATURE_GT_VERSION,
+                "role": "four_pdf2text_feature_evaluation_only",
+            },
+        },
         "dataset_version": dataset_version,
         "documents": len(records),
         "source": {
@@ -483,6 +515,10 @@ def build_feature_ground_truth(
             "document_mapping": "natural bc_001..bc_129 order to sorted old Markdown stems; PDF page counts verified",
         },
         "features": FEATURES,
+        "materialization": {
+            "structured_documents_included": include_structured,
+            "structured_source_retained_in": str(new_source.resolve()),
+        },
         "summary": summary,
         "import_audit": {
             "documents": import_report["documents"],
@@ -510,7 +546,7 @@ def _comparison_markdown(manifest: dict) -> str:
     lines = [
         "# legacy 129 四项能力 GT 对账",
         "",
-        f"版本：`{manifest['dataset_version']}`；文档：{new['documents']}；页：{new['pages']}。",
+        f"版本：`{manifest.get('gt_version', FEATURE_GT_VERSION)}`；数据集：`{manifest['dataset_version']}`；文档：{new['documents']}；页：{new['pages']}。",
         "",
         "## 结论",
         "",
@@ -979,6 +1015,8 @@ def evaluate_features(
     output = fresh_directory(output)
     provenance = {
         "schema_version": FEATURE_EVAL_SCHEMA,
+        "gt_version": manifest.get("gt_version", FEATURE_GT_VERSION),
+        "gt_lineage": manifest.get("gt_lineage", {}),
         "ground_truth": str(ground_truth.resolve()),
         "ground_truth_manifest_sha256": sha256(ground_truth / "manifest.json"),
         "prediction_source": str(predictions.resolve()),

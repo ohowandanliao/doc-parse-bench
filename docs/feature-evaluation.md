@@ -4,15 +4,15 @@
 
 这条专项只使用 129 份旧 PDF；当前 81 份 `annotated-20261111` GT 不参与。
 
-## 三个 129 GT 层次
+## 三个 129 GT 版本
 
-| 层次 | 路径 | 数量 | 用途 |
+| 版本 | 路径 | 数量 | 本专项中的角色 |
 | --- | --- | ---: | --- |
-| 旧 Markdown GT | `data/legacy/groundtruth/` | 129 个 Markdown | 历史正文、标题、表格和部分图片/图表转录 |
-| 新结构化 GT 原包 | `legacy_129_pack_20261118.tar.gz` | 129 份、372 页 | 新标题、页码、块类型、bbox、视觉块和边缘块主证据 |
-| 专项合并 GT | `artifacts/legacy-features-20261118/` | 129 条记录 | 将旧内容证据、新结构证据和每项覆盖限制固化成可评分输入 |
+| `legacy-129-markdown-v1` | `data/legacy/groundtruth/` | 129 个 Markdown | 旧内容来源；图表转录只作为候选证据 |
+| `legacy-129-annotated-v2` | `legacy_129_pack_20261118.tar.gz` | 129 份、372 页 | 机器标注＋人工页面修订后的结构主 GT；标题更准确，可显式用于 129 的 AgentBuilder/TreeTitle-v2 |
+| `legacy-129-feature-v3` | `artifacts/legacy-features-20261118/` | 129 条记录 | v1＋v2 的四功能专项派生 GT，只用于四个 PDF2Text 开关 |
 
-旧目录另有 `data/legacy/unpaired_groundtruth/Handwriting document.md`，没有对应 PDF，不进入 129 对评测。专项 GT 是由前两个版本生成的评测视图，不是第三次独立人工标注。
+旧目录另有 `data/legacy/unpaired_groundtruth/Handwriting document.md`，没有对应 PDF，不进入 129 对评测。v3 是由 v1 和 v2 生成的评测视图，不是第三次独立人工标注，也不替代 v2 的 AgentBuilder/TreeTitle-v2 GT。
 
 生成专项 GT：
 
@@ -24,7 +24,7 @@
   --old-pdf-dir data/legacy/dataset/pdf/source
 ```
 
-`manifest.json` 保存来源哈希、页数对账和覆盖状态；`comparison.md` 是对账说明；`records.json` 是逐文档输入。新结构化包共有 314 页人工 patch、58 页机器链路终态；当前导入审计保留 1 条已知无效关系记录，不影响四功能块统计。
+`manifest.json` 保存来源哈希、页数对账和覆盖状态；`comparison.md` 是对账说明；`records.json` 是逐文档输入。v3 默认是轻量包，不重复保存 v2 的完整结构 JSON；新结构化包共有 314 页人工 patch、58 页机器链路终态，完整结构仍在 v2 原包中。需要本地展开副本时，在生成命令后加 `--include-structured`。当前导入审计保留 1 条已知无效关系记录，不影响四功能块统计。
 
 ## GT 质量边界
 
