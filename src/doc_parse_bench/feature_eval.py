@@ -574,7 +574,7 @@ def _comparison_markdown(manifest: dict) -> str:
         "",
         "- `appendix`：复现 PDF2Text 的 `附录`/`Appendix` 标题开头且位于文档后半段的边界；`附件` 不进入此分母。",
         "- `header_footer`：按新 GT 的 header/footer 和 page_number 边缘块做匹配，并分别报告页码；旧 Markdown 只作文本交叉核对。",
-        "- `image_analysis`：主分母统计 image＋seal，并分别报告两类；`seal` 仍需记录 `seal_rec` 配置，因为它是共享上游能力。图片占位符本身不代表图内文字已识别。",
+        "- `image_analysis`：主分母统计 image＋seal，并分别报告两类；seal 是 image 的视觉子类型，不是独立开关。图片占位符本身不代表图内文字已识别。",
         "- `chart_analysis`：同时报告 chart 定位和有实际文本/表格内容的 chart；当前旧内容是候选 GT，未审核前不宣称精确内容分。",
         "",
         "详细 per-document 记录见 `records.json`。运行方式见项目中的 `docs/feature-evaluation.md`。",

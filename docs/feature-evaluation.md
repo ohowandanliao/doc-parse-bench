@@ -37,7 +37,7 @@
 
 没有对应 GT 内容的指标必须是 `unavailable`，不能把缺 GT 当成模型得分 0。`manifest.json` 的 `summary.coverage` 和评分输出的 `feature_coverage` 记录这个边界。
 
-## 最新 PDF2Text 的调用
+## 最新 PDF2Text 与 raw middle_json
 
 最新代码的对外入口是：
 
@@ -45,7 +45,13 @@
 POST http://<p2t-host>:<port>/v1/pdfparse
 ```
 
-`pdf2text` 内部再调用已配置的 MinerU `/file_parse`。客户端不要直接调用 MinerU。请求可以用 multipart 字段，也可以用 `parseConfig` JSON；最新代码允许 `mineru_provider` 为 `mineru3` 或 `mineru4`。
+`pdf2text` 的对外入口是 `/v1/pdfparse`，内部再调用 MinerU `/file_parse`。`/v1/pdfparse` 当前只返回最终 Markdown、页数和错误，不透传 `middle_json`。因此：
+
+- 复核 Markdown 代理时，调用 `/v1/pdfparse` 即可；
+- 需要 image/chart/header/footer 的结构化清除率时，在内网直接调用已配置的 MinerU `/file_parse`，保存完整 JSON；
+- 本地再加载 PDF2Text 的同一份 `mineru_filters.py`，离线执行过滤，不重新请求模型。
+
+本项目提供的 `tools/collect_mineru_middle_json.py` 只负责第二步。它不会调用 P2T，也不会改变模型输出；它复刻 P2T 内部发送给 MinerU 的字段：`return_middle_json=true`、`return_images=true`、`image_analysis` 和 `backend`。
 
 本次代码依据的源码快照与原 ZIP 已整理在本机 `archives/pdf2text-feature-20261119/`；ZIP SHA-256 为 `cfd0415069c6b9365e71aa2288452764446841ec47a59181409eb7488a9be450`。该目录是参考材料，不会被评测器作为依赖导入。
 
@@ -64,38 +70,66 @@ POST http://<p2t-host>:<port>/v1/pdfparse
 
 四功能先固定 `title_rules=false`，以便每个差异只归因于目标开关。每组使用完全相同的 129 个 PDF、相同的 MinerU3 上游和相同的 `relevel_titles=true`：
 
-| 组 | `keep_appendix` | `keep_header_footer` | `image_analysis` | `seal_rec` | `chart_analysis` |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `off` | false | false | false | false | false |
-| `appendix` | true | false | false | false | false |
-| `header_footer` | false | true | false | false | false |
-| `image` | false | false | true | true | false |
-| `chart` | false | false | true | true | true |
+| 组 | `keep_appendix` | `keep_header_footer` | `image_analysis` | `chart_analysis` |
+| --- | ---: | ---: | ---: | ---: |
+| `off` | false | false | false | false |
+| `appendix` | true | false | false | false |
+| `header_footer` | false | true | false | false |
+| `image` | false | false | true | false |
+| `chart` | false | false | true | true |
 
-`seal_rec` 在 image/chart 组中和 `image_analysis` 一起固定打开，只是为了按本项目口径把 seal 纳入 image 分支；它不是第五个独立分数。`chart_analysis=true` 组同时保留 image 分支，因为最新代码对 chart 上游请求会开启 image analysis。
+seal 是 image 的视觉子类型，不再有 `seal_rec` 实验开关。`chart_analysis=true` 组同时保留 image 分支，因为 P2T 会先向 MinerU 请求 `image_analysis=true`。
 
-每个 PDF 保存 `/v1/pdfparse` 的完整 JSON 响应，文件名用旧 PDF stem，例如 `1-3单元格内换行1.json`。至少保留 `pages`、`markdown`、`error`；不要只保存 Markdown。最新服务默认返回这三个字段，没有逐块预测 JSON。
+### 内网采集 raw
 
-请求示例：
+同一批 PDF 只采集两遍。`A` 关闭 image analysis，`B` 开启 image analysis；两次使用同一个 MinerU3 provider、backend 和 PDF 集合：
 
 ```bash
-curl -X POST "http://<p2t-host>:<port>/v1/pdfparse" \
-  -H "Authorization: Bearer <token>" \
-  -F "file=@/data/legacy/source/<source_name>.pdf" \
-  -F 'parseConfig={"mineru_provider":"mineru3","relevel_titles":true,"title_rules":false,"keep_appendix":true,"keep_header_footer":false,"image_analysis":false,"seal_rec":false,"chart_analysis":false}' \
-  > predictions/appendix/<source_name>.json
+python3 tools/collect_mineru_middle_json.py \
+  --url http://<mineru-host>:<port>/file_parse \
+  --pdf-dir /data/legacy/source \
+  --output /data/feature-raw/A \
+  --image-analysis false \
+  --backend vlm-vllm-async-engine \
+  --model mineru3 \
+  --token <token> \
+  --jobs 2
+
+python3 tools/collect_mineru_middle_json.py \
+  --url http://<mineru-host>:<port>/file_parse \
+  --pdf-dir /data/legacy/source \
+  --output /data/feature-raw/B \
+  --image-analysis true \
+  --backend vlm-vllm-async-engine \
+  --model mineru3 \
+  --token <token> \
+  --jobs 2
 ```
 
-本地评分：
+每个目录会保存每份 PDF 的完整 MinerU JSON 和 `manifest.json`。一个 provider 的全量成本是 `129 × 2 = 258` 个 MinerU 解析任务；P2T 的最终 Markdown 不会被当作 middle_json 使用。
+
+### 本地离线回放
+
+把 raw 目录和 PDF2Text 源码拿回本地后，使用 1806ec1 中的 `mineru_filters.py`：
 
 ```bash
-.venv/bin/docbench evaluate-features \
+.venv/bin/docbench build-feature-ir \
   --gt artifacts/legacy-features-20261118 \
-  --pred predictions/appendix \
-  --output artifacts/feature-scores/appendix
+  --raw-off /data/feature-raw/A \
+  --raw-on /data/feature-raw/B \
+  --pdf2text-source archives/pdf2text-feature-20261119/source-ditto/pdf2text-78712-pdf-rule-toggle-test-1806ec1/src \
+  --model mineru3 \
+  --output /tmp/feature-ir
+
+.venv/bin/docbench evaluate-feature-matrix \
+  --gt artifacts/legacy-features-20261118 \
+  --pred /tmp/feature-ir \
+  --output /tmp/feature-scores
 ```
 
-对 `off`、`appendix`、`header_footer`、`image`、`chart` 各运行一次，再看每组 `report.md`、`metrics.json` 和 `per_document.json`。四功能专项不需要模型额外生成答案文件；模型只需返回 PDF2Text 的最终 JSON。
+`build-feature-ir` 会生成五组公开结果：`off`、`appendix`、`header_footer`、`image`、`chart`，以及一个内部的 `controls/image_off`。后者使用 B 的同一份识别结果但关闭 image/chart 内容，用来计算 image 的成对清除率，不增加推理次数。
+
+每组都是一份 PDF 一个 IR 文档。全量时是五组各 129 份；使用 smoke 子集时，先对 union 中的 PDF 生成 IR，再由评分器按各功能子集聚合。
 
 不必每次跑满 129 份。可以在本地临时写一个子集清单 JSON，把 `union` 用作所有开关关闭的 base 子集，再为 `appendix`、`header_footer`、`image`、`chart` 分别列出自己的文档 ID：
 
@@ -133,7 +167,9 @@ curl -X POST "http://<p2t-host>:<port>/v1/pdfparse" \
 
 子集清单和预测结果属于一次性实验材料，不需要提交到仓库。评分器会把子集名称、清单哈希和实际分母写入 `provenance.json`；不要用 `--allow-missing` 代替子集选择，因为那会把未运行的文档当成空预测。
 
-由于 `/v1/pdfparse` 只返回最终 Markdown，header/footer、image 和 chart 的部分指标是内容/页数代理；严格逐块 chart 定位需要另存结构化 blocks，当前不把 Markdown 代理升级成严格内容准确率。
+矩阵主指标是开关清除率：附录页、边缘块、生成 image span、chart body 分别按过滤前单元统计。image/chart 的输出覆盖率只说明模型是否产生了可清除内容，不宣称图内文字或图表数值准确率。
+
+已有的 `5 × 129` `/v1/pdfparse` 最终 JSON 可以继续用于旧 Markdown 代理复核，但不能替代上述 raw middle_json。它没有逐块类型、嵌套 chart body 或生成 span。
 
 ## 标题规则实验（单独一条）
 

@@ -12,6 +12,7 @@ from .compatibility import prepare_legacy
 from .compatibility.cleaning import CleaningOptions
 from .exporters import export_gt, export_predictions
 from .feature_eval import build_feature_ground_truth, evaluate_features
+from .feature_matrix import build_feature_ir, evaluate_feature_matrix
 from .history import compare_workbook
 from .pipeline import run as run_profile
 from .predictions import MODELS, import_predictions
@@ -87,6 +88,29 @@ def build_parser() -> argparse.ArgumentParser:
         "--subset-name",
         help="子集名称，例如 union、appendix、header_footer、image、chart；默认 union",
     )
+    replay = sub.add_parser(
+        "build-feature-ir",
+        help="从 MinerU raw middle_json 按最新版 PDF2Text 过滤器生成四功能 IR",
+    )
+    replay.add_argument("--gt", type=Path, required=True, help="legacy-129-feature-v3 GT")
+    replay.add_argument("--raw-off", type=Path, required=True, help="image_analysis=false raw 目录")
+    replay.add_argument("--raw-on", type=Path, required=True, help="image_analysis=true raw 目录")
+    replay.add_argument(
+        "--pdf2text-source",
+        type=Path,
+        required=True,
+        help="包含 src/pdf2text/core/parse/mineru_filters.py 的 PDF2Text 源码目录或文件",
+    )
+    replay.add_argument("--model", default="mineru3", help="raw manifest 中的模型标识")
+    replay.add_argument("--output", type=Path, required=True)
+    replay.add_argument("--subset-manifest", type=Path)
+    matrix = sub.add_parser(
+        "evaluate-feature-matrix",
+        help="评测四功能 on/off 清除率；独立于主线榜单",
+    )
+    matrix.add_argument("--gt", type=Path, required=True)
+    matrix.add_argument("--pred", type=Path, required=True, help="build-feature-ir 输出目录")
+    matrix.add_argument("--output", type=Path, required=True)
     pred = sub.add_parser("import-pred", help="模型输出转统一结构")
     pred.add_argument("source", type=Path)
     pred.add_argument("output", type=Path)
@@ -235,6 +259,18 @@ def main(argv=None):
                 args.subset_manifest,
                 args.subset_name,
             )
+        elif args.command == "build-feature-ir":
+            result = build_feature_ir(
+                args.gt,
+                args.raw_off,
+                args.raw_on,
+                args.pdf2text_source,
+                args.model,
+                args.output,
+                args.subset_manifest,
+            )
+        elif args.command == "evaluate-feature-matrix":
+            result = evaluate_feature_matrix(args.gt, args.pred, args.output)
         elif args.command == "import-pred":
             result = import_predictions(args.source, args.output, args.model, args.document_map)
             result = {k: v for k, v in result.items() if k != "sources"}

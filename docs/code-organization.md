@@ -12,6 +12,7 @@
 | `docbench evaluate`／`benchmark` | `backends/`、`benchmark.py` | 隔离运行原生指标，保存覆盖率、来源和分项 |
 | `docbench collect` | `benchmark.py`、`leaderboards.py`、`metrics.py` | 汇总已完成实验 |
 | `docbench rescore-agentbuilder` | `heading.py`、`agentbuilder_v2.py`、`metrics.py` | 文档标题树、新旧标题分及综合分的冻结输入复测 |
+| `docbench build-feature-ir`／`evaluate-feature-matrix` | `mineru_middle.py`、`feature_matrix.py` | 独立 129 PDF2Text 四功能 raw middle_json 回放与清除率；不进入主线榜单 |
 
 以上文件均位于 `src/doc_parse_bench/`。对应回归测试在 `tests/`，标题指标重点看 `tests/test_heading_v2.py`。`run` 仍输出含历史页面 title 的 AgentBuilder；完整文档 TitleTree-v2 使用独立复测入口，并未自动替换所有旧榜。
 
@@ -37,7 +38,7 @@
 | `heading.py`、`agentbuilder_v2.py`、标题测试及研究文档 | 标题评测方向的实现、方法与反例证据 |
 | `compatibility/`、`history.py`、旧 title 算法及历史配置 | 129 份旧数据复现，以及新旧指标对照；现有 CLI、评分器和测试仍有依赖 |
 | `compose_bridge.py`、`context.py` | 可复用的预测结构适配与跨页导出，有独立测试 |
-| `charts.py`、质量／重复审计、模型适配器 | 仍有 CLI 入口，不能按旧日期判定无用；图表增强目前不代表独立专项指标 |
+| `charts.py`、`mineru_middle.py`、`feature_matrix.py`、质量／重复审计、模型适配器 | 仍有 CLI 入口，不能按旧日期判定无用；四功能回放独立于主线榜单 |
 | `vendor/`、`.venv/`、`.cache/cdm-env/` | 原生评测器及运行依赖；CDM 目录内是 TeX 环境 |
 | `data/`、原始压缩包、旧 GT 和历史结果 | 数据版本、配对关系、逐文档分数与可复现来源 |
 | `artifacts/research/`、验证产物和研究报告 | 文档引用的源码快照、受控扰动和数值证据，不能按“一次运行”直接删掉 |
