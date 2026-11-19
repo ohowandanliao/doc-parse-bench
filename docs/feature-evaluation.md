@@ -97,6 +97,42 @@ curl -X POST "http://<p2t-host>:<port>/v1/pdfparse" \
 
 对 `off`、`appendix`、`header_footer`、`image`、`chart` 各运行一次，再看每组 `report.md`、`metrics.json` 和 `per_document.json`。四功能专项不需要模型额外生成答案文件；模型只需返回 PDF2Text 的最终 JSON。
 
+不必每次跑满 129 份。可以在本地临时写一个子集清单 JSON，把 `union` 用作所有开关关闭的 base 子集，再为 `appendix`、`header_footer`、`image`、`chart` 分别列出自己的文档 ID：
+
+```json
+{
+  "schema_version": "doc-parse-bench.feature-subset.v1",
+  "gt_version": "legacy-129-feature-v3",
+  "subsets": {
+    "union": ["bc_003", "bc_010"],
+    "appendix": ["bc_003", "bc_010"],
+    "header_footer": ["bc_003"],
+    "image": ["bc_018"],
+    "chart": ["bc_014"]
+  }
+}
+```
+
+用 `union` 跑一次 all-off base，再用各功能名跑对应开启组：
+
+```bash
+.venv/bin/docbench evaluate-features \
+  --gt artifacts/legacy-features-20261118 \
+  --pred predictions/base \
+  --subset-manifest /tmp/feature-subset.json \
+  --subset-name union \
+  --output /tmp/feature-scores/base
+
+.venv/bin/docbench evaluate-features \
+  --gt artifacts/legacy-features-20261118 \
+  --pred predictions/appendix \
+  --subset-manifest /tmp/feature-subset.json \
+  --subset-name appendix \
+  --output /tmp/feature-scores/appendix
+```
+
+子集清单和预测结果属于一次性实验材料，不需要提交到仓库。评分器会把子集名称、清单哈希和实际分母写入 `provenance.json`；不要用 `--allow-missing` 代替子集选择，因为那会把未运行的文档当成空预测。
+
 由于 `/v1/pdfparse` 只返回最终 Markdown，header/footer、image 和 chart 的部分指标是内容/页数代理；严格逐块 chart 定位需要另存结构化 blocks，当前不把 Markdown 代理升级成严格内容准确率。
 
 ## 标题规则实验（单独一条）

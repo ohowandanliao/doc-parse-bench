@@ -37,3 +37,5 @@ v2 是“新标注终态”，不是 v3。v3 是为了四个 PDF2Text 开关额�
 ```
 
 `build-feature-gt` 默认只输出 `manifest.json`、`records.json` 和 `comparison.md`，因为 v2 原包已经保存完整结构来源；需要本地调试展开 JSON 时才加 `--include-structured`。输出 `manifest.json` 会记录 `gt_lineage`，说明 v1 是旧内容来源、v2 是结构主来源、v3 是专项派生版本。任何报告都应同时保存所选版本名和来源哈希，不能只写“129 GT”。
+
+四功能的 smoke 子集清单是一次性实验文件，不属于 v3 正式 GT；放在 `/tmp` 或本地实验目录即可。评分器通过 `--subset-manifest` 和 `--subset-name` 读取它，不会把未运行的 129 文档错误记成 0。

@@ -1,4 +1,4 @@
-from doc_parse_bench.feature_eval import FEATURE_GT_SCHEMA, evaluate_features
+from doc_parse_bench.feature_eval import FEATURE_GT_SCHEMA, FEATURE_SUBSET_SCHEMA, evaluate_features
 from doc_parse_bench.io import write_json
 from doc_parse_bench.schema import Block, Document, Page
 
@@ -102,3 +102,44 @@ def test_feature_evaluator_reads_pdf2text_json_response(tmp_path):
     assert result["appendix_page_recall"] == 1.0
     assert result["header_footer_recall"] == 1.0
     assert result["image_analysis_recall"] == 1.0
+
+
+def test_feature_evaluator_scores_a_named_subset_without_missing_zeroes(tmp_path):
+    gt = tmp_path / "gt"
+    record = _feature_record()
+    second = {**record, "document_id": "bc_002", "source_name": "other"}
+    write_json(
+        gt / "manifest.json",
+        {
+            "schema_version": FEATURE_GT_SCHEMA,
+            "gt_version": "legacy-129-feature-v3",
+            "dataset_version": "test",
+        },
+    )
+    write_json(
+        gt / "records.json",
+        {"schema_version": FEATURE_GT_SCHEMA, "records": [record, second]},
+    )
+    subset = tmp_path / "subset.json"
+    write_json(
+        subset,
+        {
+            "schema_version": FEATURE_SUBSET_SCHEMA,
+            "gt_version": "legacy-129-feature-v3",
+            "subsets": {"union": ["bc_001"], "other": ["bc_002"]},
+        },
+    )
+    prediction = Document("bc_001", [Page(1, [])], metadata={"origin": "prediction"})
+    prediction.dump(tmp_path / "pred/documents/bc_001.json")
+
+    result = evaluate_features(
+        gt,
+        tmp_path / "pred",
+        tmp_path / "result",
+        subset_manifest=subset,
+        subset_name="union",
+    )
+
+    assert result["subset"] == "union"
+    assert result["expected_documents"] == 1
+    assert result["missing_documents"] == 0

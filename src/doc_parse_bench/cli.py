@@ -78,6 +78,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     feature_eval.add_argument("--output", type=Path, required=True)
     feature_eval.add_argument("--allow-missing", action="store_true")
+    feature_eval.add_argument(
+        "--subset-manifest",
+        type=Path,
+        help="一次性子集清单 JSON；不指定时评测 v3 全部 129 份",
+    )
+    feature_eval.add_argument(
+        "--subset-name",
+        help="子集名称，例如 union、appendix、header_footer、image、chart；默认 union",
+    )
     pred = sub.add_parser("import-pred", help="模型输出转统一结构")
     pred.add_argument("source", type=Path)
     pred.add_argument("output", type=Path)
@@ -218,7 +227,14 @@ def main(argv=None):
                 args.include_structured,
             )
         elif args.command == "evaluate-features":
-            result = evaluate_features(args.gt, args.pred, args.output, args.allow_missing)
+            result = evaluate_features(
+                args.gt,
+                args.pred,
+                args.output,
+                args.allow_missing,
+                args.subset_manifest,
+                args.subset_name,
+            )
         elif args.command == "import-pred":
             result = import_predictions(args.source, args.output, args.model, args.document_map)
             result = {k: v for k, v in result.items() if k != "sources"}

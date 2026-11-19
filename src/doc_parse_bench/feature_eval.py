@@ -38,6 +38,7 @@ DEFAULT_DATASET_VERSION = "legacy-features-20261118"
 FEATURE_GT_VERSION = "legacy-129-feature-v3"
 LEGACY_MARKDOWN_GT_VERSION = "legacy-129-markdown-v1"
 ANNOTATED_GT_VERSION = "legacy-129-annotated-v2"
+FEATURE_SUBSET_SCHEMA = "doc-parse-bench.feature-subset.v1"
 FEATURES = ("appendix", "header_footer", "image_analysis", "chart_analysis")
 # Keep the broad marker for the old Markdown audit, but use the exact
 # PDF2Text filter vocabulary for the behavior denominator.  PDF2Text's
@@ -592,6 +593,51 @@ def _records_from_gt(gt: Path) -> tuple[dict, list[dict]]:
     return manifest, payload["records"]
 
 
+def _select_feature_records(
+    manifest: dict,
+    records: list[dict],
+    subset_manifest: Path | None,
+    subset_name: str | None,
+) -> tuple[list[dict], dict]:
+    """Select a fixed document subset without treating omitted docs as zeros."""
+    if subset_manifest is None:
+        if subset_name:
+            raise ValueError("指定 --subset-name 时必须同时指定 --subset-manifest")
+        return records, {"name": None, "manifest": None, "documents": len(records)}
+
+    subset = read_json(subset_manifest)
+    if subset.get("schema_version") != FEATURE_SUBSET_SCHEMA:
+        raise ValueError(f"不是四项能力子集清单：{subset_manifest}")
+    name = subset_name or "union"
+    document_ids = subset.get("subsets", {}).get(name)
+    if not isinstance(document_ids, list) or not document_ids:
+        raise ValueError(f"子集不存在或为空：{name}（{subset_manifest}）")
+    if len(document_ids) != len(set(document_ids)):
+        raise ValueError(f"子集包含重复文档：{name}")
+    if subset.get("gt_version") and subset["gt_version"] != manifest.get("gt_version"):
+        raise ValueError(
+            f"子集 GT 版本不一致：subset={subset.get('gt_version')}, "
+            f"ground_truth={manifest.get('gt_version')}"
+        )
+    by_id = {record["document_id"]: record for record in records}
+    selected = []
+    missing = []
+    for document_id in document_ids:
+        record = by_id.get(document_id)
+        if record is None:
+            missing.append(document_id)
+        else:
+            selected.append(record)
+    if missing:
+        raise ValueError(f"子集包含 GT 中不存在的文档：{missing[:5]}")
+    return selected, {
+        "name": name,
+        "manifest": str(subset_manifest.resolve()),
+        "manifest_sha256": sha256(subset_manifest),
+        "documents": len(selected),
+    }
+
+
 def _prediction_document_id(path: Path, payload: dict) -> str:
     value = payload.get("document_id") or payload.get("filename") or path.stem
     value = Path(str(value)).name
@@ -937,9 +983,14 @@ def evaluate_features(
     predictions: Path,
     output: Path,
     allow_missing: bool = False,
+    subset_manifest: Path | None = None,
+    subset_name: str | None = None,
 ) -> dict:
     """Evaluate capability presence/retention, keeping feature denominators visible."""
-    manifest, records = _records_from_gt(ground_truth)
+    manifest, all_records = _records_from_gt(ground_truth)
+    records, subset_info = _select_feature_records(
+        manifest, all_records, subset_manifest, subset_name
+    )
     prediction_list = _load_prediction_documents(predictions)
     by_id = {document.id: document for document in prediction_list}
     by_name = {document.id.removesuffix(".md"): document for document in prediction_list}
@@ -999,6 +1050,7 @@ def evaluate_features(
         "missing_documents": len(missing),
         "expected_documents": len(records),
         "provided_documents": len(records) - len(missing),
+        "subset": subset_info["name"],
         "chart_gt_content_status": manifest.get("summary", {})
         .get("coverage", {})
         .get("chart_analysis", {})
@@ -1021,6 +1073,7 @@ def evaluate_features(
         "ground_truth_manifest_sha256": sha256(ground_truth / "manifest.json"),
         "prediction_source": str(predictions.resolve()),
         "dataset_version": manifest.get("dataset_version"),
+        "subset": subset_info,
         "missing_documents": missing,
         "allow_missing": allow_missing,
         "feature_denominators": {
