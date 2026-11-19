@@ -11,6 +11,7 @@ from .charts import augment_charts
 from .compatibility import prepare_legacy
 from .compatibility.cleaning import CleaningOptions
 from .exporters import export_gt, export_predictions
+from .feature_eval import build_feature_ground_truth, evaluate_features
 from .history import compare_workbook
 from .pipeline import run as run_profile
 from .predictions import MODELS, import_predictions
@@ -50,6 +51,28 @@ def build_parser() -> argparse.ArgumentParser:
     anno.add_argument("--annotations", type=Path)
     anno.add_argument("--document-map", type=Path)
     anno.add_argument("--dataset-version", help="数据版本标签，例如 v1.1；不改变评测模式")
+    feature_gt = sub.add_parser(
+        "build-feature-gt",
+        help="从 2026-11-18 结构化 GT 与旧 Markdown 建立四项能力 GT",
+    )
+    feature_gt.add_argument("new_source", type=Path, help="新 GT tar 包或已解压目录")
+    feature_gt.add_argument("old_groundtruth", type=Path, help="旧 129 Markdown GT 目录")
+    feature_gt.add_argument("output", type=Path, help="新的四项能力 GT 输出目录")
+    feature_gt.add_argument("--old-pdf-dir", type=Path, help="旧 129 PDF 目录，用于页数对账")
+    feature_gt.add_argument("--dataset-version", default="legacy-features-20261118")
+    feature_eval = sub.add_parser(
+        "evaluate-features",
+        help="评测附录、页眉页脚、image analysis、chart analysis 四项能力",
+    )
+    feature_eval.add_argument("--gt", type=Path, required=True, help="build-feature-gt 输出目录")
+    feature_eval.add_argument(
+        "--pred",
+        type=Path,
+        required=True,
+        help="PDF2Text 响应 JSON、统一 IR documents/ 或 Markdown 目录",
+    )
+    feature_eval.add_argument("--output", type=Path, required=True)
+    feature_eval.add_argument("--allow-missing", action="store_true")
     pred = sub.add_parser("import-pred", help="模型输出转统一结构")
     pred.add_argument("source", type=Path)
     pred.add_argument("output", type=Path)
@@ -180,6 +203,16 @@ def main(argv=None):
                     "output_documents_sha256",
                 }
             }
+        elif args.command == "build-feature-gt":
+            result = build_feature_ground_truth(
+                args.new_source,
+                args.old_groundtruth,
+                args.output,
+                args.old_pdf_dir,
+                args.dataset_version,
+            )
+        elif args.command == "evaluate-features":
+            result = evaluate_features(args.gt, args.pred, args.output, args.allow_missing)
         elif args.command == "import-pred":
             result = import_predictions(args.source, args.output, args.model, args.document_map)
             result = {k: v for k, v in result.items() if k != "sources"}
