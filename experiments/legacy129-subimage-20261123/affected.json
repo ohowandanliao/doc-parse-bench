@@ -1,0 +1,9 @@
+{
+  "schema_version": "doc-parse-bench.feature-subset.v1",
+  "gt_version": "legacy-129-feature-v3",
+  "subsets": {
+    "union": ["bc_022", "bc_059", "bc_062", "bc_065", "bc_077", "bc_078"],
+    "image": ["bc_022", "bc_059", "bc_062", "bc_065", "bc_077", "bc_078"],
+    "chart": ["bc_022", "bc_059", "bc_062", "bc_065", "bc_077", "bc_078"]
+  }
+}

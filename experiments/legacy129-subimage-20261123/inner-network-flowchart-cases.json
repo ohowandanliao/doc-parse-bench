@@ -1,0 +1,165 @@
+{
+  "schema_version": "doc-parse-bench.legacy129-inner-rerun.v1",
+  "dataset": "legacy-129-feature-v3",
+  "scope": "129 内样本；用于 FT 能力和 P2T 子图适配复核，不新增正式分母",
+  "engineering_reference": {"mineru": "3.3.1", "mineru_vl_utils": "1.0.5"},
+  "analysis_units_review": "artifacts/legacy129-subimage-20261123/analysis-units-review-20261124/analysis-plan.json",
+  "source_root": "data/legacy/dataset/pdf/source",
+  "target_config": {
+    "mineru_provider": "mineru3",
+    "backend": "vlm-vllm-async-engine",
+    "relevel_titles": true,
+    "title_rules": false,
+    "return_middle_json": true,
+    "return_images": true,
+    "formal_model_runs": ["3.1-ft", "3.1-origin"]
+  },
+  "switch_matrix": [
+    {"id": "both_off", "image_analysis": false, "chart_analysis": false, "subimage_analysis": false},
+    {"id": "image_on", "image_analysis": true, "chart_analysis": false, "subimage_analysis": true},
+    {"id": "chart_on", "image_analysis": false, "chart_analysis": true, "subimage_analysis": true},
+    {"id": "both_on", "image_analysis": true, "chart_analysis": true, "subimage_analysis": true}
+  ],
+  "cases": [
+    {
+      "id": "flow-bc022-p2-fig1",
+      "document_id": "bc_022",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "page": 2,
+      "feature": "image",
+      "source_ids": ["candidate.block.p2.0002"],
+      "sub_type_gt": "flowchart",
+      "formal_fields": 17,
+      "formal_relations": 0,
+      "checks": [
+        "父图是否保留原图和印刷图注",
+        "父图与(a)/(b)面板的节点文字是否可追溯",
+        "不能把单个面板 subtype 复制为父图 subtype",
+        "虚线标注引线不计作有向关系"
+      ],
+      "runs": ["image_on", "both_on", "both_off"]
+    },
+    {
+      "id": "flow-bc065-p1-left",
+      "document_id": "bc_065",
+      "source_pdf": "依爱消防_电气火灾监控系统_5.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_ids": ["candidate.block.p1.0017"],
+      "sub_type_gt": "flowchart",
+      "formal_fields": 8,
+      "formal_relations": 0,
+      "checks": [
+        "左图八个字段逐项归属",
+        "PE 排文字不能被读成 PH",
+        "sub_type=flowchart 才算图片主分通过；text_image 只保留内容诊断",
+        "无明确方向的接线不强行计关系"
+      ],
+      "runs": ["image_on", "both_on", "both_off"]
+    },
+    {
+      "id": "flow-bc065-p1-right",
+      "document_id": "bc_065",
+      "source_pdf": "依爱消防_电气火灾监控系统_5.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_ids": ["candidate.block.p1.0018"],
+      "sub_type_gt": "flowchart",
+      "formal_fields": 8,
+      "formal_relations": 0,
+      "checks": [
+        "右图八个字段逐项归属",
+        "不能把左图一次输出复制给右图",
+        "sub_type=flowchart 才算图片主分通过",
+        "无明确方向的接线不强行计关系"
+      ],
+      "runs": ["image_on", "both_on", "both_off"]
+    },
+    {
+      "id": "flow-bc108-p1-directed",
+      "document_id": "bc_108",
+      "source_pdf": "珠海机场_工作证管理细则_9.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_ids": ["candidate.block.p1.0004"],
+      "sub_type_gt": "flowchart",
+      "formal_fields": 8,
+      "formal_relations": 6,
+      "checks": [
+        "六个节点和两条分支文字逐项匹配",
+        "六条边的端点、方向和分支标签匹配",
+        "分支“审核通过/审核未通过”必须绑定到对应边",
+        "Mermaid 语法可渲染，但可渲染不替代关系核对"
+      ],
+      "runs": ["image_on", "both_on", "both_off"]
+    },
+    {
+      "id": "split-bc062-p1-shared-caption",
+      "document_id": "bc_062",
+      "source_pdf": "依爱消防_电气火灾监控系统_2.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_ids": ["raw-parent-p1-index-12", "raw-parent-p1-index-16"],
+      "sub_type_gt": null,
+      "formal_fields": null,
+      "formal_relations": null,
+      "checks": [
+        "共用图注的两组线路图是否仍按父框交付",
+        "拆分时是否因半框 IoU 下降而漏掉两块",
+        "保留父图时是否仍记录分析证据或明确 evidence_missing"
+      ],
+      "runs": ["image_on", "both_on", "both_off"]
+    },
+    {
+      "id": "chart-bc022-p4-two-bars",
+      "document_id": "bc_022",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "page": 4,
+      "feature": "chart",
+      "source_ids": ["candidate.block.p4.0012", "candidate.block.p4.0013"],
+      "sub_type_gt": null,
+      "formal_fields": 10,
+      "formal_relations": null,
+      "checks": [
+        "图表单开可补回两张表的 10 个明示值",
+        "图片单开不得把普通图片描述泄漏到图表成品",
+        "系列、类别、数值和单位必须保持实际列义"
+      ],
+      "runs": ["chart_on", "both_on", "both_off"]
+    },
+    {
+      "id": "photo-bc059-p1-subtype",
+      "document_id": "bc_059",
+      "source_pdf": "依爱消防_工程维修手册_44.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_ids": ["candidate.block.p1.0014"],
+      "sub_type_gt": "natural_image",
+      "formal_fields": 1,
+      "formal_relations": null,
+      "checks": [
+        "照片图块保留且‘音量调节’只归属于该照片",
+        "OCR 回填不能替代 natural_image subtype",
+        "其它三张设备照片不因该文字共现而合框"
+      ],
+      "runs": ["image_on", "both_off"]
+    },
+    {
+      "id": "photo-bc078-p1-no-text",
+      "document_id": "bc_078",
+      "source_pdf": "广东城规院_惠玩甘青_7.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_ids": ["candidate.block.p1.0001", "candidate.block.p1.0002"],
+      "sub_type_gt": "natural_image",
+      "formal_fields": 0,
+      "formal_relations": null,
+      "checks": [
+        "左右两张无字照片分别保留",
+        "natural_image subtype 可追溯到各自图块",
+        "无字照片不要求描述，也不能编造图中文字"
+      ],
+      "runs": ["image_on", "both_off"]
+    }
+  ]
+}

@@ -3,8 +3,11 @@
 from collections import Counter
 from pathlib import Path
 
+from .feature_contract import FEATURES, PAIRS
 from .feature_eval import (
     FEATURE_GT_VERSION,
+    MARGINAL_IMAGE_TYPES,
+    _iou,
     _rate,
     _records_from_gt,
     _select_feature_records,
@@ -14,7 +17,7 @@ from .io import fresh_directory, read_json, safe_name, sha256, write_json
 from .mineru_middle import apply_pdf2text_filters, extract_pdf_info, pdf_info_to_document
 from .schema import MARGINAL_TYPES, Block, Document
 
-FEATURES = ("appendix", "header_footer", "image", "chart")
+VISUAL_FEATURES = ("image", "chart")
 REPLAY_SCHEMA = "doc-parse-bench.feature-replay.v1"
 RAW_SCHEMA = "doc-parse-bench.mineru-middle-json-run.v1"
 BASE_CONFIG = dict.fromkeys(
@@ -30,12 +33,6 @@ GROUPS = {
     # Match image on/off on the same recognition output.
     "controls/image_off": ("B", BASE_CONFIG),
 }
-PAIRS = {
-    "appendix": ("appendix", "off"),
-    "header_footer": ("header_footer", "off"),
-    "image": ("image", "controls/image_off"),
-    "chart": ("chart", "image"),
-}
 
 
 def _ground_truth(gt: Path) -> tuple[dict, list[dict], dict]:
@@ -49,14 +46,16 @@ def _ground_truth(gt: Path) -> tuple[dict, list[dict], dict]:
     )
 
 
-def _select_groups(manifest: dict, records: list[dict], subset: Path | None) -> dict:
+def _select_groups(
+    manifest: dict, records: list[dict], subset: Path | None, features: tuple[str, ...]
+) -> dict:
     groups = {}
-    for name in ("union", *FEATURES):
+    for name in ("union", *features):
         selected, _ = _select_feature_records(manifest, records, subset, name if subset else None)
         groups[name] = [safe_name(record["document_id"]) for record in selected]
-    expected = set().union(*(set(groups[name]) for name in FEATURES))
+    expected = set().union(*(set(groups[name]) for name in features))
     if set(groups["union"]) != expected:
-        raise ValueError("union 必须正好是 appendix、header_footer、image、chart 四个子集的并集")
+        raise ValueError(f"union 必须正好是 {', '.join(features)} 子集的并集")
     return groups
 
 
@@ -110,26 +109,36 @@ def _read_raw(path: Path, record: dict, capture: dict | None) -> tuple[list[dict
 
 def build_feature_ir(
     gt: Path,
-    raw_off: Path,
+    raw_off: Path | None,
     raw_on: Path,
     pdf2text_source: Path,
     model: str,
     output: Path,
     subset_manifest: Path | None = None,
+    *,
+    visual_only: bool = False,
 ) -> dict:
-    """Apply the deployed content filters to copies of two MinerU outputs per PDF."""
+    """Replay paired switches on A/B, or only image and chart switches on B."""
     manifest, records, gt_hashes = _ground_truth(gt)
-    subsets = _select_groups(manifest, records, subset_manifest)
+    subsets = _select_groups(
+        manifest, records, subset_manifest, VISUAL_FEATURES if visual_only else FEATURES
+    )
     by_id = {record["document_id"]: record for record in records}
-    directories = {"A": raw_off.resolve(), "B": raw_on.resolve()}
-    if directories["A"] == directories["B"]:
+    if visual_only and raw_off is not None:
+        raise ValueError("--visual-only 仅使用 raw-B，不接受 --raw-off")
+    if not visual_only and raw_off is None:
+        raise ValueError("完整四功能回放需要 --raw-off；只评图片、图表请用 --visual-only")
+    directories = {"A": raw_off.resolve()} if raw_off is not None else {}
+    directories["B"] = raw_on.resolve()
+    if directories.get("A") == directories["B"]:
         raise ValueError("A 和 B 必须是两份独立采集目录")
+    groups = {name: spec for name, spec in GROUPS.items() if spec[0] in directories}
     captures = {
         mode: _raw_manifest(directory, mode == "B", model)
         for mode, directory in directories.items()
     }
     if (
-        captures["A"]
+        captures.get("A")
         and captures["B"]
         and any(captures["A"][key] != captures["B"][key] for key in ("endpoint", "backend"))
     ):
@@ -160,7 +169,7 @@ def build_feature_ir(
             if pdf_hash:
                 pdf_hashes.add(pdf_hash)
             sources[doc_id][mode] = {"file": path.name, "sha256": digest, "pdf_sha256": pdf_hash}
-            for group, (group_mode, switches) in GROUPS.items():
+            for group, (group_mode, switches) in groups.items():
                 if group_mode != mode:
                     continue
                 filtered = apply_pdf2text_filters(
@@ -193,7 +202,7 @@ def build_feature_ir(
         "gt_sha256": gt_hashes,
         "subset_sha256": sha256(subset_manifest) if subset_manifest else None,
         "subsets": subsets,
-        "groups": {name: {"raw": raw, **config} for name, (raw, config) in GROUPS.items()},
+        "groups": {name: {"raw": raw, **config} for name, (raw, config) in groups.items()},
         "pdf2text_filters_sha256": sha256(Path(filters.__file__)),
         "pdf2text_target_config": target_config,
         "stage": "content_filters_before_title_levels_and_markdown",
@@ -205,8 +214,10 @@ def build_feature_ir(
         },
         "raw_sources": sources,
     }
+    if visual_only:
+        provenance["scope"] = "visual_only"
     write_json(output / "manifest.json", provenance)
-    return {"output": str(output), "documents": len(paths), "raw_documents": 2 * len(paths)}
+    return {"output": str(output), "documents": len(paths), "raw_documents": len(directories) * len(paths)}
 
 
 def _blocks(document: Document, types: set[str]) -> list[tuple[int, Block]]:
@@ -220,16 +231,6 @@ def _blocks(document: Document, types: set[str]) -> list[tuple[int, Block]]:
 
 def _source_id(block: Block) -> str:
     return block.metadata.get("raw_block_id") or block.id
-
-
-def _iou(left: list | None, right: list | None) -> float:
-    if not left or not right:
-        return 0.0
-    x1, y1, x2, y2 = left
-    a1, b1, a2, b2 = right
-    intersection = max(0, min(x2, a2) - max(x1, a1)) * max(0, min(y2, b2) - max(y1, b1))
-    union = (x2 - x1) * (y2 - y1) + (a2 - a1) * (b2 - b1) - intersection
-    return intersection / union if union else 0.0
 
 
 def _match(
@@ -361,23 +362,68 @@ def _appendix(gt: dict, on: Document, off: Document) -> dict:
 
 def _header_footer(gt: dict, on: Document, off: Document) -> dict:
     expected = gt["marginal_blocks"]
+    expected_images = [item for item in expected if item["type"] in MARGINAL_IMAGE_TYPES]
     predicted = [
         (page, block)
         for page, block in _blocks(on, set(MARGINAL_TYPES) | {"text"})
         if block.type in MARGINAL_TYPES or block.metadata.get("raw_type") in MARGINAL_TYPES
     ]
-    pairs = _match(expected, predicted, visual=False)
+    pairs = _match(
+        [item for item in expected if item["type"] in MARGINAL_TYPES], predicted, visual=False
+    )
     remainder = {
         _source_id(block) for page in off.pages for block in page.blocks if block.text.strip()
     }
+
+    def image_blocks(document: Document) -> list[tuple[int, Block]]:
+        return [
+            (page.number, block)
+            for page in document.pages
+            for block in page.blocks
+            if block.bbox
+            and (
+                block.type in MARGINAL_IMAGE_TYPES | {"image"}
+                or any(span.get("image_path") for span in block.metadata.get("spans", []))
+            )
+        ]
+
+    on_images = image_blocks(on)
+    matched_images = []
+    predicted_images = 0
+    for kind in sorted(MARGINAL_IMAGE_TYPES):
+        typed_images = [
+            (page, block)
+            for page, block in on_images
+            if block.metadata.get("raw_type", block.type) == kind
+        ]
+        predicted_images += len(typed_images)
+        matched_images.extend(
+            _match(
+                [item for item in expected_images if item["type"] == kind],
+                typed_images,
+                visual=True,
+            )
+        )
+    off_images = image_blocks(off)
+    residual_images = _match(expected_images, off_images, visual=True)
+    cleared_images = sum(
+        not any(
+            page == item["page"] and _iou(item.get("bbox"), block.bbox) >= 0.5
+            for page, block in off_images
+        )
+        for item, _ in matched_images
+    )
     return {
         "gt": len(expected),
-        "matched": len(pairs),
-        "predicted": sum(bool(block.text.strip()) for _, block in predicted),
-        "eligible": len(pairs),
-        "cleared": sum(_source_id(block) not in remainder for _, block in pairs),
+        "matched": len(pairs) + len(matched_images),
+        "predicted": sum(bool(block.text.strip()) for _, block in predicted) + predicted_images,
+        "eligible": len(pairs) + len(matched_images),
+        "cleared": sum(_source_id(block) not in remainder for _, block in pairs) + cleared_images,
         "page_numbers": sum(item["type"] == "page_number" for item in expected),
         "page_numbers_matched": sum(item["type"] == "page_number" for item, _ in pairs),
+        "image_gt": len(expected_images),
+        "images_matched": len(matched_images),
+        "images_remaining": len(residual_images),
     }
 
 
@@ -397,11 +443,13 @@ def _image(gt: dict, on: Document, off: Document) -> dict:
     ]
     pairs = _match(expected, predicted, visual=True)
     remainder = {_source_id(block): block for _, block in _blocks(off, {"image", "seal"})}
+    content_output = sum(_generated(block) > 0 for _, block in pairs)
     return {
         "gt": len(expected),
         "matched": len(pairs),
         "predicted": len(predicted),
-        "gt_with_output": sum(_generated(block) > 0 for _, block in pairs),
+        "content_output": content_output,
+        "gt_with_output": content_output,
         "eligible": sum(_generated(block) for _, block in predicted),
         "cleared": sum(
             max(0, _generated(block) - _generated(remainder.get(_source_id(block), Block("", ""))))
@@ -424,11 +472,13 @@ def _chart(gt: dict, on: Document, off: Document) -> dict:
     pairs = _match(expected, predicted, visual=True)
     remainder = {_source_id(block): block for _, block in _blocks(off, {"chart", "image"})}
     contentful = [block for _, block in predicted if _chart_payload(block)]
+    content_output = sum(_chart_payload(block) for _, block in pairs)
     return {
         "gt": len(expected),
         "matched": len(pairs),
         "predicted": len(predicted),
-        "gt_with_output": sum(_chart_payload(block) for _, block in pairs),
+        "content_output": content_output,
+        "gt_with_output": content_output,
         "eligible": len(contentful),
         "cleared": sum(
             not _chart_payload(remainder.get(_source_id(block), Block("", "")))
@@ -451,10 +501,13 @@ MEASURES = {
         "on_recall": ("matched", "gt"),
         "on_precision": ("matched", "predicted"),
         "on_page_number_recall": ("page_numbers_matched", "page_numbers"),
+        "on_marginal_image_recall": ("images_matched", "image_gt"),
+        "off_marginal_image_residual_rate": ("images_remaining", "image_gt"),
     },
     "image": {
         "on_recall": ("matched", "gt"),
         "on_precision": ("matched", "predicted"),
+        "content_output_recall": ("content_output", "gt"),
         "on_output_coverage": ("gt_with_output", "gt"),
         "on_seal_recall": ("seal_matched", "seal_gt"),
         "off_visual_retention": ("visuals_retained", "predicted"),
@@ -462,19 +515,49 @@ MEASURES = {
     "chart": {
         "on_recall": ("matched", "gt"),
         "on_precision": ("matched", "predicted"),
+        "content_output_recall": ("content_output", "gt"),
         "on_output_coverage": ("gt_with_output", "gt"),
         "off_downgrade_rate": ("downgraded", "predicted"),
     },
 }
 
 
-def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
-    """Score on/off pairs on each feature's own frozen list of PDFs."""
-    _, records, hashes = _ground_truth(gt)
+def evaluate_feature_matrix(
+    gt: Path,
+    predictions: Path,
+    output: Path,
+    allow_gt_revision: bool = False,
+) -> dict:
+    """Score on/off pairs on each feature's own frozen list of PDFs.
+
+    A replay directory normally has to be built from the exact GT hash it
+    records in its manifest.  ``allow_gt_revision`` is an explicit escape
+    hatch for a reviewed GT revision when the raw MinerU responses are no
+    longer available.  The resulting provenance keeps both hashes visible.
+    """
+    manifest, records, hashes = _ground_truth(gt)
     by_id = {record["document_id"]: record["new_gt"] for record in records}
     source = read_json(predictions / "manifest.json")
-    if source.get("schema_version") != REPLAY_SCHEMA or source.get("gt_sha256") != hashes:
+    if source.get("schema_version") != REPLAY_SCHEMA:
+        raise ValueError("不是四功能 IR 回放清单")
+    features = VISUAL_FEATURES if source.get("scope") == "visual_only" else FEATURES
+    source_hashes = source.get("gt_sha256")
+    gt_revision = source_hashes != hashes
+    if gt_revision and not allow_gt_revision:
         raise ValueError("IR 回放清单与当前 v3 GT 不一致，请重新生成 IR")
+    if gt_revision:
+        source_ids = {
+            document_id for subset in source.get("subsets", {}).values() for document_id in subset
+        }
+        if not source_ids.issubset(by_id):
+            missing = sorted(source_ids - set(by_id))
+            raise ValueError(f"GT 修订后缺少 IR 中的文档：{missing[:5]}")
+        source["gt_revision"] = {
+            "allowed": True,
+            "source_gt_sha256": source_hashes,
+            "evaluated_gt_sha256": hashes,
+            "evaluated_gt_version": manifest.get("gt_version"),
+        }
 
     def load(group: str, doc_id: str) -> Document:
         doc = Document.load(predictions / group / "documents" / f"{safe_name(doc_id)}.json")
@@ -483,7 +566,8 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
         return doc
 
     metrics, per_document = {}, {}
-    for feature, (on, off) in PAIRS.items():
+    for feature in features:
+        on, off = PAIRS[feature]
         totals = Counter()
         rows = {}
         for doc_id in source["subsets"][feature]:
@@ -575,10 +659,14 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
     write_json(output / "per_document.json", per_document)
     write_json(
         output / "provenance.json",
-        source | {"replay_sha256": sha256(predictions / "manifest.json")},
+        source
+        | {
+            "replay_sha256": sha256(predictions / "manifest.json"),
+            "evaluated_gt_sha256": hashes,
+        },
     )
     lines = [
-        "# 129 四功能开关对照",
+        "# 129 图片／图表开关对照" if features == VISUAL_FEATURES else "# 129 四功能开关对照",
         "",
         f"模型：`{source['model']}`；GT：`{FEATURE_GT_VERSION}`。",
         "",
@@ -615,11 +703,15 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
         precision = values["precision"]
         coverage = values["output_coverage"]
         f1 = values["f1"]
+        recall_rate = "不可计分" if recall["rate"] is None else f"{recall['rate']:.2%}"
+        precision_rate = "不可计分" if precision["rate"] is None else f"{precision['rate']:.2%}"
+        coverage_rate = "不可计分" if coverage["rate"] is None else f"{coverage['rate']:.2%}"
+        f1_value = "不可计分" if f1 is None else f"{f1:.2%}"
         lines.append(
             f"| {label} | {recall['numerator']}/{recall['denominator']} "
-            f"({recall['rate']:.2%}) | {precision['numerator']}/{precision['denominator']} "
-            f"({precision['rate']:.2%}) | {f1:.2%} | "
-            f"{coverage['numerator']}/{coverage['denominator']} ({coverage['rate']:.2%}) |"
+            f"({recall_rate}) | {precision['numerator']}/{precision['denominator']} "
+            f"({precision_rate}) | {f1_value} | "
+            f"{coverage['numerator']}/{coverage['denominator']} ({coverage_rate}) |"
         )
     lines.extend(
         [
@@ -628,6 +720,13 @@ def evaluate_feature_matrix(gt: Path, predictions: Path, output: Path) -> dict:
             f"chart GT 被 image 框覆盖：{combined['counts']['chart_as_image']}。",
         ]
     )
-    lines.extend(["", "清除率检测关闭前已有的输出；image/chart 的覆盖率仅统计是否产出内容。", ""])
+    lines.extend(
+        [
+            "",
+            "清除率检测关闭前已有的输出；`content_output_recall` 是匹配视觉块后是否产出非空内容的能力分，",
+            "`on_output_coverage` 作为兼容字段保留。两者都不判断图内数字或字符的严格正确性。",
+            "",
+        ]
+    )
     (output / "report.md").write_text("\n".join(lines), encoding="utf-8")
     return {"output": str(output), "metrics": metrics}

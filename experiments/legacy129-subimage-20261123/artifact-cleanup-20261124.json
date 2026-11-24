@@ -1,0 +1,24 @@
+{
+  "archived": [
+    "p2t-replay-v2",
+    "p2t-pre-crop"
+  ],
+  "files": 2602,
+  "uncompressed_bytes": 130612775,
+  "archive": "archives/legacy129-intermediate-replays-20261124.zip",
+  "archive_bytes": 36905279,
+  "archive_sha256": "feb7276ffd450cdccb9f66ae1094e91a2c2f502f36ff449d2b8e984c2f55ba08",
+  "verified": "CRC and SHA-256 of every file before removing source directories",
+  "preserved_active": [
+    "analysis-units-review-20261124",
+    "p2t-replay-v2-final",
+    "p2t-split-policy",
+    "rubric-charts",
+    "rubric-switches",
+    "model-gap-v2",
+    "ft-original-ir",
+    "ft-expanded-ir",
+    "p2t-replay",
+    "p2t-inner-handoff-20261124"
+  ]
+}

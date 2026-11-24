@@ -13,6 +13,7 @@ from .compatibility.cleaning import CleaningOptions
 from .exporters import export_gt, export_predictions
 from .feature_eval import build_feature_ground_truth, evaluate_features
 from .feature_matrix import build_feature_ir, evaluate_feature_matrix
+from .feature_rubric import evaluate_feature_rubric
 from .history import compare_workbook
 from .pipeline import run as run_profile
 from .predictions import MODELS, import_predictions
@@ -60,7 +61,9 @@ def build_parser() -> argparse.ArgumentParser:
     feature_gt.add_argument("old_groundtruth", type=Path, help="旧 129 Markdown GT 目录")
     feature_gt.add_argument("output", type=Path, help="新的四项能力 GT 输出目录")
     feature_gt.add_argument("--old-pdf-dir", type=Path, help="旧 129 PDF 目录，用于页数对账")
-    feature_gt.add_argument("--dataset-version", default="legacy-features-20261118")
+    feature_gt.add_argument("--appendix-overrides", type=Path, help="人工复核的附录页码补丁 JSON")
+    feature_gt.add_argument("--block-overrides", type=Path, help="人工复核的专项 GT 块补丁 JSON")
+    feature_gt.add_argument("--dataset-version", default="legacy-features-20261119")
     feature_gt.add_argument(
         "--include-structured",
         action="store_true",
@@ -93,8 +96,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="从 MinerU raw middle_json 按最新版 PDF2Text 过滤器生成四功能 IR",
     )
     replay.add_argument("--gt", type=Path, required=True, help="legacy-129-feature-v3 GT")
-    replay.add_argument("--raw-off", type=Path, required=True, help="image_analysis=false raw 目录")
+    replay.add_argument("--raw-off", type=Path, help="完整四功能回放所需的 image_analysis=false raw 目录")
     replay.add_argument("--raw-on", type=Path, required=True, help="image_analysis=true raw 目录")
+    replay.add_argument("--visual-only", action="store_true", help="只有 raw-B 时，仅回放图片、图表")
     replay.add_argument(
         "--pdf2text-source",
         type=Path,
@@ -111,6 +115,15 @@ def build_parser() -> argparse.ArgumentParser:
     matrix.add_argument("--gt", type=Path, required=True)
     matrix.add_argument("--pred", type=Path, required=True, help="build-feature-ir 输出目录")
     matrix.add_argument("--output", type=Path, required=True)
+    matrix.add_argument(
+        "--allow-gt-revision",
+        action="store_true",
+        help="允许用审阅后的 GT 重评已有 IR；输出 provenance 会记录旧/新 GT 哈希",
+    )
+    rubric = sub.add_parser("evaluate-feature-rubric", help="按复核证据计算 129 专项交付分")
+    rubric.add_argument("--gt", type=Path, required=True, help="冻结的专项计分 GT JSON")
+    rubric.add_argument("--pred", type=Path, required=True, help="单版来源对齐的输出证据 JSON")
+    rubric.add_argument("--output", type=Path, required=True)
     pred = sub.add_parser("import-pred", help="模型输出转统一结构")
     pred.add_argument("source", type=Path)
     pred.add_argument("output", type=Path)
@@ -249,6 +262,8 @@ def main(argv=None):
                 args.old_pdf_dir,
                 args.dataset_version,
                 args.include_structured,
+                appendix_overrides=args.appendix_overrides,
+                block_overrides=args.block_overrides,
             )
         elif args.command == "evaluate-features":
             result = evaluate_features(
@@ -268,9 +283,14 @@ def main(argv=None):
                 args.model,
                 args.output,
                 args.subset_manifest,
+                visual_only=args.visual_only,
             )
         elif args.command == "evaluate-feature-matrix":
-            result = evaluate_feature_matrix(args.gt, args.pred, args.output)
+            result = evaluate_feature_matrix(
+                args.gt, args.pred, args.output, args.allow_gt_revision
+            )
+        elif args.command == "evaluate-feature-rubric":
+            result = evaluate_feature_rubric(args.gt, args.pred, args.output)
         elif args.command == "import-pred":
             result = import_predictions(args.source, args.output, args.model, args.document_map)
             result = {k: v for k, v in result.items() if k != "sources"}

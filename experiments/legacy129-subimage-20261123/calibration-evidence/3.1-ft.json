@@ -1,0 +1,1452 @@
+{
+  "schema_version": "doc-parse-bench.feature-rubric-evidence.v1",
+  "gt_sha256": "6d98b54495edc5f61422103a3a032a64ed93c72383a3df068e3c22238f610b72",
+  "model": "3.1-ft",
+  "stage": "replay",
+  "relevel_applied": false,
+  "config": {
+    "mineru_provider": "mineru3",
+    "relevel_titles": true,
+    "title_rules": false
+  },
+  "cases": {
+    "bc_003:p15:appendix": {
+      "on_anchors": [
+        "附录 A",
+        "调整后功能点"
+      ],
+      "off_residual": true
+    },
+    "bc_003:p16:appendix": {
+      "on_anchors": [
+        "附录 B",
+        "同时相互执行计算机系统中的处理功能"
+      ],
+      "off_residual": true
+    },
+    "bc_003:p17:appendix": {
+      "on_anchors": [
+        "开发平台"
+      ],
+      "off_residual": true
+    },
+    "bc_003:p18:appendix": {
+      "on_anchors": [
+        "平均每季度1次或以下",
+        "软件完整性级别划分可参考GB/T 18492"
+      ],
+      "off_residual": true
+    },
+    "bc_003:p19:appendix": {
+      "on_anchors": [
+        "为本行业做过类似的项目",
+        "11个以上"
+      ],
+      "off_residual": true
+    },
+    "bc_003:p20:appendix": {
+      "on_anchors": [
+        "软件造价评估报告模板",
+        "委托日期："
+      ],
+      "off_residual": false
+    },
+    "bc_003:p21:appendix": {
+      "on_anchors": [
+        "评估报告声明",
+        "本报告评估人员与委托方之间无任何特殊利害关系"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p22:appendix": {
+      "on_anchors": [
+        "评估结果摘要",
+        "是该项目的合理价格"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p23:appendix": {
+      "on_anchors": [
+        "以上内容摘自评估报告书",
+        "请认真阅读评估报告书全文"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p24:appendix": {
+      "on_anchors": [
+        "本次评估的目的是确定",
+        "第三届中国项目管理成就奖"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p25:appendix": {
+      "on_anchors": [
+        "本报告中估算模型中的主要公式及参数取值均基于行业基准数据",
+        "开发团队"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p26:appendix": {
+      "on_anchors": [
+        "评估机构及评估人员资质证书"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p27:appendix": {
+      "on_anchors": [
+        "软件造价评估过程示例",
+        "需求粒度检查"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p28:appendix": {
+      "on_anchors": [
+        "项目关键属性列表",
+        "政务服务图标"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p29:appendix": {
+      "on_anchors": [
+        "生产率选择"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p30:appendix": {
+      "on_anchors": [
+        "电子政务领域软件开发生产率基准数据",
+        "321.09"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p31:appendix": {
+      "on_anchors": [
+        "表 D.8 成本估算结果"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p32:appendix": {
+      "on_anchors": [
+        "特殊成本费用合计（元）",
+        "47.25"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p33:appendix": {
+      "on_anchors": [
+        "该项目总计功能规模为 382.25FP",
+        "规模变更因子"
+      ],
+      "off_residual": false
+    },
+    "bc_003:p34:appendix": {
+      "on_anchors": [
+        "评估公司不承担任何责任"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p13:appendix": {
+      "on_anchors": [
+        "数据目录字典涉及的数据类型应符合以下类型",
+        "数据资源元数据描述见表A.1"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p14:appendix": {
+      "on_anchors": [
+        "resourceName",
+        "04：混合表示"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p15:appendix": {
+      "on_anchors": [],
+      "off_residual": false
+    },
+    "bc_010:p16:appendix": {
+      "on_anchors": [],
+      "off_residual": false
+    },
+    "bc_010:p17:appendix": {
+      "on_anchors": [
+        "productName",
+        "resourceId"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p18:appendix": {
+      "on_anchors": [],
+      "off_residual": false
+    },
+    "bc_010:p19:appendix": {
+      "on_anchors": [],
+      "off_residual": false
+    },
+    "bc_010:p20:appendix": {
+      "on_anchors": [
+        "产品上架信息",
+        "定价信息和交付信息相关内容"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p21:appendix": {
+      "on_anchors": [
+        "表B.1 是否涉及个人信息分类编码",
+        "第二十八条的相关规定"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p22:appendix": {
+      "on_anchors": [
+        "产品定价信息见表C.1",
+        "一事一议"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p23:appendix": {
+      "on_anchors": [
+        "1.数据来源合法性",
+        "[声明日期]"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p24:appendix": {
+      "on_anchors": [
+        "1.内部生成数据",
+        "[声明日期]"
+      ],
+      "off_residual": false
+    },
+    "bc_010:p25:appendix": {
+      "on_anchors": [
+        "数据基础设施 参考架构",
+        "数据基础设施 连接器技术要求"
+      ],
+      "off_residual": false
+    },
+    "bc_016:p26:appendix": {
+      "on_anchors": [
+        "附录 A 行业基准数据应用示例",
+        "对员工的信息进行管理"
+      ],
+      "off_residual": false
+    },
+    "bc_016:p27:appendix": {
+      "on_anchors": [
+        "预算阶段该项目的总规模为 145.95 个功能点",
+        "预算小组采用缺省开发调整因素为 1"
+      ],
+      "off_residual": false
+    },
+    "bc_016:p28:appendix": {
+      "on_anchors": [
+        "运维水平要求因素",
+        "提前消除了由于项目业务需求不清晰而导致项目失败的隐患"
+      ],
+      "off_residual": false
+    },
+    "bc_016:p29:appendix": {
+      "on_anchors": [
+        "附录 B 常见问题",
+        "评估的开发或运维费用包含应用软件运维的直接人力成本"
+      ],
+      "off_residual": false
+    },
+    "bc_016:p30:appendix": {
+      "on_anchors": [
+        "行业基准数据发布单位简介",
+        "国家从事电子信息技术领域标准化的基础性、公益性、综合性研究机构"
+      ],
+      "off_residual": false
+    },
+    "bc_016:p31:appendix": {
+      "on_anchors": [
+        "北京软件造价评估技术创新联盟",
+        "邮箱：bscea@bscea.org"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p26:appendix": {
+      "on_anchors": [
+        "附录 A 软件开发及运维工作量调整因子常见参数表",
+        "多媒体应用领域"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p27:appendix": {
+      "on_anchors": [
+        "没有同类项目的背景"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p28:appendix": {
+      "on_anchors": [
+        "中间件",
+        "周边"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p29:appendix": {
+      "on_anchors": [
+        "一级故障处理时间小于24h",
+        "超过10000"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p30:appendix": {
+      "on_anchors": [
+        "10个及以上",
+        "非涉密"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p31:appendix": {
+      "on_anchors": [
+        "附录 B 行业基准数据应用示例",
+        "规模变更调整因子为 1.39"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p32:appendix": {
+      "on_anchors": [
+        "该项目的总规模为 145.95 个功能点",
+        "17.15 万元"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p33:appendix": {
+      "on_anchors": [
+        "B.2.2 运维费用估算",
+        "提前消除了由于项目业务需求不清晰而导致项目失败的隐患"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p34:appendix": {
+      "on_anchors": [
+        "附录 C 其他运维成本度量基准数据",
+        "典型设备/产品运维单位工作量基准数据"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p35:appendix": {
+      "on_anchors": [
+        "密码测评"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p36:appendix": {
+      "on_anchors": [
+        "附录 D 常见问题",
+        "但不包括直接非人力成本"
+      ],
+      "off_residual": false
+    },
+    "bc_017:p37:appendix": {
+      "on_anchors": [
+        "D.6 当前在很多行业实际的实践中",
+        "比例法可以认为是一种简化后的“快速算法”"
+      ],
+      "off_residual": false
+    },
+    "bc_022:p1:margins": {
+      "on_blocks": [
+        {
+          "id": "mineru.p1.0015",
+          "text": "RSC Advances",
+          "image_available": false,
+          "source_id": "candidate.block.p1.0000"
+        },
+        {
+          "id": "mineru.p1.0016:1",
+          "source_id": "candidate.block.p1.0002",
+          "text": "ROYAL SOCIETY"
+        },
+        {
+          "id": "mineru.p1.0016:2",
+          "source_id": "candidate.block.p1.0003",
+          "text": "OF CHEMISTRY"
+        },
+        {
+          "id": "mineru.p1.0017",
+          "text": "17694",
+          "image_available": false,
+          "source_id": "candidate.block.p1.0024"
+        },
+        {
+          "id": "mineru.p1.0018",
+          "text": "RSC Adv., 2020, 10, 17694-17701",
+          "image_available": false,
+          "source_id": "candidate.block.p1.0025"
+        },
+        {
+          "id": "mineru.p1.0019",
+          "text": "This journal is © The Royal Society of Chemistry 2020",
+          "image_available": false,
+          "source_id": "candidate.block.p1.0026"
+        }
+      ],
+      "off_residual_ids": []
+    },
+    "bc_022:p2:margins": {
+      "on_blocks": [
+        {
+          "id": "mineru.p2.0008",
+          "text": "Paper",
+          "image_available": false,
+          "source_id": "candidate.block.p2.0000"
+        },
+        {
+          "id": "mineru.p2.0009",
+          "text": "RSC Advances",
+          "image_available": false,
+          "source_id": "candidate.block.p2.0001"
+        },
+        {
+          "id": "mineru.p2.0010",
+          "text": "This journal is © The Royal Society of Chemistry 2020",
+          "image_available": false,
+          "source_id": "candidate.block.p2.0010"
+        },
+        {
+          "id": "mineru.p2.0011",
+          "text": "RSC Adv., 2020, 10, 17694-17701",
+          "image_available": false,
+          "source_id": "candidate.block.p2.0011"
+        },
+        {
+          "id": "mineru.p2.0012",
+          "text": "17695",
+          "image_available": false,
+          "source_id": "candidate.block.p2.0012"
+        }
+      ],
+      "off_residual_ids": []
+    },
+    "bc_018:p5:margins": {
+      "on_blocks": [
+        {
+          "id": "mineru.p5.0014",
+          "text": "第5页 共5页",
+          "image_available": false,
+          "source_id": "candidate.block.p5.0014"
+        }
+      ],
+      "off_residual_ids": []
+    },
+    "bc_091:p1:margins": {
+      "on_blocks": [
+        {
+          "id": "mineru.p1.0004",
+          "text": "3",
+          "image_available": false,
+          "source_id": "candidate.block.p1.0006"
+        }
+      ],
+      "off_residual_ids": []
+    },
+    "bc_003:p14:protect-body": {
+      "on_state": "complete",
+      "off_state": "complete"
+    },
+    "bc_003:p35:protect-references": {
+      "on_state": "complete",
+      "off_state": "missing"
+    },
+    "bc_010:p12:protect-body": {
+      "on_state": "complete",
+      "off_state": "complete"
+    },
+    "bc_016:p25:protect-body": {
+      "on_state": "complete",
+      "off_state": "complete"
+    },
+    "bc_017:p25:protect-body": {
+      "on_state": "complete",
+      "off_state": "complete"
+    },
+    "bc_017:p38:protect-introduction": {
+      "on_state": "complete",
+      "off_state": "missing"
+    },
+    "bc_022:p8:protect-references": {
+      "on_state": "complete",
+      "off_state": "complete"
+    },
+    "bc_018:p5:protect-signing-note": {
+      "on_state": "complete",
+      "off_state": "complete"
+    },
+    "bc_022:p1:protect-author-note": {
+      "on_state": "missing",
+      "off_state": "missing"
+    },
+    "bc_022:candidate.block.p4.0012": {
+      "table_status": "parsed",
+      "block_id": "mineru.p4.0008",
+      "payload": "| Category | Draw Resistance (Pa) |\n| --- | --- |\n| Control | 3874 |\n| EP0 | 23375 |\n| EP1 | 15030 |\n| EP2 | 220 |\n| EP3 | 2625 |",
+      "values": [
+        {
+          "id": "mineru.p4.0008:1:1",
+          "series": "Draw Resistance",
+          "category": "Control",
+          "unit": "Pa",
+          "value": "3874"
+        },
+        {
+          "id": "mineru.p4.0008:2:1",
+          "series": "Draw Resistance",
+          "category": "EP0",
+          "unit": "Pa",
+          "value": "23375"
+        },
+        {
+          "id": "mineru.p4.0008:3:1",
+          "series": "Draw Resistance",
+          "category": "EP1",
+          "unit": "Pa",
+          "value": "15030"
+        },
+        {
+          "id": "mineru.p4.0008:4:1",
+          "series": "Draw Resistance",
+          "category": "EP2",
+          "unit": "Pa",
+          "value": "220"
+        },
+        {
+          "id": "mineru.p4.0008:5:1",
+          "series": "Draw Resistance",
+          "category": "EP3",
+          "unit": "Pa",
+          "value": "2625"
+        }
+      ]
+    },
+    "bc_022:candidate.block.p4.0013": {
+      "table_status": "parsed",
+      "block_id": "mineru.p4.0009",
+      "payload": "| Category | Open-cell Content (%) |\n| --- | --- |\n| Control | 92.18 |\n| EP0 | 86.11 |\n| EP1 | 91.29 |\n| EP2 | 84.39 |\n| EP3 | 93.87 |",
+      "values": [
+        {
+          "id": "mineru.p4.0009:1:1",
+          "series": "Open-cell Content",
+          "category": "Control",
+          "unit": "%",
+          "value": "92.18"
+        },
+        {
+          "id": "mineru.p4.0009:2:1",
+          "series": "Open-cell Content",
+          "category": "EP0",
+          "unit": "%",
+          "value": "86.11"
+        },
+        {
+          "id": "mineru.p4.0009:3:1",
+          "series": "Open-cell Content",
+          "category": "EP1",
+          "unit": "%",
+          "value": "91.29"
+        },
+        {
+          "id": "mineru.p4.0009:4:1",
+          "series": "Open-cell Content",
+          "category": "EP2",
+          "unit": "%",
+          "value": "84.39"
+        },
+        {
+          "id": "mineru.p4.0009:5:1",
+          "series": "Open-cell Content",
+          "category": "EP3",
+          "unit": "%",
+          "value": "93.87"
+        }
+      ]
+    },
+    "bc_091:candidate.block.p1.0004": {
+      "table_status": "parsed",
+      "block_id": "mineru.p1.0002",
+      "payload": "| Category | 理论蕴藏量 (亿kWh) | 占比 (%) |\n| --- | --- | --- |\n| D-1 | ~1300 | 7.46% |\n| D-2 | ~1900 | 11.15% |\n| D-3 | ~2500 | 14.76% |\n| 1 | ~4200 | 25.35% |\n| 2 | ~4900 | 29.17% |\n| 3 | ~1300 | 7.96% |\n| 4 | ~400 | 2.39% |\n| 5 | ~150 | 0.99% |\n| 6 | ~80 | 0.54% |\n| 7 | ~50 | 0.22% |",
+      "values": [
+        {
+          "id": "mineru.p1.0002:1:1",
+          "series": "理论蕴藏量",
+          "category": "D-1",
+          "unit": "亿kWh",
+          "value": "~1300"
+        },
+        {
+          "id": "mineru.p1.0002:2:1",
+          "series": "理论蕴藏量",
+          "category": "D-2",
+          "unit": "亿kWh",
+          "value": "~1900"
+        },
+        {
+          "id": "mineru.p1.0002:3:1",
+          "series": "理论蕴藏量",
+          "category": "D-3",
+          "unit": "亿kWh",
+          "value": "~2500"
+        },
+        {
+          "id": "mineru.p1.0002:4:1",
+          "series": "理论蕴藏量",
+          "category": "1",
+          "unit": "亿kWh",
+          "value": "~4200"
+        },
+        {
+          "id": "mineru.p1.0002:5:1",
+          "series": "理论蕴藏量",
+          "category": "2",
+          "unit": "亿kWh",
+          "value": "~4900"
+        },
+        {
+          "id": "mineru.p1.0002:6:1",
+          "series": "理论蕴藏量",
+          "category": "3",
+          "unit": "亿kWh",
+          "value": "~1300"
+        },
+        {
+          "id": "mineru.p1.0002:7:1",
+          "series": "理论蕴藏量",
+          "category": "4",
+          "unit": "亿kWh",
+          "value": "~400"
+        },
+        {
+          "id": "mineru.p1.0002:8:1",
+          "series": "理论蕴藏量",
+          "category": "5",
+          "unit": "亿kWh",
+          "value": "~150"
+        },
+        {
+          "id": "mineru.p1.0002:9:1",
+          "series": "理论蕴藏量",
+          "category": "6",
+          "unit": "亿kWh",
+          "value": "~80"
+        },
+        {
+          "id": "mineru.p1.0002:10:1",
+          "series": "理论蕴藏量",
+          "category": "7",
+          "unit": "亿kWh",
+          "value": "~50"
+        },
+        {
+          "id": "mineru.p1.0002:1:2",
+          "series": "占比",
+          "category": "D-1",
+          "unit": "%",
+          "value": "7.46%"
+        },
+        {
+          "id": "mineru.p1.0002:2:2",
+          "series": "占比",
+          "category": "D-2",
+          "unit": "%",
+          "value": "11.15%"
+        },
+        {
+          "id": "mineru.p1.0002:3:2",
+          "series": "占比",
+          "category": "D-3",
+          "unit": "%",
+          "value": "14.76%"
+        },
+        {
+          "id": "mineru.p1.0002:4:2",
+          "series": "占比",
+          "category": "1",
+          "unit": "%",
+          "value": "25.35%"
+        },
+        {
+          "id": "mineru.p1.0002:5:2",
+          "series": "占比",
+          "category": "2",
+          "unit": "%",
+          "value": "29.17%"
+        },
+        {
+          "id": "mineru.p1.0002:6:2",
+          "series": "占比",
+          "category": "3",
+          "unit": "%",
+          "value": "7.96%"
+        },
+        {
+          "id": "mineru.p1.0002:7:2",
+          "series": "占比",
+          "category": "4",
+          "unit": "%",
+          "value": "2.39%"
+        },
+        {
+          "id": "mineru.p1.0002:8:2",
+          "series": "占比",
+          "category": "5",
+          "unit": "%",
+          "value": "0.99%"
+        },
+        {
+          "id": "mineru.p1.0002:9:2",
+          "series": "占比",
+          "category": "6",
+          "unit": "%",
+          "value": "0.54%"
+        },
+        {
+          "id": "mineru.p1.0002:10:2",
+          "series": "占比",
+          "category": "7",
+          "unit": "%",
+          "value": "0.22%"
+        }
+      ]
+    },
+    "bc_017:candidate.block.p12.0003": {
+      "table_status": "parsed",
+      "block_id": "mineru.p12.0000",
+      "payload": "| 交付质量 | 缺陷数/千功能点 |\n| --- | --- |\n| P90 | 79.88 |\n| P75 | 32.76 |\n| P50 | 10.05 |\n| P25 | 3.53 |\n| P10 | 1.02 |",
+      "values": [
+        {
+          "id": "mineru.p12.0000:1:1",
+          "series": "交付质量",
+          "category": "P90",
+          "unit": "缺陷数/千功能点",
+          "value": "79.88"
+        },
+        {
+          "id": "mineru.p12.0000:2:1",
+          "series": "交付质量",
+          "category": "P75",
+          "unit": "缺陷数/千功能点",
+          "value": "32.76"
+        },
+        {
+          "id": "mineru.p12.0000:3:1",
+          "series": "交付质量",
+          "category": "P50",
+          "unit": "缺陷数/千功能点",
+          "value": "10.05"
+        },
+        {
+          "id": "mineru.p12.0000:4:1",
+          "series": "交付质量",
+          "category": "P25",
+          "unit": "缺陷数/千功能点",
+          "value": "3.53"
+        },
+        {
+          "id": "mineru.p12.0000:5:1",
+          "series": "交付质量",
+          "category": "P10",
+          "unit": "缺陷数/千功能点",
+          "value": "1.02"
+        }
+      ]
+    },
+    "bc_014:candidate.block.p1.0011": {
+      "table_status": "parsed",
+      "block_id": "mineru.p1.0008",
+      "payload": "| Year | 地区生产总值 (亿元) | GDP增速 (%) |\n| --- | --- | --- |\n| 2019 | 70540 | 5.3 |\n| 2020 | 72798 | 3.5 |\n| 2021 | 82875 | 8.3 |\n| 2022 | 87577 | 3.9 |\n| 2023 | 92069 | 6.0 |",
+      "values": [
+        {
+          "id": "mineru.p1.0008:1:1",
+          "series": "地区生产总值",
+          "category": "2019年",
+          "unit": "亿元",
+          "value": "70540"
+        },
+        {
+          "id": "mineru.p1.0008:2:1",
+          "series": "地区生产总值",
+          "category": "2020年",
+          "unit": "亿元",
+          "value": "72798"
+        },
+        {
+          "id": "mineru.p1.0008:3:1",
+          "series": "地区生产总值",
+          "category": "2021年",
+          "unit": "亿元",
+          "value": "82875"
+        },
+        {
+          "id": "mineru.p1.0008:4:1",
+          "series": "地区生产总值",
+          "category": "2022年",
+          "unit": "亿元",
+          "value": "87577"
+        },
+        {
+          "id": "mineru.p1.0008:5:1",
+          "series": "地区生产总值",
+          "category": "2023年",
+          "unit": "亿元",
+          "value": "92069"
+        },
+        {
+          "id": "mineru.p1.0008:1:2",
+          "series": "GDP增速",
+          "category": "2019年",
+          "unit": "%",
+          "value": "5.3"
+        },
+        {
+          "id": "mineru.p1.0008:2:2",
+          "series": "GDP增速",
+          "category": "2020年",
+          "unit": "%",
+          "value": "3.5"
+        },
+        {
+          "id": "mineru.p1.0008:3:2",
+          "series": "GDP增速",
+          "category": "2021年",
+          "unit": "%",
+          "value": "8.3"
+        },
+        {
+          "id": "mineru.p1.0008:4:2",
+          "series": "GDP增速",
+          "category": "2022年",
+          "unit": "%",
+          "value": "3.9"
+        },
+        {
+          "id": "mineru.p1.0008:5:2",
+          "series": "GDP增速",
+          "category": "2023年",
+          "unit": "%",
+          "value": "6.0"
+        }
+      ]
+    },
+    "bc_014:candidate.block.p3.0012": {
+      "table_status": "parsed",
+      "block_id": "mineru.p3.0009",
+      "payload": "| Year | Value (亿件) |\n| --- | --- |\n| 2019 | 28.9 |\n| 2020 | 41.5 |\n| 2021 | 56.0 |\n| 2022 | 57.7 |\n| 2023 | 70.7 |",
+      "values": [
+        {
+          "id": "mineru.p3.0009:1:1",
+          "series": "Value",
+          "category": "2019年",
+          "unit": "亿件",
+          "value": "28.9"
+        },
+        {
+          "id": "mineru.p3.0009:2:1",
+          "series": "Value",
+          "category": "2020年",
+          "unit": "亿件",
+          "value": "41.5"
+        },
+        {
+          "id": "mineru.p3.0009:3:1",
+          "series": "Value",
+          "category": "2021年",
+          "unit": "亿件",
+          "value": "56.0"
+        },
+        {
+          "id": "mineru.p3.0009:4:1",
+          "series": "Value",
+          "category": "2022年",
+          "unit": "亿件",
+          "value": "57.7"
+        },
+        {
+          "id": "mineru.p3.0009:5:1",
+          "series": "Value",
+          "category": "2023年",
+          "unit": "亿件",
+          "value": "70.7"
+        }
+      ]
+    },
+    "bc_014:candidate.block.p3.0014": {
+      "table_status": "parsed",
+      "block_id": "mineru.p3.0010",
+      "payload": "| Year | Value (万户) |\n| --- | --- |\n| 2019 | 3186.1 |\n| 2020 | 3445.6 |\n| 2021 | 3863.7 |\n| 2022 | 4264.7 |\n| 2023 | 4581.9 |",
+      "values": [
+        {
+          "id": "mineru.p3.0010:1:1",
+          "series": "Value",
+          "category": "2019年",
+          "unit": "万户",
+          "value": "3186.1"
+        },
+        {
+          "id": "mineru.p3.0010:2:1",
+          "series": "Value",
+          "category": "2020年",
+          "unit": "万户",
+          "value": "3445.6"
+        },
+        {
+          "id": "mineru.p3.0010:3:1",
+          "series": "Value",
+          "category": "2021年",
+          "unit": "万户",
+          "value": "3863.7"
+        },
+        {
+          "id": "mineru.p3.0010:4:1",
+          "series": "Value",
+          "category": "2022年",
+          "unit": "万户",
+          "value": "4264.7"
+        },
+        {
+          "id": "mineru.p3.0010:5:1",
+          "series": "Value",
+          "category": "2023年",
+          "unit": "万户",
+          "value": "4581.9"
+        }
+      ]
+    },
+    "bc_015:candidate.block.p2.0001": {
+      "table_status": "parsed",
+      "block_id": "mineru.p2.0000",
+      "payload": "| Year | Value (万人) |\n| --- | --- |\n| 2017年 | 82.8 |\n| 2018年 | 79.2 |\n| 2019年 | 75.3 |\n| 2020年 | 70.9 |\n| 2021年 | 70.8 |\n| 2022年 | 70.4 |\n| 2023年 | 70.3 |",
+      "values": [
+        {
+          "id": "mineru.p2.0000:1:1",
+          "series": "Value",
+          "category": "2017年",
+          "unit": "万人",
+          "value": "82.8"
+        },
+        {
+          "id": "mineru.p2.0000:2:1",
+          "series": "Value",
+          "category": "2018年",
+          "unit": "万人",
+          "value": "79.2"
+        },
+        {
+          "id": "mineru.p2.0000:3:1",
+          "series": "Value",
+          "category": "2019年",
+          "unit": "万人",
+          "value": "75.3"
+        },
+        {
+          "id": "mineru.p2.0000:4:1",
+          "series": "Value",
+          "category": "2020年",
+          "unit": "万人",
+          "value": "70.9"
+        },
+        {
+          "id": "mineru.p2.0000:5:1",
+          "series": "Value",
+          "category": "2021年",
+          "unit": "万人",
+          "value": "70.8"
+        },
+        {
+          "id": "mineru.p2.0000:6:1",
+          "series": "Value",
+          "category": "2022年",
+          "unit": "万人",
+          "value": "70.4"
+        },
+        {
+          "id": "mineru.p2.0000:7:1",
+          "series": "Value",
+          "category": "2023年",
+          "unit": "万人",
+          "value": "70.3"
+        }
+      ]
+    },
+    "bc_015:candidate.block.p4.0001": {
+      "table_status": "parsed",
+      "block_id": "mineru.p4.0000",
+      "payload": "| 年份 | 地区生产总值 (亿元) | 增速 (%) |\n| :--- | :--- | :--- |\n| 2019年 | 2910.4 | 6.0 |\n| 2020年 | 2937.0 | 0.1 |\n| 2021年 | 3236.7 | 8.0 |\n| 2022年 | 3391.1 | 5.6 |\n| 2023年 | 3574.3 | 5.0 |",
+      "values": [
+        {
+          "id": "mineru.p4.0000:1:1",
+          "series": "地区生产总值",
+          "category": "2019年",
+          "unit": "亿元",
+          "value": "2910.4"
+        },
+        {
+          "id": "mineru.p4.0000:2:1",
+          "series": "地区生产总值",
+          "category": "2020年",
+          "unit": "亿元",
+          "value": "2937.0"
+        },
+        {
+          "id": "mineru.p4.0000:3:1",
+          "series": "地区生产总值",
+          "category": "2021年",
+          "unit": "亿元",
+          "value": "3236.7"
+        },
+        {
+          "id": "mineru.p4.0000:4:1",
+          "series": "地区生产总值",
+          "category": "2022年",
+          "unit": "亿元",
+          "value": "3391.1"
+        },
+        {
+          "id": "mineru.p4.0000:5:1",
+          "series": "地区生产总值",
+          "category": "2023年",
+          "unit": "亿元",
+          "value": "3574.3"
+        },
+        {
+          "id": "mineru.p4.0000:1:2",
+          "series": "增速",
+          "category": "2019年",
+          "unit": "%",
+          "value": "6.0"
+        },
+        {
+          "id": "mineru.p4.0000:2:2",
+          "series": "增速",
+          "category": "2020年",
+          "unit": "%",
+          "value": "0.1"
+        },
+        {
+          "id": "mineru.p4.0000:3:2",
+          "series": "增速",
+          "category": "2021年",
+          "unit": "%",
+          "value": "8.0"
+        },
+        {
+          "id": "mineru.p4.0000:4:2",
+          "series": "增速",
+          "category": "2022年",
+          "unit": "%",
+          "value": "5.6"
+        },
+        {
+          "id": "mineru.p4.0000:5:2",
+          "series": "增速",
+          "category": "2023年",
+          "unit": "%",
+          "value": "5.0"
+        }
+      ]
+    },
+    "bc_015:candidate.block.p4.0004": {
+      "table_status": "parsed",
+      "block_id": "mineru.p4.0002",
+      "payload": "| 年份 | 一般公共预算收入 (亿元) | 增速 (%) |\n| --- | --- | --- |\n| 2019年 | 189.7 | 8.0 |\n| 2020年 | 181.4 | -4.4 |\n| 2021年 | 195.5 | 7.8 |\n| 2022年 | 184.9 | -5.4 |\n| 2023年 | 200.5 | 8.4 |",
+      "values": [
+        {
+          "id": "mineru.p4.0002:1:1",
+          "series": "一般公共预算收入",
+          "category": "2019年",
+          "unit": "亿元",
+          "value": "189.7"
+        },
+        {
+          "id": "mineru.p4.0002:2:1",
+          "series": "一般公共预算收入",
+          "category": "2020年",
+          "unit": "亿元",
+          "value": "181.4"
+        },
+        {
+          "id": "mineru.p4.0002:3:1",
+          "series": "一般公共预算收入",
+          "category": "2021年",
+          "unit": "亿元",
+          "value": "195.5"
+        },
+        {
+          "id": "mineru.p4.0002:4:1",
+          "series": "一般公共预算收入",
+          "category": "2022年",
+          "unit": "亿元",
+          "value": "184.9"
+        },
+        {
+          "id": "mineru.p4.0002:5:1",
+          "series": "一般公共预算收入",
+          "category": "2023年",
+          "unit": "亿元",
+          "value": "200.5"
+        },
+        {
+          "id": "mineru.p4.0002:1:2",
+          "series": "增速",
+          "category": "2019年",
+          "unit": "%",
+          "value": "8.0"
+        },
+        {
+          "id": "mineru.p4.0002:2:2",
+          "series": "增速",
+          "category": "2020年",
+          "unit": "%",
+          "value": "-4.4"
+        },
+        {
+          "id": "mineru.p4.0002:3:2",
+          "series": "增速",
+          "category": "2021年",
+          "unit": "%",
+          "value": "7.8"
+        },
+        {
+          "id": "mineru.p4.0002:4:2",
+          "series": "增速",
+          "category": "2022年",
+          "unit": "%",
+          "value": "-5.4"
+        },
+        {
+          "id": "mineru.p4.0002:5:2",
+          "series": "增速",
+          "category": "2023年",
+          "unit": "%",
+          "value": "8.4"
+        }
+      ]
+    },
+    "bc_015:candidate.block.p5.0002": {
+      "table_status": "parsed",
+      "block_id": "mineru.p5.0001",
+      "payload": "| Category | Percentage |\n| --- | --- |\n| 城乡社区支出 | 11.7% |\n| 教育支出 | 18.9% |\n| 社会保障和就业支出 | 24.2% |\n| 卫生健康支出 | 10.9% |\n| 一般公共服务支出 | 7.2% |\n| 其他科目合计 | 27.1% |",
+      "values": [
+        {
+          "id": "mineru.p5.0001:1:1",
+          "series": "Percentage",
+          "category": "城乡社区支出",
+          "unit": "%",
+          "value": "11.7%"
+        },
+        {
+          "id": "mineru.p5.0001:2:1",
+          "series": "Percentage",
+          "category": "教育支出",
+          "unit": "%",
+          "value": "18.9%"
+        },
+        {
+          "id": "mineru.p5.0001:3:1",
+          "series": "Percentage",
+          "category": "社会保障和就业支出",
+          "unit": "%",
+          "value": "24.2%"
+        },
+        {
+          "id": "mineru.p5.0001:4:1",
+          "series": "Percentage",
+          "category": "卫生健康支出",
+          "unit": "%",
+          "value": "10.9%"
+        },
+        {
+          "id": "mineru.p5.0001:5:1",
+          "series": "Percentage",
+          "category": "一般公共服务支出",
+          "unit": "%",
+          "value": "7.2%"
+        },
+        {
+          "id": "mineru.p5.0001:6:1",
+          "series": "Percentage",
+          "category": "其他科目合计",
+          "unit": "%",
+          "value": "27.1%"
+        }
+      ]
+    },
+    "bc_022:candidate.block.p2.0002": {
+      "sub_type": null,
+      "block_id": "mineru.p2.0000",
+      "raw_content": "\n\n**Panel 1**\n\n```mermaid\ngraph LR\n  subgraph \"Tow Band Production\"\n    A[\"CA/Solvent\"] --> B[\"Micro-/Nano-fibers\"]\n    C[\"Drawing\"] -.-> B\n    B --> D[\"Tow Band\"]\n  end\n\n  subgraph \"Remolding\"\n    E[\"Liquid Additives\"] --> F[\"Coating Device\"]\n    G[\"Cutter\"] -.-> F\n    H[\"Strip-shaped\"] -.-> F\n    I[\"Overlap\"] -.-> F\n  end\n\n  D --> E\n  F --> G\n  G --> H\n  H --> I\n```\n\n**Panel 2**\n\nPP\nCO₂\n\nDrawing\nCutter"
+    },
+    "bc_065:candidate.block.p1.0017": {
+      "sub_type": "text_image",
+      "block_id": "mineru.p1.0010",
+      "raw_content": "主开关\n剩余电流传感器\n配电开关\n配电出线（5芯电缆）\n电源进线\n箱体\n保护线(PE)排\n中性线(N)排",
+      "subtype_id": "mineru.p1.0010",
+      "fields": [
+        {
+          "id": "mineru.p1.0010:1",
+          "key": "main-switch",
+          "text": "主开关"
+        },
+        {
+          "id": "mineru.p1.0010:2",
+          "key": "sensor",
+          "text": "剩余电流传感器"
+        },
+        {
+          "id": "mineru.p1.0010:3",
+          "key": "distribution-switch",
+          "text": "配电开关"
+        },
+        {
+          "id": "mineru.p1.0010:4",
+          "key": "power-out",
+          "text": "配电出线（5芯电缆）"
+        },
+        {
+          "id": "mineru.p1.0010:5",
+          "key": "power-in",
+          "text": "电源进线"
+        },
+        {
+          "id": "mineru.p1.0010:6",
+          "key": "enclosure",
+          "text": "箱体"
+        },
+        {
+          "id": "mineru.p1.0010:7",
+          "key": "protective-bar",
+          "text": "保护线(PE)排"
+        },
+        {
+          "id": "mineru.p1.0010:8",
+          "key": "neutral-bar",
+          "text": "中性线(N)排"
+        }
+      ]
+    },
+    "bc_065:candidate.block.p1.0018": {
+      "sub_type": "text_image",
+      "block_id": "mineru.p1.0011",
+      "raw_content": "主开关\n电源进线\n箱体\n保护线(PH)排\n中性线(N)排\n配电开关\n剩余电流传感器\n配电出线(5芯电缆)",
+      "subtype_id": "mineru.p1.0011",
+      "fields": [
+        {
+          "id": "mineru.p1.0011:1",
+          "key": "main-switch",
+          "text": "主开关"
+        },
+        {
+          "id": "mineru.p1.0011:2",
+          "key": "power-in",
+          "text": "电源进线"
+        },
+        {
+          "id": "mineru.p1.0011:3",
+          "key": "enclosure",
+          "text": "箱体"
+        },
+        {
+          "id": "mineru.p1.0011:4",
+          "key": "protective-bar",
+          "text": "保护线(PH)排"
+        },
+        {
+          "id": "mineru.p1.0011:5",
+          "key": "neutral-bar",
+          "text": "中性线(N)排"
+        },
+        {
+          "id": "mineru.p1.0011:6",
+          "key": "distribution-switch",
+          "text": "配电开关"
+        },
+        {
+          "id": "mineru.p1.0011:7",
+          "key": "sensor",
+          "text": "剩余电流传感器"
+        },
+        {
+          "id": "mineru.p1.0011:8",
+          "key": "power-out",
+          "text": "配电出线(5芯电缆)"
+        }
+      ]
+    },
+    "bc_059:candidate.block.p1.0014": {
+      "sub_type": null,
+      "block_id": "mineru.p1.0011",
+      "raw_content": "音量调节",
+      "fields": [
+        {
+          "id": "mineru.p1.0011:1",
+          "key": "dial-label",
+          "text": "音量调节"
+        }
+      ]
+    },
+    "bc_078:candidate.block.p1.0001": {
+      "sub_type": "natural_image",
+      "block_id": "mineru.p1.0001",
+      "raw_content": "Scenic view of a calm blue salt lake reflecting with white clouds and people on the water surface (no text or symbols visible)",
+      "subtype_id": "mineru.p1.0001",
+      "fields": [],
+      "image_available": true
+    },
+    "bc_078:candidate.block.p1.0002": {
+      "sub_type": "natural_image",
+      "block_id": "mineru.p1.0002",
+      "raw_content": "Scenic view of a large salt pool with reflective water and scattered clouds under a blue sky (no text or symbols visible)",
+      "subtype_id": "mineru.p1.0002",
+      "fields": [],
+      "image_available": true
+    },
+    "bc_108:candidate.block.p1.0004": {
+      "fields": [
+        {
+          "id": "bc108/ft/node/A",
+          "key": "start",
+          "text": "流程开始"
+        },
+        {
+          "id": "bc108/ft/node/B",
+          "key": "apply",
+          "text": "申办人员或系统管理员向服务台提出申证申请"
+        },
+        {
+          "id": "bc108/ft/node/C",
+          "key": "review",
+          "text": "服务台录入电子工单审批"
+        },
+        {
+          "id": "bc108/ft/node/D",
+          "key": "end",
+          "text": "流程结束"
+        },
+        {
+          "id": "bc108/ft/node/E",
+          "key": "sign",
+          "text": "签署《机房知悉事项说明书》"
+        },
+        {
+          "id": "bc108/ft/node/F",
+          "key": "issue",
+          "text": "领取机房临时工作证"
+        },
+        {
+          "id": "bc108/ft/branch/4",
+          "key": "rejected",
+          "text": "审核未通过"
+        },
+        {
+          "id": "bc108/ft/branch/5",
+          "key": "approved",
+          "text": "审核通过"
+        }
+      ],
+      "relations": [
+        {
+          "id": "bc108/ft/edge/2",
+          "from": "start",
+          "to": "apply"
+        },
+        {
+          "id": "bc108/ft/edge/3",
+          "from": "apply",
+          "to": "review"
+        },
+        {
+          "id": "bc108/ft/edge/4",
+          "from": "review",
+          "to": "end"
+        },
+        {
+          "id": "bc108/ft/edge/5",
+          "from": "review",
+          "to": "sign"
+        },
+        {
+          "id": "bc108/ft/edge/6",
+          "from": "sign",
+          "to": "issue"
+        },
+        {
+          "id": "bc108/ft/edge/7",
+          "from": "issue",
+          "to": "end"
+        }
+      ],
+      "raw_content": "```mermaid\ngraph TD\n  A([\"流程开始\"]) --> B[\"申办人员或系统管理员向服务台提出申证申请\"]\n  B --> C{\"服务台录入电子工单审批\"}\n  C -->|审核未通过| D([\"流程结束\"])\n  C -->|审核通过| E[\"签署《机房知悉事项说明书》\"]\n  E --> F[\"领取机房临时工作证\"]\n  F --> D\n```",
+      "source_ir_sha256": "bab2e8c4bac9176139b480bffb3eec312419b2bd53f884acd4ec9e8a7c3e69d9",
+      "sub_type": "flowchart",
+      "subtype_id": "bc108/ft/mineru.p1.0000"
+    }
+  },
+  "captures": {
+    "bc_003": {
+      "appendix": "9eaa1a927c318e1ba4369b0fd1d153ec3f6c30d39a7e9a3911998e0e91a58539",
+      "off": "9eaa1a927c318e1ba4369b0fd1d153ec3f6c30d39a7e9a3911998e0e91a58539"
+    },
+    "bc_010": {
+      "appendix": "34ea0cf886fb9d3a47e044d2108e6d9a5cebda35110dea7a2b477cd54a3679bd",
+      "off": "34ea0cf886fb9d3a47e044d2108e6d9a5cebda35110dea7a2b477cd54a3679bd"
+    },
+    "bc_016": {
+      "appendix": "0d3675fd97f7807afee95fc11071cbdd8258f1427f7ca64752f7a7290c9ad341",
+      "off": "0d3675fd97f7807afee95fc11071cbdd8258f1427f7ca64752f7a7290c9ad341"
+    },
+    "bc_017": {
+      "appendix": "75093701c321649797732701550a7d41bad70657235eceebe2ae8eb3cad44244",
+      "off": "75093701c321649797732701550a7d41bad70657235eceebe2ae8eb3cad44244"
+    },
+    "bc_022": {
+      "header_footer": "b8b1947d3ed03b4d2477338cfca1fea5857bb07f95cc9eecf9e18b287e83db09",
+      "off": "b8b1947d3ed03b4d2477338cfca1fea5857bb07f95cc9eecf9e18b287e83db09",
+      "appendix": "b8b1947d3ed03b4d2477338cfca1fea5857bb07f95cc9eecf9e18b287e83db09"
+    },
+    "bc_018": {
+      "header_footer": "aa5fcb55f6a38328d4f4e74857f9c41f7d65b56325fb028422a3fd018fb0368f",
+      "off": "aa5fcb55f6a38328d4f4e74857f9c41f7d65b56325fb028422a3fd018fb0368f"
+    },
+    "bc_091": {
+      "header_footer": "f57c14d76c2d62fe695e2719c7e4773411b6ba5b160bf45a1bf596ff4f6f1cf9",
+      "off": "f57c14d76c2d62fe695e2719c7e4773411b6ba5b160bf45a1bf596ff4f6f1cf9"
+    }
+  },
+  "source_evidence": [
+    {
+      "path": "artifacts/legacy129-subimage-20261123/rubric-switches/ft-evidence.json",
+      "sha256": "a8c945c712706a29de05a6cd8c708ea45f3924a044b8ec769dcc3ecdf0395b9a",
+      "source_model": "ft",
+      "stage": "replay",
+      "gt_path": "artifacts/legacy129-subimage-20261123/rubric-switches/gt.json",
+      "gt_sha256": "130f2f0aa862bef88824ae6df4054b804fd1527f7809936f203a9b55c67ee82d"
+    },
+    {
+      "path": "artifacts/legacy129-subimage-20261123/rubric-charts/all-pilot-charts/ft-adapted-evidence.json",
+      "sha256": "75f21c17974244750b308246fe1118560d3faffcd581a25db182a86c992e1642",
+      "source_model": "ft-adapted",
+      "stage": "replay",
+      "gt_path": "artifacts/legacy129-subimage-20261123/rubric-charts/all-pilot-charts/gt.json",
+      "gt_sha256": "9fab04ec3c1d95284e2587ab9bfcaa8e3db8e2beddaea84b3186d2ad18a37bdc"
+    },
+    {
+      "path": "artifacts/legacy129-subimage-20261123/model-gap-v2/ft-adapted-images.json",
+      "sha256": "96118e0c6eb88d4110e76879c28c0f56a757b98ada056371bc2e41e697e9fc58",
+      "source_model": "ft-adapted",
+      "stage": "replay",
+      "gt_path": "artifacts/legacy129-subimage-20261123/model-gap-v2/image-controls-gt.json",
+      "gt_sha256": "ac401efb00ebb5c39e430e47bf80e6eefc08bcb9f0dbe653f39375334010ad68"
+    },
+    {
+      "path": "artifacts/legacy129-subimage-20261123/analysis-units-review-20261124/flowchart-bc108/ft-evidence.json",
+      "sha256": "efd70010660080d3ba62c918e9ce605634fa378c385ac2ad1f86f2ad93e0df5e",
+      "source_model": "3.1-ft",
+      "stage": "replay",
+      "gt_path": "artifacts/legacy129-subimage-20261123/analysis-units-review-20261124/flowchart-bc108/gt.json",
+      "gt_sha256": "e6f688361a484f1f9181ef2aecae5bf6afeae6f245e5c553a0d3fdca54596457"
+    }
+  ],
+  "scope_note": "组合已有 replay 证据；未覆盖的 GT case 保持 evidence_missing，不代表模型失败。"
+}

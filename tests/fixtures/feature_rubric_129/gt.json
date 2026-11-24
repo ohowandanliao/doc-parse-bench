@@ -1,0 +1,67 @@
+{
+  "schema_version": "doc-parse-bench.feature-rubric-gt.v1",
+  "gt_version": "legacy-129-feature-v3",
+  "split": "calibration",
+  "cases": [
+    {"id": "appendix-p15", "document_id": "bc_003", "page": 15, "feature": "appendix", "anchors": ["附录 A", "功能点计数模板见表 A.1。"]},
+    {"id": "appendix-p20", "document_id": "bc_003", "page": 20, "feature": "appendix", "anchors": ["附录 C", "项目名称"]},
+    {"id": "independent-references", "document_id": "bc_003", "page": 35, "feature": "appendix", "protected": true, "source_id": "p35:独立参考文献"},
+    {
+      "id": "masthead", "document_id": "bc_022", "page": 1, "feature": "header_footer",
+      "blocks": [
+        {"id": "candidate.block.p1.0000", "type": "header", "text": "RSC Advances"},
+        {"id": "candidate.block.p1.0001", "type": "header_image"},
+        {"id": "candidate.block.p1.0002", "type": "header", "text": "ROYAL SOCIETY"},
+        {"id": "candidate.block.p1.0003", "type": "header", "text": "OF CHEMISTRY"}
+      ]
+    },
+    {
+      "id": "process-labels", "document_id": "bc_022", "page": 2, "feature": "image",
+      "source_id": "candidate.block.p2.0002", "sub_type": "flowchart",
+      "fields": [
+        {"key": "material", "text": "CA/Solvent"},
+        {"key": "upper-cutter", "text": "Cutter"},
+        {"key": "extruder", "text": "Extrusion Device"}
+      ]
+    },
+    {
+      "id": "draw-resistance", "document_id": "bc_022", "page": 4, "feature": "chart",
+      "source_id": "candidate.block.p4.0012",
+      "values": [
+        {"series": "Draw Resistance", "category": "Control", "value": "3874", "unit": "Pa"},
+        {"series": "Draw Resistance", "category": "EP0", "value": "23375", "unit": "Pa"},
+        {"series": "Draw Resistance", "category": "EP1", "value": "15030", "unit": "Pa"},
+        {"series": "Draw Resistance", "category": "EP2", "value": "220", "unit": "Pa"},
+        {"series": "Draw Resistance", "category": "EP3", "value": "2625", "unit": "Pa"}
+      ]
+    },
+    {
+      "id": "open-cell", "document_id": "bc_022", "page": 4, "feature": "chart",
+      "source_id": "candidate.block.p4.0013",
+      "values": [
+        {"series": "Open-cell Content", "category": "Control", "value": "92.18", "unit": "%"},
+        {"series": "Open-cell Content", "category": "EP0", "value": "86.11", "unit": "%"},
+        {"series": "Open-cell Content", "category": "EP1", "value": "91.29", "unit": "%"},
+        {"series": "Open-cell Content", "category": "EP2", "value": "84.39", "unit": "%"},
+        {"series": "Open-cell Content", "category": "EP3", "value": "93.87", "unit": "%"}
+      ]
+    },
+    {
+      "id": "wind-share", "document_id": "bc_091", "page": 1, "feature": "chart",
+      "source_id": "candidate.block.p1.0004",
+      "unscored": [{"series": "理论蕴藏量", "unit": "亿kWh"}],
+      "values": [
+        {"series": "占比", "category": "D-1", "value": "7.46", "unit": "%"},
+        {"series": "占比", "category": "D-2", "value": "11.15", "unit": "%"},
+        {"series": "占比", "category": "D-3", "value": "14.76", "unit": "%"},
+        {"series": "占比", "category": "1", "value": "25.35", "unit": "%"},
+        {"series": "占比", "category": "2", "value": "29.17", "unit": "%"},
+        {"series": "占比", "category": "3", "value": "7.96", "unit": "%"},
+        {"series": "占比", "category": "4", "value": "2.39", "unit": "%"},
+        {"series": "占比", "category": "5", "value": "0.99", "unit": "%"},
+        {"series": "占比", "category": "6", "value": "0.54", "unit": "%"},
+        {"series": "占比", "category": "7", "value": "0.22", "unit": "%"}
+      ]
+    }
+  ]
+}

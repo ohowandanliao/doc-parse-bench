@@ -20,6 +20,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .annotations import import_annotations
+from .feature_contract import FEATURE_GT_VERSION
 from .io import fresh_directory, read_json, sha256, write_json
 from .markdown import parse_markdown
 from .schema import (
@@ -34,12 +35,12 @@ from .schema import (
 
 FEATURE_GT_SCHEMA = "doc-parse-bench.feature-gt.v1"
 FEATURE_EVAL_SCHEMA = "doc-parse-bench.feature-eval.v1"
-DEFAULT_DATASET_VERSION = "legacy-features-20261118"
-FEATURE_GT_VERSION = "legacy-129-feature-v3"
+DEFAULT_DATASET_VERSION = "legacy-features-20261119"
 LEGACY_MARKDOWN_GT_VERSION = "legacy-129-markdown-v1"
 ANNOTATED_GT_VERSION = "legacy-129-annotated-v2"
 FEATURE_SUBSET_SCHEMA = "doc-parse-bench.feature-subset.v1"
 FEATURES = ("appendix", "header_footer", "image_analysis", "chart_analysis")
+REVIEWED_APPENDIX_SOURCE = "manual_pdf_review"
 # Keep the broad marker for the old Markdown audit, but use the exact
 # PDF2Text filter vocabulary for the behavior denominator.  PDF2Text's
 # _find_appendix_page only accepts titles beginning with 附录/Appendix and
@@ -50,7 +51,8 @@ APPENDIX_START_RE = re.compile(r"^\s*(?:附录|appendix)", re.I)
 APPENDIX_TITLE_TYPES = {"title", "paragraph_title", "doc_title"}
 FIGURE_CAPTION_RE = re.compile(r"^\s*(?:图|fig(?:ure)?\.?)[\sA-Za-z0-9.-]*", re.I)
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)]*)\)|<img\b", re.I)
-MARGINAL = set(MARGINAL_TYPES)
+MARGINAL_IMAGE_TYPES = {"header_image", "footer_image"}
+MARGINAL = MARGINAL_TYPES | MARGINAL_IMAGE_TYPES
 VISUAL = set(VISUAL_TYPES)
 
 
@@ -73,6 +75,16 @@ def _similarity(left: str, right: str) -> float:
     if not left or not right:
         return 0.0
     return difflib.SequenceMatcher(a=left, b=right, autojunk=False).ratio()
+
+
+def _iou(left: list | None, right: list | None) -> float:
+    if not left or not right:
+        return 0.0
+    x1, y1, x2, y2 = left
+    a1, b1, a2, b2 = right
+    intersection = max(0, min(x2, a2) - max(x1, a1)) * max(0, min(y2, b2) - max(y1, b1))
+    union = (x2 - x1) * (y2 - y1) + (a2 - a1) * (b2 - b1) - intersection
+    return intersection / union if union else 0.0
 
 
 def _block_payload(block: Block) -> str:
@@ -213,9 +225,7 @@ def _new_document_features(document: Document) -> dict:
         for block in page.blocks
         if block.type in MARGINAL
     ]
-    header_footer_blocks = [
-        item for item in marginal_blocks if item["type"] in {"header", "footer"}
-    ]
+    header_footer_blocks = [item for item in marginal_blocks if item["type"] != "page_number"]
     page_number_blocks = [item for item in marginal_blocks if item["type"] == "page_number"]
     visual_blocks = [
         {
@@ -311,6 +321,40 @@ def _old_names(old_groundtruth: Path) -> list[Path]:
     return paths
 
 
+def _apply_appendix_override(document_id: str, features: dict, override: dict) -> None:
+    ranges = override.get("appendix_page_ranges") if isinstance(override, dict) else None
+    if not isinstance(ranges, list):
+        raise ValueError(f"{document_id} 的附录补丁必须提供 appendix_page_ranges")
+    pages = set()
+    for bounds in ranges:
+        if (
+            not isinstance(bounds, list)
+            or len(bounds) != 2
+            or any(type(page) is not int for page in bounds)
+            or not 1 <= bounds[0] <= bounds[1] <= features["pages"]
+        ):
+            raise ValueError(f"{document_id} 的附录页码范围无效：{bounds!r}")
+        pages.update(range(bounds[0], bounds[1] + 1))
+    features["appendix"].update(
+        has_appendix=bool(pages), start_page=min(pages, default=None), pages=sorted(pages)
+    )
+
+
+def _apply_block_overrides(document: Document, overrides: dict) -> None:
+    blocks = {block.id: block for page in document.pages for block in page.blocks}
+    for block_id, override in overrides.items():
+        block = blocks.get(block_id)
+        if block is None or block.type != override["from_type"]:
+            raise ValueError(f"GT 块补丁与结构来源不符：{document.id}/{block_id}")
+        if "bbox" in override:
+            left, top, right, bottom = override["bbox"]
+            if not (0 <= left < right <= 1 and 0 <= top < bottom <= 1):
+                raise ValueError(f"GT 块补丁坐标无效：{document.id}/{block_id}")
+            block.bbox = override["bbox"]
+        block.type = override["type"]
+        block.text = override.get("text", block.text)
+
+
 def build_feature_ground_truth(
     new_source: Path,
     old_groundtruth: Path,
@@ -318,6 +362,8 @@ def build_feature_ground_truth(
     old_pdf_dir: Path | None = None,
     dataset_version: str = DEFAULT_DATASET_VERSION,
     include_structured: bool = False,
+    appendix_overrides: Path | None = None,
+    block_overrides: Path | None = None,
 ) -> dict:
     """Materialize the compact v3 GT and an old/new comparison report.
 
@@ -325,6 +371,12 @@ def build_feature_ground_truth(
     v3 therefore keeps only the feature records by default; ``include_structured``
     is a debugging option for a local expanded copy.
     """
+    overrides = read_json(appendix_overrides) if appendix_overrides is not None else {}
+    reviewed_blocks = read_json(block_overrides) if block_overrides is not None else {}
+    if not isinstance(overrides, dict):
+        raise ValueError("附录补丁必须是以文档 ID 为键的 JSON 对象")
+    if not isinstance(reviewed_blocks, dict):
+        raise ValueError("GT 块补丁必须是以文档 ID 为键的 JSON 对象")
     old_paths = _old_names(old_groundtruth)
     output = fresh_directory(output)
     old_pdf_dir = old_pdf_dir or old_groundtruth.parent / "dataset" / "pdf" / "source"
@@ -341,6 +393,13 @@ def build_feature_ground_truth(
     documents.sort(key=lambda doc: _natural_id(doc.id))
     if len(documents) != len(old_paths):
         raise ValueError(f"新旧 GT 文档数不一致：new={len(documents)}, old={len(old_paths)}")
+    document_ids = {document.id for document in documents}
+    unknown = overrides.keys() - document_ids
+    if unknown:
+        raise ValueError(f"附录补丁包含未知文档：{', '.join(sorted(unknown))}")
+    unknown = reviewed_blocks.keys() - document_ids
+    if unknown:
+        raise ValueError(f"GT 块补丁包含未知文档：{', '.join(sorted(unknown))}")
     if old_pdf_dir.exists():
         import pypdfium2 as pdfium
 
@@ -360,7 +419,12 @@ def build_feature_ground_truth(
     new_summary = Counter()
     for document, old_path in zip(documents, old_paths):
         old = _old_markdown_stats(old_path)
+        if document.id in reviewed_blocks:
+            _apply_block_overrides(document, reviewed_blocks[document.id])
         new = _new_document_features(document)
+        reviewed_appendix = document.id in overrides
+        if reviewed_appendix:
+            _apply_appendix_override(document.id, new, overrides[document.id])
         old_summary.update(
             {
                 "documents": 1,
@@ -395,7 +459,11 @@ def build_feature_ground_truth(
                 "old_gt": old,
                 "new_gt": new,
                 "feature_sources": {
-                    "appendix": "new_structured_annotation; old_markdown_cross_check",
+                    "appendix": (
+                        REVIEWED_APPENDIX_SOURCE
+                        if reviewed_appendix
+                        else "new_structured_annotation; old_markdown_cross_check"
+                    ),
                     "header_footer": "new_marginal_blocks; old_markdown_cross_check",
                     "image_analysis": "new_image_and_seal_blocks; old_placeholder_cross_check",
                     "chart_analysis": "new_chart_locations + old_markdown_content_candidate",
@@ -455,7 +523,7 @@ def build_feature_ground_truth(
     }
     summary["coverage"] = {
         "appendix": {
-            "status": "supported_boundary_proxy",
+            "status": "mixed_reviewed_and_boundary_proxy" if overrides else "supported_boundary_proxy",
             "documents": int(new_summary["appendix_documents"]),
             "pages": sum(
                 len(record["new_gt"]["appendix"]["pages"])
@@ -529,6 +597,18 @@ def build_feature_ground_truth(
             "issues": import_report["issues"],
         },
     }
+    if appendix_overrides is not None:
+        manifest["source"]["appendix_overrides"] = {
+            "path": str(appendix_overrides.resolve()),
+            "sha256": sha256(appendix_overrides),
+            "reviewed_documents": sorted(overrides),
+        }
+    if block_overrides is not None:
+        manifest["source"]["block_overrides"] = {
+            "path": str(block_overrides.resolve()),
+            "sha256": sha256(block_overrides),
+            "reviewed_documents": sorted(reviewed_blocks),
+        }
     write_json(output / "manifest.json", manifest)
     write_json(output / "records.json", {"schema_version": FEATURE_GT_SCHEMA, "records": records})
     (output / "comparison.md").write_text(_comparison_markdown(manifest), encoding="utf-8")
@@ -544,6 +624,11 @@ def build_feature_ground_truth(
 def _comparison_markdown(manifest: dict) -> str:
     summary = manifest["summary"]
     old, new = summary["old"], summary["new"]
+    appendix_rule = (
+        "已人工复核的文档按附录页码补丁；其余仍采用 PDF2Text 后半段标题截断边界作为代理。"
+        if manifest.get("source", {}).get("appendix_overrides", {}).get("reviewed_documents")
+        else "附录边界按 PDF2Text 的标题开头及后半段规则计算。"
+    )
     lines = [
         "# legacy 129 四项能力 GT 对账",
         "",
@@ -551,7 +636,7 @@ def _comparison_markdown(manifest: dict) -> str:
         "",
         "## 结论",
         "",
-        "新结构化 GT 作为标题、附录、页眉页脚和视觉块位置的主 GT。它有人工整页快照和标题同步修订，能保留页码、块类型、层级、顺序和坐标。附录边界严格按 PDF2Text 的标题开头及后半段规则计算。",
+        "新结构化 GT 作为标题、附录、页眉页脚和视觉块位置的主 GT。它有人工整页快照和标题同步修订，能保留页码、块类型、层级、顺序和坐标。" + appendix_rule,
         "",
         "旧 Markdown 作为视觉内容的来源审计：它有图片占位符和混合的表格转录，但没有可靠的页眉/页脚类型；其中表格未逐项标注为 chart，不能直接当作精确 chart-content GT。",
         "",
@@ -572,7 +657,7 @@ def _comparison_markdown(manifest: dict) -> str:
         "",
         "## 计分边界",
         "",
-        "- `appendix`：复现 PDF2Text 的 `附录`/`Appendix` 标题开头且位于文档后半段的边界；`附件` 不进入此分母。",
+        f"- `appendix`：{appendix_rule}",
         "- `header_footer`：按新 GT 的 header/footer 和 page_number 边缘块做匹配，并分别报告页码；旧 Markdown 只作文本交叉核对。",
         "- `image_analysis`：主分母统计 image＋seal，并分别报告两类；seal 是 image 的视觉子类型，不是独立开关。图片占位符本身不代表图内文字已识别。",
         "- `chart_analysis`：同时报告 chart 定位和有实际文本/表格内容的 chart；当前旧内容是候选 GT，未审核前不宣称精确内容分。",
@@ -771,24 +856,31 @@ def _match_blocks(
     used: set[int] = set()
     matched = 0
     for item in expected:
+        visual = item["type"] in MARGINAL_IMAGE_TYPES
         candidates = [
             (index, (page, block))
             for index, (page, block) in enumerate(predicted)
             if index not in used
             and (not require_type or block.type == item["type"])
             and (not page_aware or page == item["page"])
+            and (not visual or (page_aware and block.type == item["type"]))
         ]
         if not candidates:
             continue
         scored = sorted(
             (
-                (_similarity(item.get("text", ""), candidate[1].text), index)
+                (
+                    _iou(item.get("bbox"), candidate[1].bbox)
+                    if visual
+                    else _similarity(item.get("text", ""), candidate[1].text),
+                    index,
+                )
                 for index, candidate in candidates
             ),
             reverse=True,
         )
         score, index = scored[0]
-        if score >= threshold or (not item.get("text") and not predicted[index][1].text):
+        if score >= (0.5 if visual else threshold):
             used.add(index)
             matched += 1
     return matched, len(expected)
@@ -856,10 +948,7 @@ def _feature_scores(record: dict, document: Document | None) -> dict:
     page_aware = document.metadata.get("page_boundaries") == "explicit"
     response_pages = document.metadata.get("reported_pages")
     if response_pages is not None and appendix_pages:
-        # keep_appendix removes a suffix, so the reported retained-page count
-        # directly determines how much of the appendix suffix survived.
-        retained_end = min(int(response_pages), max(appendix_pages))
-        observed_pages = max(0, retained_end - min(appendix_pages) + 1)
+        observed_pages = sum(page <= int(response_pages) for page in appendix_pages)
     else:
         observed_pages = sum(
             any(

@@ -1,0 +1,58 @@
+{
+  "schema_version": "doc-parse-bench.feature-rubric-evidence.v1",
+  "gt_sha256": "b80be80d16e587b55911822a2dafd8a688534731662a051330c16ae9b026c156",
+  "model": "3.1-ft",
+  "stage": "replay",
+  "config": {"mineru_provider": "mineru3", "relevel_titles": true, "title_rules": false},
+  "captures": {
+    "bc_003": {
+      "off": "9eaa1a927c318e1ba4369b0fd1d153ec3f6c30d39a7e9a3911998e0e91a58539",
+      "appendix": "9eaa1a927c318e1ba4369b0fd1d153ec3f6c30d39a7e9a3911998e0e91a58539"
+    },
+    "bc_022": {
+      "off": "b8b1947d3ed03b4d2477338cfca1fea5857bb07f95cc9eecf9e18b287e83db09",
+      "header_footer": "b8b1947d3ed03b4d2477338cfca1fea5857bb07f95cc9eecf9e18b287e83db09"
+    }
+  },
+  "cases": {
+    "appendix-p15": {"on_anchors": ["附录 A", "功能点计数模板见表 A.1。"], "off_residual": true},
+    "appendix-p20": {"on_anchors": ["附录 C", "项目名称"], "off_residual": false},
+    "independent-references": {"on_state": "complete", "off_state": "missing"},
+    "masthead": {
+      "on_blocks": [
+        {"id": "mineru.p1.0015", "source_id": "candidate.block.p1.0000", "text": "RSC Advances"},
+        {"id": "mineru.p1.0016:1", "source_id": "candidate.block.p1.0002", "text": "ROYAL SOCIETY"},
+        {"id": "mineru.p1.0016:2", "source_id": "candidate.block.p1.0003", "text": "OF CHEMISTRY"}
+      ],
+      "off_residual_ids": []
+    },
+    "process-labels": {"fields": []},
+    "draw-resistance": {"table_status": "missing"},
+    "open-cell": {"table_status": "missing"},
+    "wind-share": {
+      "table_status": "parsed",
+      "values": [
+        {"id": "mineru.p1.0002:D-1:2", "series": "占比", "category": "D-1", "value": "7.46%", "unit": "%"},
+        {"id": "mineru.p1.0002:D-2:2", "series": "占比", "category": "D-2", "value": "11.15%", "unit": "%"},
+        {"id": "mineru.p1.0002:D-3:2", "series": "占比", "category": "D-3", "value": "14.76%", "unit": "%"},
+        {"id": "mineru.p1.0002:1:2", "series": "占比", "category": "1", "value": "25.35%", "unit": "%"},
+        {"id": "mineru.p1.0002:2:2", "series": "占比", "category": "2", "value": "29.17%", "unit": "%"},
+        {"id": "mineru.p1.0002:3:2", "series": "占比", "category": "3", "value": "7.96%", "unit": "%"},
+        {"id": "mineru.p1.0002:4:2", "series": "占比", "category": "4", "value": "2.39%", "unit": "%"},
+        {"id": "mineru.p1.0002:5:2", "series": "占比", "category": "5", "value": "0.99%", "unit": "%"},
+        {"id": "mineru.p1.0002:6:2", "series": "占比", "category": "6", "value": "0.54%", "unit": "%"},
+        {"id": "mineru.p1.0002:7:2", "series": "占比", "category": "7", "value": "0.22%", "unit": "%"},
+        {"id": "mineru.p1.0002:D-1:1", "series": "理论蕴藏量", "category": "D-1", "value": "~1300", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:D-2:1", "series": "理论蕴藏量", "category": "D-2", "value": "~1900", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:D-3:1", "series": "理论蕴藏量", "category": "D-3", "value": "~2500", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:1:1", "series": "理论蕴藏量", "category": "1", "value": "~4200", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:2:1", "series": "理论蕴藏量", "category": "2", "value": "~4900", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:3:1", "series": "理论蕴藏量", "category": "3", "value": "~1300", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:4:1", "series": "理论蕴藏量", "category": "4", "value": "~400", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:5:1", "series": "理论蕴藏量", "category": "5", "value": "~150", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:6:1", "series": "理论蕴藏量", "category": "6", "value": "~80", "unit": "亿kWh"},
+        {"id": "mineru.p1.0002:7:1", "series": "理论蕴藏量", "category": "7", "value": "~50", "unit": "亿kWh"}
+      ]
+    }
+  }
+}
