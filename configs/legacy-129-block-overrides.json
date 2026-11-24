@@ -1,0 +1,18 @@
+{
+  "bc_001": {
+    "candidate.block.p1.0009": {"from_type": "image", "type": "chart"}
+  },
+  "bc_017": {
+    "candidate.block.p12.0003": {
+      "from_type": "image",
+      "type": "chart",
+      "bbox": [0.2288477, 0.089, 0.761, 0.279]
+    }
+  },
+  "bc_018": {
+    "candidate.block.p5.0000": {"from_type": "header", "type": "text"}
+  },
+  "bc_022": {
+    "candidate.block.p1.0001": {"from_type": "header", "type": "header_image", "text": ""}
+  }
+}

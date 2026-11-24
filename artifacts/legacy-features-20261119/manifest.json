@@ -1,0 +1,184 @@
+{
+  "schema_version": "doc-parse-bench.feature-gt.v1",
+  "kind": "feature_ground_truth",
+  "gt_version": "legacy-129-feature-v3",
+  "gt_lineage": {
+    "legacy_markdown": {
+      "version": "legacy-129-markdown-v1",
+      "path": "/Users/yixuan/Documents/doc-parse-bench/data/legacy/groundtruth",
+      "role": "historical_content_and_chart_candidate_source"
+    },
+    "annotated_structured": {
+      "version": "legacy-129-annotated-v2",
+      "path": "/Users/yixuan/Documents/doc-parse-bench/legacy_129_pack_20261119.tar.gz",
+      "role": "title_and_structure_primary_ground_truth"
+    },
+    "feature_derived": {
+      "version": "legacy-129-feature-v3",
+      "role": "four_pdf2text_feature_evaluation_only"
+    }
+  },
+  "dataset_version": "legacy-features-20261119",
+  "documents": 129,
+  "source": {
+    "new_source": "/Users/yixuan/Documents/doc-parse-bench/legacy_129_pack_20261119.tar.gz",
+    "new_source_sha256": "a4009008e7ee8845c460eef4cf5d0bef284b1b7f1d51598109bd7be1f4db882c",
+    "old_groundtruth": "/Users/yixuan/Documents/doc-parse-bench/data/legacy/groundtruth",
+    "old_pdf_dir": "/Users/yixuan/Documents/doc-parse-bench/data/legacy/dataset/pdf/source",
+    "document_mapping": "natural bc_001..bc_129 order to sorted old Markdown stems; PDF page counts verified",
+    "appendix_overrides": {
+      "path": "/Users/yixuan/Documents/doc-parse-bench/configs/legacy-129-appendix-overrides.json",
+      "sha256": "873c2911bd9f09f9f296fb0ea1850c205cc194d2d397afe3603c4e13ffa26672",
+      "reviewed_documents": [
+        "bc_003",
+        "bc_010",
+        "bc_016",
+        "bc_017"
+      ]
+    },
+    "block_overrides": {
+      "path": "/Users/yixuan/Documents/doc-parse-bench/configs/legacy-129-block-overrides.json",
+      "sha256": "8e23fd8e4073bb631695167ce555633e11e2f387b46cf500910acee638818079",
+      "reviewed_documents": ["bc_001", "bc_017", "bc_018", "bc_022"]
+    }
+  },
+  "features": [
+    "appendix",
+    "header_footer",
+    "image_analysis",
+    "chart_analysis"
+  ],
+  "materialization": {
+    "structured_documents_included": false,
+    "structured_source_retained_in": "/Users/yixuan/Documents/doc-parse-bench/legacy_129_pack_20261119.tar.gz"
+  },
+  "summary": {
+    "old": {
+      "documents": 129,
+      "heading_count": 580,
+      "image_references": 104,
+      "image_reference_documents": 37,
+      "image_placeholder_count": 57,
+      "table_count": 304,
+      "appendix_documents": 2,
+      "chart_candidate_documents": 12
+    },
+    "new": {
+      "documents": 129,
+      "pages": 372,
+      "titles": 593,
+      "marginal_blocks": 800,
+      "header_footer_blocks": 527,
+      "page_number_blocks": 273,
+      "image_blocks": 118,
+      "seal_blocks": 33,
+      "chart_blocks": 73,
+      "visual_blocks": 191,
+      "appendix_documents": 4,
+      "patch_pages": 314,
+      "chain_pages": 58
+    },
+    "comparison": {
+      "title": {
+        "preferred": "new",
+        "reason": "new GT has block-level types, levels, bboxes, and title-sync edits; old Markdown only has headings"
+      },
+      "appendix": {
+        "preferred": "new",
+        "reason": "new GT gives page/block boundaries; old Markdown is a useful text cross-check"
+      },
+      "header_footer": {
+        "preferred": "new",
+        "reason": "old Markdown does not retain reliable header/footer/page-number types"
+      },
+      "image_analysis": {
+        "preferred": "hybrid",
+        "reason": "new GT supplies visual block locations; old Markdown only supplies image placeholders and no image-content transcription"
+      },
+      "chart_analysis": {
+        "preferred": "hybrid_candidate",
+        "reason": "new GT supplies chart locations but chart text/html is empty; old Markdown contains mixed chart/table conversions that still require manual chart-level review",
+        "review_required": true
+      }
+    },
+    "coverage": {
+      "appendix": {
+        "status": "mixed_reviewed_and_boundary_proxy",
+        "documents": 4,
+        "pages": 51,
+        "old_markdown_cross_check_documents": 2
+      },
+      "header_footer": {
+        "status": "structured_retention_proxy",
+        "new_header_footer_blocks": 527,
+        "new_page_number_blocks": 273,
+        "old_markdown_typed_blocks": 0
+      },
+      "image_analysis": {
+        "status": "visual_block_retention_proxy",
+        "new_image_and_seal_blocks": 118,
+        "new_image_blocks": 85,
+        "new_seal_blocks": 33,
+        "old_markdown_reference_documents": 37,
+        "strict_content_accuracy": false
+      },
+      "chart_analysis": {
+        "location_status": "structured_location_proxy",
+        "content_status": "legacy_markdown_candidate_only",
+        "new_chart_blocks": 73,
+        "old_candidate_documents": 12,
+        "strict_content_accuracy": false
+      }
+    }
+  },
+  "import_audit": {
+    "documents": 129,
+    "pages": 372,
+    "patch_pages": 314,
+    "chain_pages": 58,
+    "issues": [
+      {
+        "document": "bc_013",
+        "block": "candidate.block.p15.0000",
+        "target": "candidate.block.p15.0000",
+        "issue": "invalid_page_direction"
+      }
+    ]
+  },
+  "manual_review": {
+    "revision": "2026-11-23",
+    "base_gt_version": "legacy-129-feature-v3",
+    "decisions": [
+      {
+        "document_id": "bc_001",
+        "source_name": "1-2无线表1",
+        "page": 1,
+        "block_id": "candidate.block.p1.0009",
+        "from_type": "image",
+        "to_type": "chart",
+        "reason": "简单统计图：股价和指数折线、成交量柱形"
+      },
+      {
+        "document_id": "bc_017",
+        "source_name": "4-2段落中带「图x-x」",
+        "page": 12,
+        "block_id": "candidate.block.p12.0003",
+        "from_type": "image",
+        "to_type": "chart",
+        "reason": "简单统计图：交付质量百分位柱状图"
+      },
+      {
+        "document_id": "bc_023",
+        "source_name": "5-1双栏表格3",
+        "pages": [
+          4,
+          5,
+          6
+        ],
+        "from_type": "image",
+        "to_type": "image",
+        "reason": "光谱曲线和复杂散点图保留图片，不按简单统计图表处理"
+      }
+    ]
+  }
+}

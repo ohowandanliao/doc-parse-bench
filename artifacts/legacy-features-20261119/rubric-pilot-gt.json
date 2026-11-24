@@ -1,0 +1,2282 @@
+{
+  "schema_version": "doc-parse-bench.feature-rubric-gt.v1",
+  "gt_version": "legacy-129-feature-v3",
+  "split": "calibration",
+  "annotation_status": "pending_human_review",
+  "source": {
+    "records": "artifacts/legacy-features-20261119/records.json",
+    "records_sha256": "a1384023b6bc67aba52b312091f7bd729c2fc0eba7940e745d422e56fd0c9b29",
+    "pdf_directory": "data/legacy/dataset/pdf/source",
+    "basis": "仅以所列物理页的原 PDF 和 v3 源位置标注；不从任何模型预测倒填。"
+  },
+  "appendix_scope": {
+    "bc_003": {
+      "pages": [
+        15,
+        34
+      ],
+      "status": "confirmed_range",
+      "note": "附录 A 起；第 35 页独立参考文献必须保留。"
+    },
+    "bc_010": {
+      "pages": [
+        13,
+        25
+      ],
+      "status": "confirmed_range",
+      "note": "第 25 页参考文献随附录。"
+    },
+    "bc_016": {
+      "pages": [
+        26,
+        31
+      ],
+      "status": "confirmed_range",
+      "note": "第 30–31 页介绍和联系信息随附录。"
+    },
+    "bc_017": {
+      "pages": [
+        26,
+        37
+      ],
+      "status": "confirmed_range",
+      "note": "第 25 页为正文，第 26 页从附录 A 起算。第 38 页发布单位简介不属于附录，必须保留。"
+    }
+  },
+  "cases": [
+    {
+      "id": "bc_003:p15:appendix",
+      "document_id": "bc_003",
+      "page": 15,
+      "feature": "appendix",
+      "anchors": [
+        "附录 A",
+        "调整后功能点"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p16:appendix",
+      "document_id": "bc_003",
+      "page": 16,
+      "feature": "appendix",
+      "anchors": [
+        "附录 B",
+        "同时相互执行计算机系统中的处理功能"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p17:appendix",
+      "document_id": "bc_003",
+      "page": 17,
+      "feature": "appendix",
+      "anchors": [
+        "没有明示对可靠性的特别需求事项或活动",
+        "开发平台"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p18:appendix",
+      "document_id": "bc_003",
+      "page": 18,
+      "feature": "appendix",
+      "anchors": [
+        "平均每季度1次或以下",
+        "软件完整性级别划分可参考GB/T 18492"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p19:appendix",
+      "document_id": "bc_003",
+      "page": 19,
+      "feature": "appendix",
+      "anchors": [
+        "为本行业做过类似的项目",
+        "11个以上"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p20:appendix",
+      "document_id": "bc_003",
+      "page": 20,
+      "feature": "appendix",
+      "anchors": [
+        "软件造价评估报告模板",
+        "委托日期："
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p21:appendix",
+      "document_id": "bc_003",
+      "page": 21,
+      "feature": "appendix",
+      "anchors": [
+        "评估报告声明",
+        "本报告评估人员与委托方之间无任何特殊利害关系"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p22:appendix",
+      "document_id": "bc_003",
+      "page": 22,
+      "feature": "appendix",
+      "anchors": [
+        "评估结果摘要",
+        "是该项目的合理价格"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p23:appendix",
+      "document_id": "bc_003",
+      "page": 23,
+      "feature": "appendix",
+      "anchors": [
+        "以上内容摘自评估报告书",
+        "请认真阅读评估报告书全文"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p24:appendix",
+      "document_id": "bc_003",
+      "page": 24,
+      "feature": "appendix",
+      "anchors": [
+        "本次评估的目的是确定",
+        "第三届中国项目管理成就奖"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p25:appendix",
+      "document_id": "bc_003",
+      "page": 25,
+      "feature": "appendix",
+      "anchors": [
+        "本报告中估算模型中的主要公式及参数取值均基于行业基准数据",
+        "开发团队"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p26:appendix",
+      "document_id": "bc_003",
+      "page": 26,
+      "feature": "appendix",
+      "anchors": [
+        "软件运维工作量",
+        "评估机构及评估人员资质证书"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p27:appendix",
+      "document_id": "bc_003",
+      "page": 27,
+      "feature": "appendix",
+      "anchors": [
+        "软件造价评估过程示例",
+        "需求粒度检查"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p28:appendix",
+      "document_id": "bc_003",
+      "page": 28,
+      "feature": "appendix",
+      "anchors": [
+        "项目关键属性列表",
+        "政务服务图标"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p29:appendix",
+      "document_id": "bc_003",
+      "page": 29,
+      "feature": "appendix",
+      "anchors": [
+        "新闻信息",
+        "生产率选择"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p30:appendix",
+      "document_id": "bc_003",
+      "page": 30,
+      "feature": "appendix",
+      "anchors": [
+        "电子政务领域软件开发生产率基准数据",
+        "321.09"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p31:appendix",
+      "document_id": "bc_003",
+      "page": 31,
+      "feature": "appendix",
+      "anchors": [
+        "计算调整后工作量",
+        "表 D.8 成本估算结果"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p32:appendix",
+      "document_id": "bc_003",
+      "page": 32,
+      "feature": "appendix",
+      "anchors": [
+        "特殊成本费用合计（元）",
+        "47.25"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p33:appendix",
+      "document_id": "bc_003",
+      "page": 33,
+      "feature": "appendix",
+      "anchors": [
+        "该项目总计功能规模为 382.25FP",
+        "规模变更因子"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p34:appendix",
+      "document_id": "bc_003",
+      "page": 34,
+      "feature": "appendix",
+      "anchors": [
+        "运维基准生产率",
+        "评估公司不承担任何责任"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_010:p13:appendix",
+      "document_id": "bc_010",
+      "page": 13,
+      "feature": "appendix",
+      "anchors": [
+        "数据目录字典涉及的数据类型应符合以下类型",
+        "数据资源元数据描述见表A.1"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p14:appendix",
+      "document_id": "bc_010",
+      "page": 14,
+      "feature": "appendix",
+      "anchors": [
+        "resourceName",
+        "04：混合表示"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p15:appendix",
+      "document_id": "bc_010",
+      "page": 15,
+      "feature": "appendix",
+      "anchors": [
+        "timeRange",
+        "annotationInfo"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p16:appendix",
+      "document_id": "bc_010",
+      "page": 16,
+      "feature": "appendix",
+      "anchors": [
+        "hasSyntheticData",
+        "可扩展信息"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p17:appendix",
+      "document_id": "bc_010",
+      "page": 17,
+      "feature": "appendix",
+      "anchors": [
+        "productName",
+        "resourceId"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p18:appendix",
+      "document_id": "bc_010",
+      "page": 18,
+      "feature": "appendix",
+      "anchors": [
+        "applicableModelType",
+        "identityId"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p19:appendix",
+      "document_id": "bc_010",
+      "page": 19,
+      "feature": "appendix",
+      "anchors": [
+        "providerDesc",
+        "形式为文件"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p20:appendix",
+      "document_id": "bc_010",
+      "page": 20,
+      "feature": "appendix",
+      "anchors": [
+        "产品上架信息",
+        "定价信息和交付信息相关内容"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p21:appendix",
+      "document_id": "bc_010",
+      "page": 21,
+      "feature": "appendix",
+      "anchors": [
+        "表B.1 是否涉及个人信息分类编码",
+        "第二十八条的相关规定"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p22:appendix",
+      "document_id": "bc_010",
+      "page": 22,
+      "feature": "appendix",
+      "anchors": [
+        "产品定价信息见表C.1",
+        "一事一议"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p23:appendix",
+      "document_id": "bc_010",
+      "page": 23,
+      "feature": "appendix",
+      "anchors": [
+        "1.数据来源合法性",
+        "[声明日期]"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p24:appendix",
+      "document_id": "bc_010",
+      "page": 24,
+      "feature": "appendix",
+      "anchors": [
+        "1.内部生成数据",
+        "[声明日期]"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_010:p25:appendix",
+      "document_id": "bc_010",
+      "page": 25,
+      "feature": "appendix",
+      "anchors": [
+        "数据基础设施 参考架构",
+        "数据基础设施 连接器技术要求"
+      ],
+      "scope_note": "按人工裁定，本页参考文献随附录去除。",
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_016:p26:appendix",
+      "document_id": "bc_016",
+      "page": 26,
+      "feature": "appendix",
+      "anchors": [
+        "附录 A 行业基准数据应用示例",
+        "对员工的信息进行管理"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_016:p27:appendix",
+      "document_id": "bc_016",
+      "page": 27,
+      "feature": "appendix",
+      "anchors": [
+        "预算阶段该项目的总规模为 145.95 个功能点",
+        "预算小组采用缺省开发调整因素为 1"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_016:p28:appendix",
+      "document_id": "bc_016",
+      "page": 28,
+      "feature": "appendix",
+      "anchors": [
+        "运维水平要求因素",
+        "提前消除了由于项目业务需求不清晰而导致项目失败的隐患"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_016:p29:appendix",
+      "document_id": "bc_016",
+      "page": 29,
+      "feature": "appendix",
+      "anchors": [
+        "附录 B 常见问题",
+        "评估的开发或运维费用包含应用软件运维的直接人力成本"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_016:p30:appendix",
+      "document_id": "bc_016",
+      "page": 30,
+      "feature": "appendix",
+      "anchors": [
+        "行业基准数据发布单位简介",
+        "国家从事电子信息技术领域标准化的基础性、公益性、综合性研究机构"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_016:p31:appendix",
+      "document_id": "bc_016",
+      "page": 31,
+      "feature": "appendix",
+      "anchors": [
+        "北京软件造价评估技术创新联盟",
+        "邮箱：bscea@bscea.org"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_017:p26:appendix",
+      "document_id": "bc_017",
+      "page": 26,
+      "feature": "appendix",
+      "anchors": [
+        "附录 A 软件开发及运维工作量调整因子常见参数表",
+        "多媒体应用领域"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p27:appendix",
+      "document_id": "bc_017",
+      "page": 27,
+      "feature": "appendix",
+      "anchors": [
+        "没有明示对可靠性的特别需求事项或活动",
+        "没有同类项目的背景"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p28:appendix",
+      "document_id": "bc_017",
+      "page": 28,
+      "feature": "appendix",
+      "anchors": [
+        "中间件",
+        "周边"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p29:appendix",
+      "document_id": "bc_017",
+      "page": 29,
+      "feature": "appendix",
+      "anchors": [
+        "一级故障处理时间小于24h",
+        "超过10000"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p30:appendix",
+      "document_id": "bc_017",
+      "page": 30,
+      "feature": "appendix",
+      "anchors": [
+        "10个及以上",
+        "非涉密"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p31:appendix",
+      "document_id": "bc_017",
+      "page": 31,
+      "feature": "appendix",
+      "anchors": [
+        "附录 B 行业基准数据应用示例",
+        "规模变更调整因子为 1.39"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p32:appendix",
+      "document_id": "bc_017",
+      "page": 32,
+      "feature": "appendix",
+      "anchors": [
+        "该项目的总规模为 145.95 个功能点",
+        "17.15 万元"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p33:appendix",
+      "document_id": "bc_017",
+      "page": 33,
+      "feature": "appendix",
+      "anchors": [
+        "B.2.2 运维费用估算",
+        "提前消除了由于项目业务需求不清晰而导致项目失败的隐患"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p34:appendix",
+      "document_id": "bc_017",
+      "page": 34,
+      "feature": "appendix",
+      "anchors": [
+        "附录 C 其他运维成本度量基准数据",
+        "典型设备/产品运维单位工作量基准数据"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p35:appendix",
+      "document_id": "bc_017",
+      "page": 35,
+      "feature": "appendix",
+      "anchors": [
+        "防病毒网关",
+        "密码测评"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p36:appendix",
+      "document_id": "bc_017",
+      "page": 36,
+      "feature": "appendix",
+      "anchors": [
+        "附录 D 常见问题",
+        "但不包括直接非人力成本"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p37:appendix",
+      "document_id": "bc_017",
+      "page": 37,
+      "feature": "appendix",
+      "anchors": [
+        "D.6 当前在很多行业实际的实践中",
+        "比例法可以认为是一种简化后的“快速算法”"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_022:p1:margins",
+      "document_id": "bc_022",
+      "page": 1,
+      "feature": "header_footer",
+      "blocks": [
+        {
+          "id": "candidate.block.p1.0000",
+          "type": "header",
+          "text": "RSC Advances",
+          "bbox": [
+            0.06791045,
+            0.0672748,
+            0.30074627,
+            0.09293044
+          ]
+        },
+        {
+          "id": "candidate.block.p1.0001",
+          "type": "header_image",
+          "bbox": [
+            0.68731343,
+            0.03021665,
+            0.74776119,
+            0.08323831
+          ]
+        },
+        {
+          "id": "candidate.block.p1.0002",
+          "type": "header",
+          "text": "ROYAL SOCIETY",
+          "bbox": [
+            0.75074627,
+            0.03990878,
+            0.92985075,
+            0.05701254
+          ]
+        },
+        {
+          "id": "candidate.block.p1.0003",
+          "type": "header",
+          "text": "OF CHEMISTRY",
+          "bbox": [
+            0.75223881,
+            0.05815279,
+            0.92985075,
+            0.07411631
+          ]
+        },
+        {
+          "id": "candidate.block.p1.0024",
+          "type": "page_number",
+          "text": "17694",
+          "bbox": [
+            0.06865672,
+            0.96294185,
+            0.10970149,
+            0.97491448
+          ]
+        },
+        {
+          "id": "candidate.block.p1.0025",
+          "type": "footer",
+          "text": "RSC Adv., 2020, 10, 17694–17701",
+          "bbox": [
+            0.12313433,
+            0.96294185,
+            0.31492537,
+            0.97491448
+          ]
+        },
+        {
+          "id": "candidate.block.p1.0026",
+          "type": "footer",
+          "text": "This journal is © The Royal Society of Chemistry 2020",
+          "bbox": [
+            0.60671642,
+            0.96294185,
+            0.92985075,
+            0.97605473
+          ]
+        }
+      ],
+      "scope_note": "顶部刊名、社名和标志，以及底部页码和刊物信息。图标是图片，不按一个字母 C 匹配。",
+      "source_pdf": "5-1双栏表格2.pdf"
+    },
+    {
+      "id": "bc_022:p2:margins",
+      "document_id": "bc_022",
+      "page": 2,
+      "feature": "header_footer",
+      "blocks": [
+        {
+          "id": "candidate.block.p2.0000",
+          "type": "header",
+          "text": "Paper",
+          "bbox": [
+            0.06865672,
+            0.03021665,
+            0.11716418,
+            0.04275941
+          ]
+        },
+        {
+          "id": "candidate.block.p2.0001",
+          "type": "header",
+          "text": "RSC Advances",
+          "bbox": [
+            0.81567164,
+            0.0290764,
+            0.92910448,
+            0.04218928
+          ]
+        },
+        {
+          "id": "candidate.block.p2.0010",
+          "type": "footer",
+          "text": "This journal is © The Royal Society of Chemistry 2020",
+          "bbox": [
+            0.06791045,
+            0.9618016,
+            0.39179104,
+            0.97491448
+          ]
+        },
+        {
+          "id": "candidate.block.p2.0011",
+          "type": "footer",
+          "text": "RSC Adv., 2020, 10, 17694–17701",
+          "bbox": [
+            0.68432836,
+            0.9618016,
+            0.87835821,
+            0.97491448
+          ]
+        },
+        {
+          "id": "candidate.block.p2.0012",
+          "type": "page_number",
+          "text": "17695",
+          "bbox": [
+            0.8880597,
+            0.9618016,
+            0.92910448,
+            0.97377423
+          ]
+        }
+      ],
+      "source_pdf": "5-1双栏表格2.pdf"
+    },
+    {
+      "id": "bc_018:p5:margins",
+      "document_id": "bc_018",
+      "page": 5,
+      "feature": "header_footer",
+      "blocks": [
+        {
+          "id": "candidate.block.p5.0014",
+          "type": "page_number",
+          "text": "第5页 共5页",
+          "bbox": [
+            0.45080645,
+            0.94811859,
+            0.53709677,
+            0.9618016
+          ]
+        }
+      ],
+      "scope_note": "只移除最底部的印刷页码；左上签署提示是应留内容。",
+      "source_pdf": "4-3扫描1.pdf"
+    },
+    {
+      "id": "bc_091:p1:margins",
+      "document_id": "bc_091",
+      "page": 1,
+      "feature": "header_footer",
+      "blocks": [
+        {
+          "id": "candidate.block.p1.0006",
+          "type": "page_number",
+          "text": "3",
+          "bbox": [
+            0.54875101,
+            0.91676169,
+            0.56003223,
+            0.9281642
+          ]
+        }
+      ],
+      "scope_note": "单页抽样 PDF 的物理页是 1，印刷页码为 3。",
+      "source_pdf": "成勘院_风能资源规划_3.pdf"
+    },
+    {
+      "id": "bc_003:p14:protect-body",
+      "document_id": "bc_003",
+      "page": 14,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p14:末段正文",
+      "anchors": [
+        "软件造价评估报告模板见附录 C",
+        "软件造价评估过程示例见附录 D"
+      ],
+      "scope_note": "这两句只是正文引用附录，不能当作开始边界。",
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_003:p35:protect-references",
+      "document_id": "bc_003",
+      "page": 35,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p35:独立参考文献",
+      "anchors": [
+        "参考文献",
+        "GB/T 5271.1-2000",
+        "GB/T 11457-2006",
+        "SJ/T 11623-2016"
+      ],
+      "source_pdf": "1-3单元格内换行1.pdf"
+    },
+    {
+      "id": "bc_010:p12:protect-body",
+      "document_id": "bc_010",
+      "page": 12,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p12:技术安全正文",
+      "anchors": [
+        "8.2 技术安全要求",
+        "设置访问控制体系，防止未经授权的访问和信息泄露"
+      ],
+      "source_pdf": "3-1跨页重复表头.pdf"
+    },
+    {
+      "id": "bc_016:p25:protect-body",
+      "document_id": "bc_016",
+      "page": 25,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p25:基准数据的使用",
+      "anchors": [
+        "7. 基准数据的使用",
+        "本次基准数据（数据编号为 CSBMK®-202110）发布及生效日期为 2021 年 10 月 22 日"
+      ],
+      "source_pdf": "4-1统计图3.pdf"
+    },
+    {
+      "id": "bc_017:p25:protect-body",
+      "document_id": "bc_017",
+      "page": 25,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p25:基准数据的使用",
+      "anchors": [
+        "7. 基准数据的使用",
+        "未在行业基准数据中定期发布的调整因子取值可参考附录或"
+      ],
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_017:p38:protect-introduction",
+      "document_id": "bc_017",
+      "page": 38,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p38:行业基准数据发布单位简介",
+      "anchors": [
+        "行业基准数据发布单位简介",
+        "北京软件造价评估技术创新联盟"
+      ],
+      "scope_note": "文末发布单位简介不属于附录；关闭附录时仍须保留。",
+      "source_pdf": "4-2段落中带「图x-x」.pdf"
+    },
+    {
+      "id": "bc_022:p8:protect-references",
+      "document_id": "bc_022",
+      "page": 8,
+      "feature": "appendix",
+      "protected": true,
+      "source_id": "p8:论文参考文献续页",
+      "anchors": [
+        "growth and its nucleation in free and limited expansion",
+        "Applied Materials Today, 2019, 14, 96–101"
+      ],
+      "scope_note": "无附录的反例：期刊参考文献续页不应被截断。",
+      "source_pdf": "5-1双栏表格2.pdf"
+    },
+    {
+      "id": "bc_018:p5:protect-signing-note",
+      "document_id": "bc_018",
+      "page": 5,
+      "feature": "header_footer",
+      "protected": true,
+      "source_id": "p5:签署提示",
+      "anchors": [
+        "（以下无正文）"
+      ],
+      "bbox": [
+        0.15,
+        0.066,
+        0.267,
+        0.086
+      ],
+      "source_pdf": "4-3扫描1.pdf"
+    },
+    {
+      "id": "bc_022:p1:protect-author-note",
+      "document_id": "bc_022",
+      "page": 1,
+      "feature": "header_footer",
+      "protected": true,
+      "source_id": "p1:作者贡献信息",
+      "anchors": [
+        "These authors contributed equally to this work."
+      ],
+      "bbox": [
+        0.068,
+        0.919,
+        0.353,
+        0.937
+      ],
+      "scope_note": "正文作者脚注靠近页底；不是重复刊物页脚。",
+      "source_pdf": "5-1双栏表格2.pdf"
+    },
+    {
+      "id": "bc_022:p2:protect-figure",
+      "document_id": "bc_022",
+      "page": 2,
+      "feature": "image",
+      "protected": true,
+      "source_id": "candidate.block.p2.0002",
+      "scope_note": "开关两端均保留完整 Fig. 1 原图，去掉生成内容不等于去掉原图。",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "bbox": [
+        0.22686567,
+        0.06328392,
+        0.7738806,
+        0.31927024
+      ]
+    },
+    {
+      "id": "bc_022:p2:protect-caption",
+      "document_id": "bc_022",
+      "page": 2,
+      "feature": "image",
+      "protected": true,
+      "source_id": "p2:Fig.1印刷图注",
+      "anchors": [
+        "Schematic illustration of the preparation of the cigarette filters",
+        "supercritical CO₂ extrusion foaming technology"
+      ],
+      "bbox": [
+        0.068,
+        0.322,
+        0.935,
+        0.347
+      ],
+      "source_pdf": "5-1双栏表格2.pdf"
+    },
+    {
+      "id": "bc_091:p1:protect-figure",
+      "document_id": "bc_091",
+      "page": 1,
+      "feature": "chart",
+      "protected": true,
+      "source_id": "candidate.block.p1.0004",
+      "scope_note": "切换图表分析不能删除源图中的柱形、折线、图例或轴。",
+      "source_pdf": "成勘院_风能资源规划_3.pdf",
+      "bbox": [
+        0.15310234,
+        0.58779932,
+        0.84689766,
+        0.82611174
+      ]
+    },
+    {
+      "id": "bc_091:p1:protect-caption",
+      "document_id": "bc_091",
+      "page": 1,
+      "feature": "chart",
+      "protected": true,
+      "source_id": "p1:图4.2-3印刷图注",
+      "anchors": [
+        "图 4.2-3 塞尔维亚风资源理论蕴藏量占比分布"
+      ],
+      "bbox": [
+        0.33,
+        0.834,
+        0.72,
+        0.853
+      ],
+      "source_pdf": "成勘院_风能资源规划_3.pdf"
+    },
+    {
+      "id": "bc_024:manual.block.p1.0001",
+      "document_id": "bc_024",
+      "source_pdf": "5-2表旁水印.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "manual.block.p1.0001",
+      "sub_type": "text_image",
+      "readability": "partial",
+      "fields": [
+        {
+          "key": "title-zh",
+          "text": "建筑材料学报"
+        },
+        {
+          "key": "title-en",
+          "text": "JOURNAL OF BUILDING MATERIALS"
+        },
+        {
+          "key": "university-zh",
+          "text": "同济大学"
+        },
+        {
+          "key": "university-en",
+          "text": "Tongji University"
+        }
+      ],
+      "scope_note": "期刊封面以文字为主。只核对封面上的中英文刊名和同济大学字样；顶部小字、图标内小字与周围 PDF 正文不评分。",
+      "bbox": [
+        0.1409589,
+        0.07981756,
+        0.26273167,
+        0.18877423
+      ]
+    },
+    {
+      "id": "bc_062:manual.block.p1.0001",
+      "document_id": "bc_062",
+      "source_pdf": "依爱消防_电气火灾监控系统_2.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "manual.block.p1.0001",
+      "sub_type": "text_image",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "document-label",
+          "text": "《消防设施通用规范》 GB 55036—2022 实施指南"
+        },
+        {
+          "key": "paragraph-1",
+          "text": "采用独立式电气火灾监控探测器。在设置消防控制室的场所，应由电气火灾监控器将系统的运行状态信息传输至消防控制室图形显示装置或具有集中控制功能的火灾报警控制器上显示，但该类信息与火灾报警信息的显示应有区别。"
+        },
+        {
+          "key": "paragraph-2",
+          "text": "（2）电气火灾监控系统作为一种火灾预警系统，属于供配电系统的保障型系统范畴。当电气火灾监控探测器发出报警时，表示其监视的保护对象发生了异常，具有一定的电气火灾隐患，容易引发电气火灾，但并不表示已经发生了火灾。因此，报警后没有必要自动切断保护对象的供电电源，只要提醒管理人员及时查看电气线路和设备，排除电气火灾隐患即可。电气火灾监控探测器的设置不宜在供配电系统中增加额外的节点，以免增加新的电气故障隐患。"
+        }
+      ],
+      "scope_note": "截图里的标准名称和两段印刷文字；按段拼接换行，忽略水印。",
+      "bbox": [
+        0.2810219,
+        0.72342645,
+        0.75502839,
+        0.94641391
+      ]
+    },
+    {
+      "id": "bc_022:candidate.block.p2.0002",
+      "document_id": "bc_022",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "page": 2,
+      "feature": "image",
+      "source_id": "candidate.block.p2.0002",
+      "sub_type": "flowchart",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "a-solvent",
+          "text": "CA/Solvent"
+        },
+        {
+          "key": "a-fibers",
+          "text": "Micro-/Nano-fibers"
+        },
+        {
+          "key": "a-additives",
+          "text": "Liquid Additives"
+        },
+        {
+          "key": "a-coating",
+          "text": "Coating Device"
+        },
+        {
+          "key": "a-cutter",
+          "text": "Cutter"
+        },
+        {
+          "key": "a-drawing",
+          "text": "Drawing"
+        },
+        {
+          "key": "a-tow-band",
+          "text": "Tow Band"
+        },
+        {
+          "key": "a-strip",
+          "text": "Strip-shaped"
+        },
+        {
+          "key": "a-overlap",
+          "text": "Overlap"
+        },
+        {
+          "key": "a-tow-production",
+          "text": "Tow Band Production"
+        },
+        {
+          "key": "a-remolding",
+          "text": "Remolding"
+        },
+        {
+          "key": "b-extruder",
+          "text": "Extrusion Device"
+        },
+        {
+          "key": "b-pp",
+          "text": "PP"
+        },
+        {
+          "key": "b-co2",
+          "text": "CO₂"
+        },
+        {
+          "key": "b-drawing",
+          "text": "Drawing"
+        },
+        {
+          "key": "b-cutter",
+          "text": "Cutter"
+        },
+        {
+          "key": "product",
+          "text": "Cigarette Filter"
+        }
+      ],
+      "scope_note": "图 1 是含 (a)/(b) 的工艺示意图；两个子图各自的同名标签独立对齐。子图标号和框外印刷图注不作文字字段；虚线标注引线不作逻辑连线，本图不计关系分。",
+      "bbox": [
+        0.22686567,
+        0.06328392,
+        0.7738806,
+        0.31927024
+      ]
+    },
+    {
+      "id": "bc_065:candidate.block.p1.0017",
+      "document_id": "bc_065",
+      "source_pdf": "依爱消防_电气火灾监控系统_5.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0017",
+      "sub_type": "flowchart",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "main-switch",
+          "text": "主开关"
+        },
+        {
+          "key": "power-in",
+          "text": "电源进线"
+        },
+        {
+          "key": "sensor",
+          "text": "剩余电流传感器"
+        },
+        {
+          "key": "enclosure",
+          "text": "箱体"
+        },
+        {
+          "key": "protective-bar",
+          "text": "保护线（PE）排"
+        },
+        {
+          "key": "neutral-bar",
+          "text": "中性线（N）排"
+        },
+        {
+          "key": "distribution-switch",
+          "text": "配电开关"
+        },
+        {
+          "key": "power-out",
+          "text": "配电出线（5芯电缆）"
+        }
+      ],
+      "scope_note": "原页下方左侧的 (b) 接线示意，单图独立计字段。排除底部印刷说明、水印和无明确方向的接线关系。",
+      "bbox": [
+        0.15085158,
+        0.65222349,
+        0.50770479,
+        0.90706956
+      ]
+    },
+    {
+      "id": "bc_065:candidate.block.p1.0018",
+      "document_id": "bc_065",
+      "source_pdf": "依爱消防_电气火灾监控系统_5.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0018",
+      "sub_type": "flowchart",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "main-switch",
+          "text": "主开关"
+        },
+        {
+          "key": "power-in",
+          "text": "电源进线"
+        },
+        {
+          "key": "sensor",
+          "text": "剩余电流传感器"
+        },
+        {
+          "key": "enclosure",
+          "text": "箱体"
+        },
+        {
+          "key": "protective-bar",
+          "text": "保护线（PE）排"
+        },
+        {
+          "key": "neutral-bar",
+          "text": "中性线（N）排"
+        },
+        {
+          "key": "distribution-switch",
+          "text": "配电开关"
+        },
+        {
+          "key": "power-out",
+          "text": "配电出线（5芯电缆）"
+        }
+      ],
+      "scope_note": "原页下方右侧的 (a) 接线示意，不能复用左图的一份字段输出。排除底部印刷说明、水印和无明确方向的接线关系。",
+      "bbox": [
+        0.52473642,
+        0.65222349,
+        0.89537713,
+        0.90706956
+      ]
+    },
+    {
+      "id": "bc_108:candidate.block.p1.0004",
+      "document_id": "bc_108",
+      "source_pdf": "珠海机场_工作证管理细则_9.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0004",
+      "sub_type": "flowchart",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "start",
+          "text": "流程开始"
+        },
+        {
+          "key": "apply",
+          "text": "申办人员或系统管理员向服务台提出申证申请"
+        },
+        {
+          "key": "review",
+          "text": "服务台录入电子工单审批"
+        },
+        {
+          "key": "sign",
+          "text": "签署《机房知悉事项说明书》"
+        },
+        {
+          "key": "issue",
+          "text": "领取机房临时工作证"
+        },
+        {
+          "key": "end",
+          "text": "流程结束"
+        },
+        {
+          "key": "approved",
+          "text": "审核通过"
+        },
+        {
+          "key": "rejected",
+          "text": "审核未通过"
+        }
+      ],
+      "relations": [
+        {
+          "from": "start",
+          "to": "apply"
+        },
+        {
+          "from": "apply",
+          "to": "review"
+        },
+        {
+          "from": "review",
+          "to": "sign",
+          "branch_label": "审核通过"
+        },
+        {
+          "from": "review",
+          "to": "end",
+          "branch_label": "审核未通过"
+        },
+        {
+          "from": "sign",
+          "to": "issue"
+        },
+        {
+          "from": "issue",
+          "to": "end"
+        }
+      ],
+      "scope_note": "六个节点、两条分支文字、六条有向箭头。两条分支文案计字段，当前关系分核对箭头端点及方向，分支标签的绑定另存为证据。",
+      "bbox": [
+        0.19500403,
+        0.12086659,
+        0.80580177,
+        0.51083238
+      ]
+    },
+    {
+      "id": "bc_041:candidate.block.p1.0000",
+      "document_id": "bc_041",
+      "source_pdf": "中山日报_深圳特区报合作_2.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0000",
+      "sub_type": "natural_image",
+      "readability": "partial",
+      "fields": [
+        {
+          "key": "paper-shenzhen",
+          "text": "深圳特区报"
+        },
+        {
+          "key": "paper-zhongshan",
+          "text": "中山日报"
+        },
+        {
+          "key": "event",
+          "text": "签约仪式"
+        },
+        {
+          "key": "event-time",
+          "text": "2024年5月24日 16:00"
+        }
+      ],
+      "scope_note": "有字照片，首轮只核对第一幅照片的背景主标题和时间行。两家社名可由同一行拆开归属。细小地点行、讲台标识和右下角水印不在本轮核对范围。",
+      "bbox": [
+        0.14907333,
+        0.08779932,
+        0.43190975,
+        0.22576967
+      ]
+    },
+    {
+      "id": "bc_059:candidate.block.p1.0014",
+      "document_id": "bc_059",
+      "source_pdf": "依爱消防_工程维修手册_44.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0014",
+      "sub_type": "natural_image",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "dial-label",
+          "text": "音量调节"
+        }
+      ],
+      "scope_note": "页面下方第一张器件照片，旋钮下的字是图内文字；临近正文即使有相同文字，也不能替该图命中。",
+      "bbox": [
+        0.11603546,
+        0.77309008,
+        0.30298147,
+        0.89395667
+      ]
+    },
+    {
+      "id": "bc_078:candidate.block.p1.0001",
+      "document_id": "bc_078",
+      "source_pdf": "广东城规院_惠玩甘青_7.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0001",
+      "sub_type": "natural_image",
+      "readability": "no_text",
+      "fields": [],
+      "scope_note": "上方左侧盐湖照片没有可辨写实文字，保留图像即可，不要求描述。与右图分别标注。",
+      "bbox": [
+        0.0886382,
+        0.14196123,
+        0.55761483,
+        0.32782212
+      ]
+    },
+    {
+      "id": "bc_078:candidate.block.p1.0002",
+      "document_id": "bc_078",
+      "source_pdf": "广东城规院_惠玩甘青_7.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0002",
+      "sub_type": "natural_image",
+      "readability": "no_text",
+      "fields": [],
+      "scope_note": "上方右侧盐湖照片没有可辨写实文字，保留图像即可，不要求描述。与左图分别标注。",
+      "bbox": [
+        0.56325544,
+        0.14082098,
+        0.9113618,
+        0.32782212
+      ]
+    },
+    {
+      "id": "bc_022:candidate.block.p6.0009",
+      "document_id": "bc_022",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "page": 6,
+      "feature": "image",
+      "source_id": "candidate.block.p6.0009",
+      "sub_type": "natural_image",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "photo-annotation",
+          "text": "Cutting"
+        }
+      ],
+      "scope_note": "页面下部左侧的实验照片。子图标号 a) 用于归属，不进内容分。Cutting 只属于左图，不能给右图复用。",
+      "bbox": [
+        0.16865672,
+        0.7309008,
+        0.50820896,
+        0.91106043
+      ]
+    },
+    {
+      "id": "bc_023:candidate.block.p4.0007",
+      "document_id": "bc_023",
+      "source_pdf": "5-1双栏表格3.pdf",
+      "page": 4,
+      "feature": "image",
+      "source_id": "candidate.block.p4.0007",
+      "sub_type": "other",
+      "scope_note": "按用户裁定，复杂光谱曲线保留为 image，不作为统计图转表；首轮只用于误分诊断，不给出估读数值。",
+      "bbox": [
+        0.25221595,
+        0.10376283,
+        0.74536664,
+        0.30102623
+      ]
+    },
+    {
+      "id": "bc_018:candidate.block.p1.0020",
+      "document_id": "bc_018",
+      "source_pdf": "4-3扫描1.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0020",
+      "sub_type": "seal",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "organization",
+          "text": "宁波市江北九方和荣电气有限公司"
+        },
+        {
+          "key": "purpose",
+          "text": "合同审计专用章"
+        }
+      ],
+      "scope_note": "右上红色椭圆章。外圈公司名和中央章文都清晰。",
+      "bbox": [
+        0.67822581,
+        0.12086659,
+        0.86612903,
+        0.22006842
+      ]
+    },
+    {
+      "id": "bc_018:candidate.block.p1.0021",
+      "document_id": "bc_018",
+      "source_pdf": "4-3扫描1.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "candidate.block.p1.0021",
+      "sub_type": "seal",
+      "readability": "partial",
+      "fields": [
+        {
+          "key": "visible-organization-prefix",
+          "text": "中国科学院宁波材"
+        }
+      ],
+      "scope_note": "右页边的骑缝残章。仅录红字清晰连续的名称前缀；不按其他页补全名称，不要求残章编号。",
+      "bbox": [
+        0.88064516,
+        0.37913341,
+        0.99919355,
+        0.51881414
+      ]
+    },
+    {
+      "id": "bc_018:candidate.block.p5.0010",
+      "document_id": "bc_018",
+      "source_pdf": "4-3扫描1.pdf",
+      "page": 5,
+      "feature": "image",
+      "source_id": "candidate.block.p5.0010",
+      "sub_type": "seal",
+      "readability": "readable",
+      "fields": [
+        {
+          "key": "seal-inscription",
+          "text": "罗湘印"
+        }
+      ],
+      "scope_note": "签署栏右侧小方章，按右列自上而下再读左列；不把栏位正文或手签计作章文。",
+      "bbox": [
+        0.50564516,
+        0.16989738,
+        0.59677419,
+        0.23375143
+      ]
+    },
+    {
+      "id": "bc_018:candidate.block.p5.0011",
+      "document_id": "bc_018",
+      "source_pdf": "4-3扫描1.pdf",
+      "page": 5,
+      "feature": "image",
+      "source_id": "candidate.block.p5.0011",
+      "sub_type": "seal",
+      "readability": "partial",
+      "fields": [
+        {
+          "key": "organization",
+          "text": "中国科学院宁波材料技术与工程研究所"
+        }
+      ],
+      "scope_note": "签署栏下方圆章。只核对可辨的红印外圈机构名；不把黑色合同印刷字或签名计入，重叠区编号暂不评分。",
+      "bbox": [
+        0.37016129,
+        0.28506271,
+        0.56935484,
+        0.4281642
+      ]
+    },
+    {
+      "id": "bc_019:manual.block.p1.0001",
+      "document_id": "bc_019",
+      "source_pdf": "4-3扫描2.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "manual.block.p1.0001",
+      "sub_type": "seal",
+      "readability": "partial",
+      "fields": [
+        {
+          "key": "purpose",
+          "text": "合同专用章"
+        }
+      ],
+      "scope_note": "原页下方偏左红章。首轮核对下弧上方清晰章文；与表格黑字重叠的机构名和小号编号另核。与右章是两个来源。",
+      "bbox": [
+        0.38629258,
+        0.6018016,
+        0.5689444,
+        0.72342645
+      ]
+    },
+    {
+      "id": "bc_019:manual.block.p1.0002",
+      "document_id": "bc_019",
+      "source_pdf": "4-3扫描2.pdf",
+      "page": 1,
+      "feature": "image",
+      "source_id": "manual.block.p1.0002",
+      "sub_type": "seal",
+      "readability": "partial",
+      "fields": [
+        {
+          "key": "purpose",
+          "text": "合同专用章"
+        }
+      ],
+      "scope_note": "原页下方右章，红字较浅。只核对中央偏下清晰章文；与左章相同的字串也必须有独立来源证据。",
+      "bbox": [
+        0.62803384,
+        0.59039909,
+        0.81427075,
+        0.7208951
+      ]
+    },
+    {
+      "id": "bc_022:candidate.block.p4.0012",
+      "document_id": "bc_022",
+      "page": 4,
+      "feature": "chart",
+      "source_id": "candidate.block.p4.0012",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "values": [
+        {
+          "series": "Draw Resistance",
+          "category": "Control",
+          "value": "3874",
+          "unit": "Pa"
+        },
+        {
+          "series": "Draw Resistance",
+          "category": "EP0",
+          "value": "23375",
+          "unit": "Pa"
+        },
+        {
+          "series": "Draw Resistance",
+          "category": "EP1",
+          "value": "15030",
+          "unit": "Pa"
+        },
+        {
+          "series": "Draw Resistance",
+          "category": "EP2",
+          "value": "220",
+          "unit": "Pa"
+        },
+        {
+          "series": "Draw Resistance",
+          "category": "EP3",
+          "value": "2625",
+          "unit": "Pa"
+        }
+      ],
+      "scope_note": "仅收录图5(a)下方左侧柱状图的数据标签，不含上方形态图及正文。",
+      "bbox": [
+        0.19477612,
+        0.75313569,
+        0.50074627,
+        0.91220068
+      ]
+    },
+    {
+      "id": "bc_022:candidate.block.p4.0013",
+      "document_id": "bc_022",
+      "page": 4,
+      "feature": "chart",
+      "source_id": "candidate.block.p4.0013",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "values": [
+        {
+          "series": "Open-cell Content",
+          "category": "Control",
+          "value": "92.18",
+          "unit": "%"
+        },
+        {
+          "series": "Open-cell Content",
+          "category": "EP0",
+          "value": "86.11",
+          "unit": "%"
+        },
+        {
+          "series": "Open-cell Content",
+          "category": "EP1",
+          "value": "91.29",
+          "unit": "%"
+        },
+        {
+          "series": "Open-cell Content",
+          "category": "EP2",
+          "value": "84.39",
+          "unit": "%"
+        },
+        {
+          "series": "Open-cell Content",
+          "category": "EP3",
+          "value": "93.87",
+          "unit": "%"
+        }
+      ],
+      "scope_note": "仅收录图5(b)下方右侧柱状图的数据标签，不含上方形态图及正文。",
+      "bbox": [
+        0.50970149,
+        0.75199544,
+        0.80373134,
+        0.91277081
+      ]
+    },
+    {
+      "id": "bc_091:candidate.block.p1.0004",
+      "document_id": "bc_091",
+      "page": 1,
+      "feature": "chart",
+      "source_id": "candidate.block.p1.0004",
+      "source_pdf": "成勘院_风能资源规划_3.pdf",
+      "values": [
+        {
+          "series": "占比",
+          "category": "D-1",
+          "value": "7.46",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "D-2",
+          "value": "11.15",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "D-3",
+          "value": "14.76",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "1",
+          "value": "25.35",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "2",
+          "value": "29.17",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "3",
+          "value": "7.96",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "4",
+          "value": "2.39",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "5",
+          "value": "0.99",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "6",
+          "value": "0.54",
+          "unit": "%"
+        },
+        {
+          "series": "占比",
+          "category": "7",
+          "value": "0.22",
+          "unit": "%"
+        }
+      ],
+      "unscored": [
+        {
+          "series": "理论蕴藏量",
+          "unit": "亿kWh"
+        }
+      ],
+      "scope_note": "只录入图4.2-3内柱形系列“占比”的明示标签；折线“理论蕴藏量”无逐点精确标签，未按坐标估读。上方印刷表不并入图表范围。",
+      "bbox": [
+        0.15310234,
+        0.58779932,
+        0.84689766,
+        0.82611174
+      ]
+    },
+    {
+      "id": "bc_017:candidate.block.p12.0003",
+      "document_id": "bc_017",
+      "page": 12,
+      "feature": "chart",
+      "source_id": "candidate.block.p12.0003",
+      "source_pdf": "4-2段落中带「图x-x」.pdf",
+      "values": [
+        {
+          "series": "交付质量",
+          "category": "P90",
+          "value": "79.88",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P75",
+          "value": "32.76",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P50",
+          "value": "10.05",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P25",
+          "value": "3.53",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P10",
+          "value": "1.02",
+          "unit": "缺陷数/千功能点"
+        }
+      ],
+      "bbox": [
+        0.2288477,
+        0.089,
+        0.761,
+        0.279
+      ]
+    },
+    {
+      "id": "bc_014:candidate.block.p1.0011",
+      "document_id": "bc_014",
+      "page": 1,
+      "feature": "chart",
+      "source_id": "candidate.block.p1.0011",
+      "source_pdf": "4-1统计图1.pdf",
+      "values": [
+        {
+          "series": "地区生产总值",
+          "category": "2019年",
+          "value": "70540",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2020年",
+          "value": "72798",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2021年",
+          "value": "82875",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2022年",
+          "value": "87577",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2023年",
+          "value": "92069",
+          "unit": "亿元"
+        },
+        {
+          "series": "GDP增速",
+          "category": "2019年",
+          "value": "5.3",
+          "unit": "%"
+        },
+        {
+          "series": "GDP增速",
+          "category": "2020年",
+          "value": "3.5",
+          "unit": "%"
+        },
+        {
+          "series": "GDP增速",
+          "category": "2021年",
+          "value": "8.3",
+          "unit": "%"
+        },
+        {
+          "series": "GDP增速",
+          "category": "2022年",
+          "value": "3.9",
+          "unit": "%"
+        },
+        {
+          "series": "GDP增速",
+          "category": "2023年",
+          "value": "6.0",
+          "unit": "%"
+        }
+      ],
+      "bbox": [
+        0.08783239,
+        0.72690992,
+        0.46897663,
+        0.87400228
+      ]
+    },
+    {
+      "id": "bc_014:candidate.block.p3.0012",
+      "document_id": "bc_014",
+      "page": 3,
+      "feature": "chart",
+      "source_id": "candidate.block.p3.0012",
+      "source_pdf": "4-1统计图1.pdf",
+      "values": [
+        {
+          "series": "快递业务量",
+          "category": "2019年",
+          "value": "28.9",
+          "unit": "亿件"
+        },
+        {
+          "series": "快递业务量",
+          "category": "2020年",
+          "value": "41.5",
+          "unit": "亿件"
+        },
+        {
+          "series": "快递业务量",
+          "category": "2021年",
+          "value": "56.0",
+          "unit": "亿件"
+        },
+        {
+          "series": "快递业务量",
+          "category": "2022年",
+          "value": "57.7",
+          "unit": "亿件"
+        },
+        {
+          "series": "快递业务量",
+          "category": "2023年",
+          "value": "70.7",
+          "unit": "亿件"
+        }
+      ],
+      "bbox": [
+        0.54794521,
+        0.06214367,
+        0.88477035,
+        0.18700114
+      ]
+    },
+    {
+      "id": "bc_014:candidate.block.p3.0014",
+      "document_id": "bc_014",
+      "page": 3,
+      "feature": "chart",
+      "source_id": "candidate.block.p3.0014",
+      "source_pdf": "4-1统计图1.pdf",
+      "values": [
+        {
+          "series": "固定互联网宽带接入用户数",
+          "category": "2019年",
+          "value": "3186.1",
+          "unit": "万户"
+        },
+        {
+          "series": "固定互联网宽带接入用户数",
+          "category": "2020年",
+          "value": "3445.6",
+          "unit": "万户"
+        },
+        {
+          "series": "固定互联网宽带接入用户数",
+          "category": "2021年",
+          "value": "3863.7",
+          "unit": "万户"
+        },
+        {
+          "series": "固定互联网宽带接入用户数",
+          "category": "2022年",
+          "value": "4264.7",
+          "unit": "万户"
+        },
+        {
+          "series": "固定互联网宽带接入用户数",
+          "category": "2023年",
+          "value": "4581.9",
+          "unit": "万户"
+        }
+      ],
+      "bbox": [
+        0.54311039,
+        0.21892816,
+        0.89202256,
+        0.34207526
+      ]
+    },
+    {
+      "id": "bc_015:candidate.block.p2.0001",
+      "document_id": "bc_015",
+      "page": 2,
+      "feature": "chart",
+      "source_id": "candidate.block.p2.0001",
+      "source_pdf": "4-1统计图2.pdf",
+      "values": [
+        {
+          "series": "常住人口",
+          "category": "2017年",
+          "value": "82.8",
+          "unit": "万人"
+        },
+        {
+          "series": "常住人口",
+          "category": "2018年",
+          "value": "79.2",
+          "unit": "万人"
+        },
+        {
+          "series": "常住人口",
+          "category": "2019年",
+          "value": "75.3",
+          "unit": "万人"
+        },
+        {
+          "series": "常住人口",
+          "category": "2020年",
+          "value": "70.9",
+          "unit": "万人"
+        },
+        {
+          "series": "常住人口",
+          "category": "2021年",
+          "value": "70.8",
+          "unit": "万人"
+        },
+        {
+          "series": "常住人口",
+          "category": "2022年",
+          "value": "70.4",
+          "unit": "万人"
+        },
+        {
+          "series": "常住人口",
+          "category": "2023年",
+          "value": "70.3",
+          "unit": "万人"
+        }
+      ],
+      "bbox": [
+        0.16599517,
+        0.16704675,
+        0.85495568,
+        0.4327252
+      ]
+    },
+    {
+      "id": "bc_015:candidate.block.p4.0001",
+      "document_id": "bc_015",
+      "page": 4,
+      "feature": "chart",
+      "source_id": "candidate.block.p4.0001",
+      "source_pdf": "4-1统计图2.pdf",
+      "values": [
+        {
+          "series": "地区生产总值",
+          "category": "2019年",
+          "value": "2910.4",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2020年",
+          "value": "2937.0",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2021年",
+          "value": "3236.7",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2022年",
+          "value": "3391.1",
+          "unit": "亿元"
+        },
+        {
+          "series": "地区生产总值",
+          "category": "2023年",
+          "value": "3574.3",
+          "unit": "亿元"
+        },
+        {
+          "series": "增速",
+          "category": "2019年",
+          "value": "6.0",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2020年",
+          "value": "0.1",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2021年",
+          "value": "8.0",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2022年",
+          "value": "5.6",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2023年",
+          "value": "5.0",
+          "unit": "%"
+        }
+      ],
+      "bbox": [
+        0.18533441,
+        0.14595211,
+        0.85495568,
+        0.42018244
+      ]
+    },
+    {
+      "id": "bc_015:candidate.block.p4.0004",
+      "document_id": "bc_015",
+      "page": 4,
+      "feature": "chart",
+      "source_id": "candidate.block.p4.0004",
+      "source_pdf": "4-1统计图2.pdf",
+      "values": [
+        {
+          "series": "一般公共预算收入",
+          "category": "2019年",
+          "value": "189.7",
+          "unit": "亿元"
+        },
+        {
+          "series": "一般公共预算收入",
+          "category": "2020年",
+          "value": "181.4",
+          "unit": "亿元"
+        },
+        {
+          "series": "一般公共预算收入",
+          "category": "2021年",
+          "value": "195.5",
+          "unit": "亿元"
+        },
+        {
+          "series": "一般公共预算收入",
+          "category": "2022年",
+          "value": "184.9",
+          "unit": "亿元"
+        },
+        {
+          "series": "一般公共预算收入",
+          "category": "2023年",
+          "value": "200.5",
+          "unit": "亿元"
+        },
+        {
+          "series": "增速",
+          "category": "2019年",
+          "value": "8.0",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2020年",
+          "value": "-4.4",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2021年",
+          "value": "7.8",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2022年",
+          "value": "-5.4",
+          "unit": "%"
+        },
+        {
+          "series": "增速",
+          "category": "2023年",
+          "value": "8.4",
+          "unit": "%"
+        }
+      ],
+      "bbox": [
+        0.17727639,
+        0.59692132,
+        0.90330379,
+        0.87286203
+      ]
+    },
+    {
+      "id": "bc_015:candidate.block.p5.0002",
+      "document_id": "bc_015",
+      "page": 5,
+      "feature": "chart",
+      "source_id": "candidate.block.p5.0002",
+      "source_pdf": "4-1统计图2.pdf",
+      "values": [
+        {
+          "series": "一般公共预算支出构成",
+          "category": "城乡社区支出",
+          "value": "11.7",
+          "unit": "%"
+        },
+        {
+          "series": "一般公共预算支出构成",
+          "category": "教育支出",
+          "value": "18.9",
+          "unit": "%"
+        },
+        {
+          "series": "一般公共预算支出构成",
+          "category": "社会保障和就业支出",
+          "value": "24.2",
+          "unit": "%"
+        },
+        {
+          "series": "一般公共预算支出构成",
+          "category": "卫生健康支出",
+          "value": "10.9",
+          "unit": "%"
+        },
+        {
+          "series": "一般公共预算支出构成",
+          "category": "一般公共服务支出",
+          "value": "7.2",
+          "unit": "%"
+        },
+        {
+          "series": "一般公共预算支出构成",
+          "category": "其他科目合计",
+          "value": "27.1",
+          "unit": "%"
+        }
+      ],
+      "bbox": [
+        0.1821112,
+        0.29190422,
+        0.76067687,
+        0.55017104
+      ]
+    },
+    {
+      "id": "bc_024:candidate.block.p6.0001",
+      "document_id": "bc_024",
+      "page": 6,
+      "feature": "chart",
+      "source_id": "candidate.block.p6.0001",
+      "source_pdf": "5-2表旁水印.pdf",
+      "values": [],
+      "scope_note": "仅诊断图2(a)左侧“Variation of the normal force”。三条曲线只有坐标轴刻度和图例，没有逐点明示数值；精确值无法核实，故不造 GT。",
+      "bbox": [
+        0.15229654,
+        0.08209806,
+        0.47300564,
+        0.27023945
+      ]
+    }
+  ]
+}

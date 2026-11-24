@@ -24,3 +24,5 @@ data/
 /artifacts/*
 !/artifacts/legacy-features-20261118/
 !/artifacts/legacy-features-20261118/**
+!/artifacts/legacy-features-20261119/
+!/artifacts/legacy-features-20261119/**

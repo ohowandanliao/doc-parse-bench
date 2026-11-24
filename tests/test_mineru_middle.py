@@ -9,14 +9,7 @@ from doc_parse_bench.mineru_middle import (
     response_to_document,
 )
 
-_SNAPSHOT_SOURCE = Path(
-    "archives/pdf2text-feature-20261119/source-ditto/pdf2text-78712-pdf-rule-toggle-test-1806ec1/src"
-)
-FILTER_SOURCE = (
-    _SNAPSHOT_SOURCE
-    if (_SNAPSHOT_SOURCE / "pdf2text/core/parse/mineru_filters.py").is_file()
-    else Path(__file__).parent / "fixtures/mineru_filters.py"
-)
+FILTER_SOURCE = Path(__file__).parent / "fixtures/mineru_filters.py"
 
 
 def _span(kind="text", content=""):

@@ -328,7 +328,10 @@ def _bbox(value: Any, width: float, height: float) -> list[float] | None:
 def _span_record(span: Mapping[str, Any]) -> dict[str, Any]:
     # Keep the fields needed to distinguish generated image descriptions from
     # printed captions while avoiding a second copy of unrelated gateway data.
-    keys = ("type", "text", "content", "generated", "image_path", "html", "bbox")
+    keys = (
+        "type", "text", "content", "generated", "image_path", "html", "bbox",
+        "subimage_source", "subimage_index",
+    )
     return {key: copy.deepcopy(span[key]) for key in keys if key in span}
 
 
@@ -473,6 +476,8 @@ def pdf_info_to_document(
                 "generated_spans": generated,
                 "nested_blocks": nested,
             }
+            if "sub_type" in raw_block:
+                metadata["sub_type"] = copy.deepcopy(raw_block["sub_type"])
             chart_body = [child for child in nested if child.get("type") == "chart_body"]
             if chart_body:
                 metadata["chart_body"] = chart_body

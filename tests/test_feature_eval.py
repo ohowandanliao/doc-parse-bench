@@ -1,4 +1,11 @@
-from doc_parse_bench.feature_eval import FEATURE_GT_SCHEMA, FEATURE_SUBSET_SCHEMA, evaluate_features
+import pytest
+
+from doc_parse_bench.feature_eval import (
+    FEATURE_GT_SCHEMA,
+    FEATURE_SUBSET_SCHEMA,
+    _apply_appendix_override,
+    evaluate_features,
+)
 from doc_parse_bench.io import write_json
 from doc_parse_bench.schema import Block, Document, Page
 
@@ -15,6 +22,24 @@ def _feature_record():
             "chart_blocks": [{"page": 2, "type": "chart", "text": ""}],
         },
     }
+
+
+def test_appendix_override_replaces_heuristic_range_and_leaves_references_outside():
+    features = {
+        "pages": 35,
+        "appendix": {"has_appendix": True, "start_page": 20, "pages": list(range(20, 36))},
+    }
+
+    _apply_appendix_override("bc_003", features, {"appendix_page_ranges": [[15, 34]]})
+
+    assert features["appendix"]["start_page"] == 15
+    assert features["appendix"]["pages"] == list(range(15, 35))
+
+
+@pytest.mark.parametrize("bounds", [[0, 34], [34, 15], [15, 36], [True, 34]])
+def test_appendix_override_rejects_invalid_physical_pages(bounds):
+    with pytest.raises(ValueError, match="bc_003.*附录页码范围无效"):
+        _apply_appendix_override("bc_003", {"pages": 35}, {"appendix_page_ranges": [bounds]})
 
 
 def test_feature_evaluator_scores_all_four_capabilities(tmp_path):
@@ -102,6 +127,19 @@ def test_feature_evaluator_reads_pdf2text_json_response(tmp_path):
     assert result["appendix_page_recall"] == 1.0
     assert result["header_footer_recall"] == 1.0
     assert result["image_analysis_recall"] == 1.0
+
+
+def test_feature_evaluator_skips_non_appendix_pages_in_reported_page_prefix(tmp_path):
+    gt = tmp_path / "gt"
+    record = _feature_record()
+    record["new_gt"]["appendix"]["pages"] = [2, 4]
+    write_json(gt / "manifest.json", {"schema_version": FEATURE_GT_SCHEMA})
+    write_json(gt / "records.json", {"schema_version": FEATURE_GT_SCHEMA, "records": [record]})
+    write_json(tmp_path / "pred/sample.json", {"pages": 3, "markdown": "Body", "error": None})
+
+    result = evaluate_features(gt, tmp_path / "pred", tmp_path / "result")
+
+    assert result["appendix_page_recall"] == 0.5
 
 
 def test_feature_evaluator_scores_a_named_subset_without_missing_zeroes(tmp_path):
