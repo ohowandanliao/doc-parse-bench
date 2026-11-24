@@ -18,6 +18,7 @@ docs/legacy129-scoring-contract.md
 当前已提交：d6251ad（评分和交接代码），79d8eed（固定 v3 GT 和回放前置材料）。
 评分已经收敛为 legacy129-content-v1；四项各 25%，subtype 错单图主分 0，图表只评明示值，缺证据 null，误删独立否决。本次没有修改 GT、运行新模型或输出正式总分。
 校准分：附录两版 76.89，页眉页脚两版 81.48，图表 FT 70.51 / Origin 54.22，仅 11 图/78 明示值。图片与总分尚缺证据。不要重新设计公式、改 GT 或把校准 split 改名为 evaluation。
+用户最新要求：本轮停止补证据、补取旧回包、补推或继续补齐图片分。不要执行上一轮的历史响应取回清单。下次评测材料按 docs/legacy129-next-evaluation-inputs.md 准备；当前 session 仍只负责 P2T 工程适配与本地测试。
 
 P2T 原 ZIP：
 /Users/yixuan/Documents/pdf2text_code_develop-1.6.0-8b747ca_20261123.zip

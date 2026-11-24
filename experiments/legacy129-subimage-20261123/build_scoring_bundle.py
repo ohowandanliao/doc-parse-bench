@@ -41,6 +41,9 @@ python3 score.py template --gt gt/rubric-pilot-gt.json --model 3.1-ft --stage fi
 
 `MANIFEST.json` 记录包内哈希。`code/doc_parse_bench/` 是仓库同名文件的原样复制，评分逻辑与 docbench 入口一致。
 本包提供离线评分与现有历史证据，不包含新增内网推理结果或已验收的 P2T 适配代码。
+
+本轮已停止补证据、补 GT 和补推，现有 null 原样保留。
+下次评测需要提供的原始服务响应、成品、资产、来源映射及配置，见 `docs/legacy129-next-evaluation-inputs.md`。
 """
 
 SELFTEST = '''"""Verify bundled hashes and reproduce the calibration scores without dependencies."""
@@ -106,10 +109,18 @@ def main() -> None:
         destination = output / "gt" / name
         destination.parent.mkdir(exist_ok=True)
         shutil.copy2(root / "artifacts/legacy-features-20261119" / name, destination)
-    for name in ("legacy129-scoring-contract.md", "feature-evaluation-129-rubric.md"):
+    for name in (
+        "legacy129-scoring-contract.md",
+        "feature-evaluation-129-rubric.md",
+        "legacy129-next-evaluation-inputs.md",
+    ):
         destination = output / "docs" / name
         destination.parent.mkdir(exist_ok=True)
         shutil.copy2(root / "docs" / name, destination)
+    shutil.copy2(
+        root / "experiments/legacy129-subimage-20261123/agentbuilder-impact-check-20261124.json",
+        output / "docs/agentbuilder-impact-check-20261124.json",
+    )
     for model in ("3.1-ft", "3.1-origin"):
         source = (
             root / "experiments/legacy129-subimage-20261123/calibration-evidence" / f"{model}.json"
@@ -135,6 +146,9 @@ def main() -> None:
                 if path.is_file()
             ],
             "new_model_calls": 0,
+            "current_round_status": (
+                "closed_without_evidence_backfill; input requirements documented for next evaluation"
+            ),
         },
     )
     print(json.dumps({"output": str(output)}, ensure_ascii=False))

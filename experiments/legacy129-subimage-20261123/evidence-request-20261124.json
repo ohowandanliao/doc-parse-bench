@@ -1,0 +1,90 @@
+{
+  "schema_version": "doc-parse-bench.legacy129-evidence-request.v1",
+  "status": "withdrawn_by_user_20261124",
+  "execute": false,
+  "withdrawal_note": "用户要求本轮停止补证据；本文件仅留作历史需求记录，不再执行取回或推理。下次材料要求见 docs/legacy129-next-evaluation-inputs.md。",
+  "request_kind": "recover_existing_historical_capture_first",
+  "requested_model": "3.1-origin (2604 contrast)",
+  "scope_note": "只导出现有历史 raw-B，不请求新增推理、不采集2605 base；若找不到请回报 missing，不用新结果覆盖历史文件。",
+  "capture_config": {
+    "image_analysis": true,
+    "return_middle_json": true,
+    "return_images": true,
+    "backend": "vlm-vllm-async-engine"
+  },
+  "capture_manifest_sha256": "a46ef1a8c6b19229794e423a72b2d630e200373791bde4b081e11021b775d308",
+  "source_pdf_directory": "/data/home/huangyx/project/pdf2text-badcases/evaluation_datasets/pdf/source",
+  "deliverables": [
+    "完整原始 JSON 响应（保持 middle_json 的原样字符串/对象和 type/sub_type/页号/bbox）",
+    "原始 images 或可访问的独立图像文件",
+    "原采集 manifest、模型/服务版本；若已有对应 P2T 成品再附 Markdown 与图片资产"
+  ],
+  "documents": [
+    {
+      "document_id": "bc_018",
+      "filename": "4-3扫描1.pdf",
+      "physical_pages_of_interest": [
+        1,
+        5
+      ],
+      "pdf_sha256": "f052a86b265c52355579762c338964d48463cdcae1077ff48778bf1864ee0c0e",
+      "expected_historical_response_sha256": "bab01b95d5f0bbd8037b7b9a1c14557b63599a320442769b630aac22b176d7ce",
+      "purpose": "用于核对 4 个印章的实际输出和来源，已有旧 IR 章文可先评分；不是要求重新推理"
+    },
+    {
+      "document_id": "bc_019",
+      "filename": "4-3扫描2.pdf",
+      "physical_pages_of_interest": [
+        1
+      ],
+      "pdf_sha256": "80661173c24b82260ef7374c891e8fd8ce3e89f8c2be25243f8d6e6fad3245be",
+      "expected_historical_response_sha256": "de6fcb90f876d6a14534b64d7eb9a7257bfa010eceb9877527b5cad47383d6eb",
+      "purpose": "用于两章合框的归属复核；不能复用同一章文输出给两个来源"
+    },
+    {
+      "document_id": "bc_024",
+      "filename": "5-2表旁水印.pdf",
+      "physical_pages_of_interest": [
+        1
+      ],
+      "pdf_sha256": "86de9f19523eb3c595b2a3c8760c4341bed63e0ab47072624c0f8887e8ee4e03",
+      "expected_historical_response_sha256": "a32f06ab557ad36bacfc87719d1d0a1f8c216f8f7a14ad67ca4c7456ac281d6b",
+      "purpose": "文字封面图的原始类型、内容与图像资产；旧 IR 未保留 subtype"
+    },
+    {
+      "document_id": "bc_041",
+      "filename": "中山日报_深圳特区报合作_2.pdf",
+      "physical_pages_of_interest": [
+        1
+      ],
+      "pdf_sha256": "be4f7daa5b2a6b66e5307bf94fdefae50a3ced47e23dc4ba37b11a1ba16f9af1",
+      "expected_historical_response_sha256": "b545e237bafca427442f6c7e5a8837844f0a3f636d02ca054fea08f253eb9107",
+      "purpose": "有字照片的原始 subtype；文字已在旧 IR 中，不要求重新生成"
+    },
+    {
+      "document_id": "bc_108",
+      "filename": "珠海机场_工作证管理细则_9.pdf",
+      "physical_pages_of_interest": [
+        1
+      ],
+      "pdf_sha256": "7498dce4315a4af45d3f2064a420c152178dd75e20c8229306ca545929dd1aaa",
+      "expected_historical_response_sha256": "7ee35f3ab5c9e4b7b4385d279ea74a89695881e77700ebaf06f1c4493095523c",
+      "purpose": "旧 IR 没有 subtype；节点和有向关系已有 evidence，无需重推这些内容"
+    }
+  ],
+  "new_parent_analysis": {
+    "status": "deferred_to_future_evaluation_do_not_execute_this_round",
+    "models": [
+      "3.1-ft",
+      "3.1-origin"
+    ],
+    "plan": "artifacts/legacy129-subimage-20261123/analysis-units-review-20261124/analysis-plan.json",
+    "units": [
+      "bc_022-p2-i2-parent",
+      "bc_022-p5-i2-parent",
+      "bc_062-p1-i12-parent",
+      "bc_062-p1-i16-parent"
+    ],
+    "note": "4 个父图输入已有；当前缺对应父图分析响应，不能用子图拼成父图回答。它们不都具有内容 GT，不自动纳入图片主分。"
+  }
+}

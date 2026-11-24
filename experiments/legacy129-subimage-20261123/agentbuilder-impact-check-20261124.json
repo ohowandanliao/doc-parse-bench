@@ -1,0 +1,198 @@
+{
+  "schema_version": "doc-parse-bench.legacy129-agentbuilder-impact.v1",
+  "baseline_commit": "b14b27f",
+  "feature_commits": [
+    "d6251ad",
+    "79d8eed",
+    "c2b7a51"
+  ],
+  "result": "Existing AgentBuilder-v2 and historical AgentBuilder scoring paths and saved aggregate scores are unaffected by these legacy129 feature changes.",
+  "unchanged_runtime_sources": [
+    {
+      "path": "src/doc_parse_bench/agentbuilder_v2.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "89e7353d49b8cb6e25845eedd7c9bb4731b7f1841685d9608f48117494e222c1"
+    },
+    {
+      "path": "src/doc_parse_bench/metrics.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "7cfb36eb83cb2c657ccf945fc5446c7cdb0dd4844150783f6e45154a8aef871c"
+    },
+    {
+      "path": "src/doc_parse_bench/heading.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "21a816a8f3ef383897dbdfccade646dfdc7d6672a95ce5aed10879b64f201869"
+    },
+    {
+      "path": "src/doc_parse_bench/predictions.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "f582fcd63435cc8d1b448adbb5d7cf8c9e5280fde071f6eff502a44f0f175767"
+    },
+    {
+      "path": "src/doc_parse_bench/exporters.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "58b2bbd35671e7e4fb8f028f408a89e00685e4ef7ccf8b86b71f1574a976c778"
+    },
+    {
+      "path": "src/doc_parse_bench/annotations.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "b85395bc9e06a8518b774826bdc15b070049994460ddf880e746fd526cd29841"
+    },
+    {
+      "path": "src/doc_parse_bench/pipeline.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "b63dd4565925215f16f8a61e75e136ed324ac9a93efa70789328a4f6ca079d02"
+    },
+    {
+      "path": "src/doc_parse_bench/markdown.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "1ea960691452851d5214b97b68622acc6158220d05a7e42aec2fb5c82ad8f6ac"
+    },
+    {
+      "path": "src/doc_parse_bench/context.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "ba3a7a80d1dd821d0cc64946918c6154f00d22b3a2c54a6ec83d812346945b8c"
+    },
+    {
+      "path": "src/doc_parse_bench/schema.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "efa4d9c33dcb6d522a52798f56f9e45c5cc087839c76b853145e0bb9f1eeb9c9"
+    },
+    {
+      "path": "src/doc_parse_bench/backends/runner.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "60b859d0f8efbe5a2ca28e3c4955277d124a6859d49da5ef57da7dae37706751"
+    },
+    {
+      "path": "src/doc_parse_bench/benchmark.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "c656ae31c5d4143816d34a4c658840c2f3533b60f0dd1a7a32401a8aabe3e8d3"
+    },
+    {
+      "path": "src/doc_parse_bench/io.py",
+      "unchanged_from_b14b27f": true,
+      "sha256": "7923ab38e0640047db4cc527d907d87af0e27d7e25ec6a8b26753d6cac1580d9"
+    }
+  ],
+  "saved_report_source_hashes_match": [
+    "agentbuilder_v2.py",
+    "heading.py",
+    "metrics.py"
+  ],
+  "saved_aggregate_verification": {
+    "models": 15,
+    "scope": "Recomputed totals from saved components; no model calls or native evaluator rerun",
+    "saved_source_hashes_match": true,
+    "results": [
+      {
+        "model": "mineru4_advanced",
+        "agentbuilder_v2_overall": 0.8721254435451924,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru4_standard",
+        "agentbuilder_v2_overall": 0.8503028868333316,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru4_standard+vlm",
+        "agentbuilder_v2_overall": 0.843443785367389,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru4_advanced+vlm",
+        "agentbuilder_v2_overall": 0.84249377082113,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru4_advanced+rules",
+        "agentbuilder_v2_overall": 0.8390936435141094,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru4_standard+rules",
+        "agentbuilder_v2_overall": 0.8384017749905928,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "oxr",
+        "agentbuilder_v2_overall": 0.8308221185439733,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "NaviDC-OCR",
+        "agentbuilder_v2_overall": 0.8059454084515107,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "OvisOCR2",
+        "agentbuilder_v2_overall": 0.8027476615810242,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "logics_3page",
+        "agentbuilder_v2_overall": 0.7693562588021382,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru31",
+        "agentbuilder_v2_overall": 0.7636318145261312,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru31+vlm",
+        "agentbuilder_v2_overall": 0.7540670126202341,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "mineru31+rules",
+        "agentbuilder_v2_overall": 0.7424209912298184,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "Unlimited-OCR-2",
+        "agentbuilder_v2_overall": 0.7344399593917595,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      },
+      {
+        "model": "logics_single",
+        "agentbuilder_v2_overall": 0.6832240606666041,
+        "matches_saved_v2": true,
+        "matches_saved_historical": true
+      }
+    ]
+  },
+  "regression": {
+    "command": ".venv/bin/python -m pytest -q tests/test_heading_v2.py tests/test_metrics_and_safety.py tests/test_reports.py tests/test_pipeline.py tests/test_adapters.py tests/test_provenance.py",
+    "passed": 59,
+    "failed": 0
+  },
+  "historical_results": {
+    "files_verified_before_and_after_checks": 64,
+    "all_hashes_unchanged": true,
+    "inventory_sha256": "41a96df2e3a6937e53bd29bda7ff27b6e4ac0b67edc6d9e263d60e38122750f8"
+  },
+  "shared_changes_reviewed": {
+    "cli.py": "Only feature subcommands/options/dispatch changed; main evaluation and rescore-agentbuilder dispatch unchanged.",
+    "mineru_middle.py": "Preserves subtype/subimage provenance metadata for feature IR; AgentBuilder import_predictions/rescore paths do not import this module."
+  },
+  "scope_limits": [
+    "No model inference.",
+    "No native OmniDocBench/MPDocBench full dataset reevaluation.",
+    "Aggregate verification reuses stored component scores; independent functional regressions cover headings, exports, CLI pipeline and boards."
+  ]
+}
