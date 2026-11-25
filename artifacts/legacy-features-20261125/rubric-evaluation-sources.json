@@ -1,0 +1,1490 @@
+{
+  "structure_sha256": "a1384023b6bc67aba52b312091f7bd729c2fc0eba7940e745d422e56fd0c9b29",
+  "pilot_sha256": "6d98b54495edc5f61422103a3a032a64ed93c72383a3df068e3c22238f610b72",
+  "documents": [
+    {
+      "document_id": "bc_001",
+      "source_pdf": "1-2无线表1.pdf",
+      "pdf_sha256": "04e20866415de1585bd913b4795b3c63f9051d3124e1883067d5f98a5e98871e",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_002",
+      "source_pdf": "1-2无线表2.pdf",
+      "pdf_sha256": "3e2be629c42c8d39cc294145d277c25032a8d064713e79ff53327489d2cfc2d7",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_003",
+      "source_pdf": "1-3单元格内换行1.pdf",
+      "pdf_sha256": "2075b496b4223fc8661d0d22e56c37aabb4dafec98008b5a6e335a07a75ca1f0",
+      "pages": 35,
+      "appendix_pages": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "margin_pages": [
+        1,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ]
+    },
+    {
+      "document_id": "bc_004",
+      "source_pdf": "1-3单元格内换行2.pdf",
+      "pdf_sha256": "92a151c1165acf037a90b38149826f25c7ceda6a01446cfa579a363de96b0287",
+      "pages": 9,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_005",
+      "source_pdf": "2-1横向合并.pdf",
+      "pdf_sha256": "63c34826bd0ed57b597a3a2e4516900adaaebbf3e6f02cf75d431b828ab34a27",
+      "pages": 9,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "document_id": "bc_006",
+      "source_pdf": "2-2纵向合并.pdf",
+      "pdf_sha256": "c11e936a88baa48f3da989458625d4853916b0a06937615c91021095d682b358",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_007",
+      "source_pdf": "2-3多层嵌套表头2.pdf",
+      "pdf_sha256": "6ebab0fd6715102237e2b051184f65c361f4ae6c415a15a6bccd2ea3fc34b2f2",
+      "pages": 2,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2
+      ]
+    },
+    {
+      "document_id": "bc_008",
+      "source_pdf": "2-4斜线表头.pdf",
+      "pdf_sha256": "7e12aceb0ea33ab3138bed6f5e47a186ac6c48790d480330eeff5b00352e7e4c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_009",
+      "source_pdf": "2-5表内公式.pdf",
+      "pdf_sha256": "002d81c743605f188238acfccbd27eef414e244db409bf2c6b3cd8132f67e36d",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_010",
+      "source_pdf": "3-1跨页重复表头.pdf",
+      "pdf_sha256": "2e85bd5a990f5364ed287dd7cc896b427b3b3ff8e3869d2352d72584a4db3827",
+      "pages": 25,
+      "appendix_pages": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "document_id": "bc_011",
+      "source_pdf": "3-2跨页分页切断.pdf",
+      "pdf_sha256": "e18760d963574a70b6328df11e5fac6fec84a436e0f245a615363784e9539707",
+      "pages": 10,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_012",
+      "source_pdf": "3-3跨页表注在不同页.pdf",
+      "pdf_sha256": "b6edf216264a4127e51824ca3c938952f1d0f5a1f132b2f500d93deb0d0c401d",
+      "pages": 4,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_013",
+      "source_pdf": "3-4长表跨三页以上.pdf",
+      "pdf_sha256": "28a612f0ee680d412be4396d0e495e02b014e2842c0d5a004a1472bcc8290c60",
+      "pages": 26,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_014",
+      "source_pdf": "4-1统计图1.pdf",
+      "pdf_sha256": "1b2ceaec4ed1147b52b4d4d250d83fe95e6eb170d104dd1e23cc98bf69b2dc2d",
+      "pages": 8,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "document_id": "bc_015",
+      "source_pdf": "4-1统计图2.pdf",
+      "pdf_sha256": "af784600109d8284ba0938fbfc461c1c8c10396c5eb92c79e0eed0358fc0f905",
+      "pages": 15,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "document_id": "bc_016",
+      "source_pdf": "4-1统计图3.pdf",
+      "pdf_sha256": "469e4cf43b91a63581315f8772455b635dc18fb209a6a1a79a27c5caa36b2322",
+      "pages": 31,
+      "appendix_pages": [
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "margin_pages": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "document_id": "bc_017",
+      "source_pdf": "4-2段落中带「图x-x」.pdf",
+      "pdf_sha256": "1b55438aa549fd4331b73dbb621de0ea82bcf7c408bc3abdf383938c23e66358",
+      "pages": 38,
+      "appendix_pages": [
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "margin_pages": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ]
+    },
+    {
+      "document_id": "bc_018",
+      "source_pdf": "4-3扫描1.pdf",
+      "pdf_sha256": "f052a86b265c52355579762c338964d48463cdcae1077ff48778bf1864ee0c0e",
+      "pages": 5,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "document_id": "bc_019",
+      "source_pdf": "4-3扫描2.pdf",
+      "pdf_sha256": "80661173c24b82260ef7374c891e8fd8ce3e89f8c2be25243f8d6e6fad3245be",
+      "pages": 12,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_020",
+      "source_pdf": "4-4示意图.pdf",
+      "pdf_sha256": "1e9ad317bf4f7685e805b6da9d1e67c3fea8f9c47973e7915be2b9f3dc7abf5c",
+      "pages": 4,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "document_id": "bc_021",
+      "source_pdf": "5-1双栏表格1.pdf",
+      "pdf_sha256": "73024cef7a065098e6ee8bf82f205b889b9c53f64d0d80a2870c3e70e3fa7067",
+      "pages": 2,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_022",
+      "source_pdf": "5-1双栏表格2.pdf",
+      "pdf_sha256": "dbc619e367f203ae4a21a19fc37c44149d45712fbc50a360714c6ac98560b233",
+      "pages": 8,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "document_id": "bc_023",
+      "source_pdf": "5-1双栏表格3.pdf",
+      "pdf_sha256": "5895589de6a7358b979c686a124c7dc6835585d467e5511904ce94833ddb6b09",
+      "pages": 7,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "document_id": "bc_024",
+      "source_pdf": "5-2表旁水印.pdf",
+      "pdf_sha256": "86de9f19523eb3c595b2a3c8760c4341bed63e0ab47072624c0f8887e8ee4e03",
+      "pages": 11,
+      "appendix_pages": [],
+      "margin_pages": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "document_id": "bc_025",
+      "source_pdf": "5-3页眉近表.pdf",
+      "pdf_sha256": "d5de1ce60585fb28a24b9eb9fa294cc0d268bedf6f3d0b3856c81d10f87a311e",
+      "pages": 2,
+      "appendix_pages": [],
+      "margin_pages": [
+        1,
+        2
+      ]
+    },
+    {
+      "document_id": "bc_026",
+      "source_pdf": "上海某军工_标准_1.pdf",
+      "pdf_sha256": "1014c41b0597c2c9f120d629b7882f4388021b1b60ecd8cc214bbf054a2cf073",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_027",
+      "source_pdf": "上海某军工_标准_5.pdf",
+      "pdf_sha256": "e43f43583c838bc6bad376db0cdfa4b3116b6ecbb0aa15a0db5ea6134c66307c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_028",
+      "source_pdf": "上海某军工_跨页表_1.pdf",
+      "pdf_sha256": "098a8678997edd27b80e482c0dcfc1901190a36cba1232c9404e2290257b2a4d",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_029",
+      "source_pdf": "上海某军工_跨页表_11.pdf",
+      "pdf_sha256": "58a148f579ba80df841b39ef10cef88fdb5d3f3a8a50301b52335e3cee3da764",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_030",
+      "source_pdf": "上海某军工_跨页表_2.pdf",
+      "pdf_sha256": "8e1919ca23b37a2429de4f2e618bf2d588de60e795a57ff914fc74aef8f60aa5",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_031",
+      "source_pdf": "上海某军工_跨页表_3.pdf",
+      "pdf_sha256": "802602d550e7457a948baefb41456f9399abccf5573fb6a3f03621a3356c8191",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_032",
+      "source_pdf": "上海某军工_跨页表_4.pdf",
+      "pdf_sha256": "91ec39b8e995c5dec58e16faad9edf67eb51903a8b7b90420dac8d2d2fcf4fcc",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_033",
+      "source_pdf": "上海某军工_跨页表_5.pdf",
+      "pdf_sha256": "807da9668b8ecb612d6633aed20f6219419892a82ee43aa41c69278a56bfa6f4",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_034",
+      "source_pdf": "中山日报_中山招商_1.pdf",
+      "pdf_sha256": "b113c3df99953daac8cc0cc4a51e865f279922a7f0e9eb10d2ffe308634ca273",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_035",
+      "source_pdf": "中山日报_中山招商_2.pdf",
+      "pdf_sha256": "bcc7f4b0bfc5a2d4b818c53d113394dbba04d0356a5055a4368939a49c3602a0",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_036",
+      "source_pdf": "中山日报_中山招商_3.pdf",
+      "pdf_sha256": "1ac97b416e29d20e50465a4b724943fb77fd88b041c2f4106c8e12bfd46510e3",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_037",
+      "source_pdf": "中山日报_幻海云桥_1.pdf",
+      "pdf_sha256": "d920476b6a490029e42076b8adc00dc76397f6eff09a2352d41ccc69aa1ac56f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_038",
+      "source_pdf": "中山日报_报社总结会_1.pdf",
+      "pdf_sha256": "90f114162401a477ebfe44ee6cf1a32231fc9d2b6b22edafb83390b4c0fa1893",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_039",
+      "source_pdf": "中山日报_深中手绘长卷_3.pdf",
+      "pdf_sha256": "6bcaf13ae91147b65322c8329be099d5f3f54833e01ad69d3622ea0225b20355",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_040",
+      "source_pdf": "中山日报_深圳特区报合作_1.pdf",
+      "pdf_sha256": "9880775971f8c4f38d059ce27f30623c6b0fc6962ebf15ba6b242f8ecb36bb4f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_041",
+      "source_pdf": "中山日报_深圳特区报合作_2.pdf",
+      "pdf_sha256": "be4f7daa5b2a6b66e5307bf94fdefae50a3ced47e23dc4ba37b11a1ba16f9af1",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_042",
+      "source_pdf": "中山日报_表彰会_1.pdf",
+      "pdf_sha256": "4416826909727157c811ad064853dd7da7ad70c60ef6ac1702aebed813e8f49d",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_043",
+      "source_pdf": "中山日报_表彰会_2.pdf",
+      "pdf_sha256": "b1071afa5a27292f71811962adba68b56e93fe60f2f53f19c5bb5d46b748ce31",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_044",
+      "source_pdf": "中山日报_表彰会_3.pdf",
+      "pdf_sha256": "ce80c934d7c009c712f99db14617b69014129962f7f4052db6c85f262b057e25",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_045",
+      "source_pdf": "中车株洲_方案技术_1.pdf",
+      "pdf_sha256": "0bd8ef0e52e05eb2ebd1094bbdb3de8615fcc68939aa79243921a58fca57e273",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_046",
+      "source_pdf": "中车株洲_方案技术_16.pdf",
+      "pdf_sha256": "2d15015314c27598ead8ad710825ccae095460af5a28bbb1b72db5d050b07d5a",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_047",
+      "source_pdf": "中车株洲_方案技术_2.pdf",
+      "pdf_sha256": "f84c1865f0b8fd54e0b14ea6047f54f51c8dd257d0cc4df2048dd16d22af3ab4",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_048",
+      "source_pdf": "中车株洲_方案技术_3.pdf",
+      "pdf_sha256": "e533701f7680264d0c0db1cf371bebd0714917116cd66f1efcc688dea67d89d4",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_049",
+      "source_pdf": "中车株洲_方案技术_4.pdf",
+      "pdf_sha256": "33a7643aaf6eb031cf08594f8ff4d506c54f6939eaa8231e07eb719adb85701f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_050",
+      "source_pdf": "中车株洲_方案技术_5.pdf",
+      "pdf_sha256": "fcc6870fb92c73662756f64de7a10c040cb04180c6f6c2b597fe987a37bdb4e2",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_051",
+      "source_pdf": "中车株洲_方案技术_6.pdf",
+      "pdf_sha256": "ee48a35d0f5702de703c7a6190e887dab88a79f9bf28383fe2cbdb9fb3b249b7",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_052",
+      "source_pdf": "中车株洲_方案技术_7.pdf",
+      "pdf_sha256": "8ac34b4b772afa385dfe4efb52c49fc940663e42081889fc43d3fcd6a35ddc55",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_053",
+      "source_pdf": "依爱消防_工程维修手册_1.pdf",
+      "pdf_sha256": "04bfa03f11003c34da5157662b2151f8ad6dc47f339c86b417800a068ea72511",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_054",
+      "source_pdf": "依爱消防_工程维修手册_3.pdf",
+      "pdf_sha256": "8aca1a6a4b17f911035cc1bcf8b1019deb00bb65c53cbe139c8b9baf2ace2931",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_055",
+      "source_pdf": "依爱消防_工程维修手册_33.pdf",
+      "pdf_sha256": "43ae6359f1c49f340607e3af99b7c560e7a69b2faeb666021807c0a45cd3296f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_056",
+      "source_pdf": "依爱消防_工程维修手册_37.pdf",
+      "pdf_sha256": "c33670b4807d52fcd50bb8a6d9a493b626b68434f2e1b864db4d86fbbb07dd79",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_057",
+      "source_pdf": "依爱消防_工程维修手册_38.pdf",
+      "pdf_sha256": "26f479effffb0b532f69cc83b1bec2fb0bb659cff44d3440664e5c8280af6a68",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_058",
+      "source_pdf": "依爱消防_工程维修手册_42.pdf",
+      "pdf_sha256": "3e9e1d42f5618ed1b4f9a51b79d028e4c18bbeeffc897ca34dd3724814ea63a2",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_059",
+      "source_pdf": "依爱消防_工程维修手册_44.pdf",
+      "pdf_sha256": "591711fb576df4ecbade3aaf06ffa013059ad5dc59b544eedd4b8a462a91e688",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_060",
+      "source_pdf": "依爱消防_工程维修手册_6.pdf",
+      "pdf_sha256": "7aa560c784a16bea698f98bb91da5c3261752d47844c6111a15eb014c2f58e7f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_061",
+      "source_pdf": "依爱消防_电气火灾监控系统_1.pdf",
+      "pdf_sha256": "35e214e55d5ae17ee0036e8895e90ee35f2ff815b28d5f358a93001626a017eb",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_062",
+      "source_pdf": "依爱消防_电气火灾监控系统_2.pdf",
+      "pdf_sha256": "e5fed7ada9933e1baefb907aa4b31841c228e6db94af261eb9c5d08c6d327ebc",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_063",
+      "source_pdf": "依爱消防_电气火灾监控系统_3.pdf",
+      "pdf_sha256": "2a4574b1a975dbf005559c9db42df133e5f803101a4b2af6777e0650b8002ce4",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_064",
+      "source_pdf": "依爱消防_电气火灾监控系统_4.pdf",
+      "pdf_sha256": "cd1f45afce34a3579145e9dadacb1e6bd4b7bc683e24d35c000ff9cf6b563ec9",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_065",
+      "source_pdf": "依爱消防_电气火灾监控系统_5.pdf",
+      "pdf_sha256": "d2fe03995dcb7f0dd25ca5fbfa24d5999f76a2690d6b0d2bc4525e50963fa973",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_066",
+      "source_pdf": "依爱消防_电气火灾监控系统_6.pdf",
+      "pdf_sha256": "7d71b9e30ee1799d0af40b46d045ebc7339748ec8280377a78d17ce1ef792eae",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_067",
+      "source_pdf": "依爱消防_电气火灾监控系统_7.pdf",
+      "pdf_sha256": "83990a942bab767b14371ffa4bed9184844a1df0d9714e39f6d10fce4dd3ac12",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_068",
+      "source_pdf": "南通化工_设施资产控制程序_10.pdf",
+      "pdf_sha256": "e51f057b7d40ccd63ec7081bb204afb6b5f833c7f91fa0684d4653d094c9bb7d",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_069",
+      "source_pdf": "南通化工_设施资产控制程序_11.pdf",
+      "pdf_sha256": "662281742cd230204f4f4ff99f7a8f7b942dcd31fb29ab8dc8e309bdc6ebe73e",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_070",
+      "source_pdf": "南通化工_设施资产控制程序_2.pdf",
+      "pdf_sha256": "e57ad7d79f0b422787e5286d23abc2b11cc3d29b21467ec306fa8a8635fc0375",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_071",
+      "source_pdf": "南通化工_设施资产控制程序_3.pdf",
+      "pdf_sha256": "97ffaccba550abc6752f1866c7b6a0b800516dd78a1c9be087dfb1b81ca80105",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_072",
+      "source_pdf": "南通化工_设施资产控制程序_5.pdf",
+      "pdf_sha256": "7565ae1f21e4203fad50db47a36d3465fc2ad736e04b881c3f4214d6c31ff15c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_073",
+      "source_pdf": "广东城规院_南海湾_1.pdf",
+      "pdf_sha256": "e1af99941af24f492f6a288cc8522943966933493e7d0a893d22455a547ebbb3",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_074",
+      "source_pdf": "广东城规院_惠玩甘青_1.pdf",
+      "pdf_sha256": "d5142ea886a54535191a442d4379fbdccfec8c346deb5a39d8d2e43ad18247df",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_075",
+      "source_pdf": "广东城规院_惠玩甘青_11.pdf",
+      "pdf_sha256": "43689f9f96bcd8498d6ac6c6f8c46716dcb6deef1706ccb8ec97a73d3bb57503",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_076",
+      "source_pdf": "广东城规院_惠玩甘青_2.pdf",
+      "pdf_sha256": "4a7743d936ecfcaa66d6997d9bf778ab3430b75639c4f9804ef39a13839227a1",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_077",
+      "source_pdf": "广东城规院_惠玩甘青_4.pdf",
+      "pdf_sha256": "99e034cfdcb36f1e1b1f81f01487d6e1312e1b93f0927f21901ff029f1a51e63",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_078",
+      "source_pdf": "广东城规院_惠玩甘青_7.pdf",
+      "pdf_sha256": "65eba766c60bd1d484a28d9d56f27d81ca237f49cef3a02915ad0be8977a62a1",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_079",
+      "source_pdf": "广东城规院_惠玩甘青_8.pdf",
+      "pdf_sha256": "b734682bb06e7d828a6ee2ea2c32749e1b5e7b9e381b04641a91ca3f3d0a7fd1",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_080",
+      "source_pdf": "广东特检院_安全报告1_1.pdf",
+      "pdf_sha256": "fbbcba195bdd9ef8e4a1bc3088dea506b58b88d4daa5b132b0c0c95c25a4dbd8",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_081",
+      "source_pdf": "广东特检院_安全报告1_5.pdf",
+      "pdf_sha256": "f5302bbfe7a23fdb95595ac542112abf448f0df239b822a41ade23c38ae02e74",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_082",
+      "source_pdf": "广东特检院_安全报告2_2.pdf",
+      "pdf_sha256": "4e383de1392263ba6f6c003bdc73a3dae7ed4b0a01c88306935dd9360dbd79a2",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_083",
+      "source_pdf": "广东特检院_安全报告2_3.pdf",
+      "pdf_sha256": "e34f54406c80ea3378b331ec1403b934f0f0190be2a8811f0a4154540c60b4f0",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_084",
+      "source_pdf": "广东特检院_安全报告2_5.pdf",
+      "pdf_sha256": "dbd8e2143bf9b312caa1e9e7bcf631ef3c1a4cf9acb643f21a1d6547f0dde0e9",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_085",
+      "source_pdf": "广东特检院_安全报告2_6.pdf",
+      "pdf_sha256": "762591d9531fb82e2075a388d698d00f52ecf6258b28978b6f86abdf9cb02655",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_086",
+      "source_pdf": "广东特检院_安全报告2_7.pdf",
+      "pdf_sha256": "236c9b1acdf7aded208d4a65bf0c321224ddb87c4f1f7d967312da4807db69fe",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_087",
+      "source_pdf": "广东特检院_安全报告3_5.pdf",
+      "pdf_sha256": "ccd3465aa0f603e98b8ca80d992b7bd83e3db2014660a8e72ec699644c9bc2b4",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_088",
+      "source_pdf": "成勘院_风功率等级_1.pdf",
+      "pdf_sha256": "2c9b75fe8680083da87e4ad1b87016aa8f610ceeffe898da5d6aa00d2be313ea",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": []
+    },
+    {
+      "document_id": "bc_089",
+      "source_pdf": "成勘院_风能资源规划_1.pdf",
+      "pdf_sha256": "14bf2c385bdbf0e57361baa37a8304b487de79dd952cd256578cdcb386bd08e6",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_090",
+      "source_pdf": "成勘院_风能资源规划_10.pdf",
+      "pdf_sha256": "bfba7d418eb999467cd710a715ae87664a6dc1918a0f5df6291788bf6e02a427",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_091",
+      "source_pdf": "成勘院_风能资源规划_3.pdf",
+      "pdf_sha256": "d2d97f0dfb4f3588d93749ddfbb1cf93fe9462972059a735ff5f1bcb9aad5c36",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_092",
+      "source_pdf": "珠海机场_三防工作预案_13.pdf",
+      "pdf_sha256": "8980a12bb6f322b888934b7095751983665cd1a24448aabf3459935ed7a1311b",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_093",
+      "source_pdf": "珠海机场_三防工作预案_15.pdf",
+      "pdf_sha256": "31b59e8cc8ecc1fb5e4129855f3e0470ab54ebcce76734afadc5f5af45d9b3d3",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_094",
+      "source_pdf": "珠海机场_三防工作预案_16.pdf",
+      "pdf_sha256": "2986b4cc7f0a7bb694fb05af8eef12edaed220de0fac7ad1ced6f1784e46b1f4",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_095",
+      "source_pdf": "珠海机场_三防工作预案_2.pdf",
+      "pdf_sha256": "e20860aff82368e96a0fc68cbc9511d9d859effef3f86a337e890a6d5efdfe81",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_096",
+      "source_pdf": "珠海机场_三防工作预案_23.pdf",
+      "pdf_sha256": "5ebee9ad860dd5d617c4263e6ce2159eb3615ed74a93095873614f65efaf094c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_097",
+      "source_pdf": "珠海机场_三防工作预案_3.pdf",
+      "pdf_sha256": "a0e4323a35376faeacb92deee767c7f0ad0abb3c69694d6c5d97cd0510161511",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_098",
+      "source_pdf": "珠海机场_三防工作预案_8.pdf",
+      "pdf_sha256": "956bc9509eb2bac189d18f4cc15c580bce9a387ce2204d20b268525e4a2e0713",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_099",
+      "source_pdf": "珠海机场_办公电脑管理规定_1.pdf",
+      "pdf_sha256": "b0fd7a5585a3e1f7857e4c002fd0f849fc60db4f6a6c8dba40edbd0ded29ed4c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_100",
+      "source_pdf": "珠海机场_办公电脑管理规定_11.pdf",
+      "pdf_sha256": "bb517b6188e217a665673e7d75d11bab0b15c793a953f63a26b5d1461d835a1b",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_101",
+      "source_pdf": "珠海机场_办公电脑管理规定_13.pdf",
+      "pdf_sha256": "e262105076d27f9faf87ed2d9eb07add64c829d20e5203756c70e916afe87f83",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_102",
+      "source_pdf": "珠海机场_办公电脑管理规定_14.pdf",
+      "pdf_sha256": "31ca548273d7b055332218dfc8a1e7d7a4d143d09d14d2936dd302482a0ed85d",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_103",
+      "source_pdf": "珠海机场_办公电脑管理规定_5.pdf",
+      "pdf_sha256": "6a3e0b5d3bb1f1678d531ebea3221f71c37ec5b9246a008ef6fe464e016ea13f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_104",
+      "source_pdf": "珠海机场_办公电脑管理规定_6.pdf",
+      "pdf_sha256": "64d72a365602785b6da1b879835fad08079eb8adc8707565fdddab879e214467",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_105",
+      "source_pdf": "珠海机场_办公电脑管理规定_7.pdf",
+      "pdf_sha256": "3bab1e4fb16d39acbd40e5e994fc24ad5f077255c4ada1051fd94c000c534b6e",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_106",
+      "source_pdf": "珠海机场_工作证管理细则_12.pdf",
+      "pdf_sha256": "eeceee7f6bc8a19e0231bdff544fdf4c775b0aee155a3db5074adb815462cc19",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_107",
+      "source_pdf": "珠海机场_工作证管理细则_6.pdf",
+      "pdf_sha256": "e10d38b89d0d000ee059cf0b60e7cdf7d4b5eb76a595430ac69401812aa45c6c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_108",
+      "source_pdf": "珠海机场_工作证管理细则_9.pdf",
+      "pdf_sha256": "7498dce4315a4af45d3f2064a420c152178dd75e20c8229306ca545929dd1aaa",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_109",
+      "source_pdf": "科欣环保_产业结构_108.pdf",
+      "pdf_sha256": "4e50cca369c267ab25ed484c198212f5128df0b47c7a25f1887d7cf2c038a15f",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_110",
+      "source_pdf": "科欣环保_产业结构_130.pdf",
+      "pdf_sha256": "3ca3ad26a2c4e011f48d4541c2c0143c8c8eae6065ffc362b480650723d99867",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_111",
+      "source_pdf": "科欣环保_产业结构_134.pdf",
+      "pdf_sha256": "e5de02adcb663892b216d43ed1239447919bd575f24e76aadc2e3201da9b9b88",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_112",
+      "source_pdf": "科欣环保_产业结构_140.pdf",
+      "pdf_sha256": "b07ed42e7909fde09af19927e8ca28841647cae35526c73c6283fee087f3e9b9",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_113",
+      "source_pdf": "科欣环保_产业结构_22.pdf",
+      "pdf_sha256": "731cd89975e9e621bb9f78866789fe6691871fd48fc56d3255803041b6421606",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_114",
+      "source_pdf": "科欣环保_产业结构_23.pdf",
+      "pdf_sha256": "12ecdc72733aa2df0f98a88e1a0ef58f4e0065923b3c7d1b0e95eda2ce509acb",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_115",
+      "source_pdf": "科欣环保_产业结构_38.pdf",
+      "pdf_sha256": "47fdc8ed556dfcfd27f8968c485f2d081026285af84bcf296a5cc9e3f1961c80",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_116",
+      "source_pdf": "科欣环保_产业结构_41.pdf",
+      "pdf_sha256": "f70bfa7eb2ff50cfcd7d869609425bb84728ea2fad27d7529339125d176955fa",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_117",
+      "source_pdf": "科欣环保_产业结构_5.pdf",
+      "pdf_sha256": "7876524e7f8e9a68ad8053bbf09b326dde7f933930bcc12afaf7117e8eeb71d1",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_118",
+      "source_pdf": "蓝德_保障性住房租赁_1.pdf",
+      "pdf_sha256": "7d8e7605518e5a3645415087763f36c9b469f1a07fc1ac730dccc04af542be33",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_119",
+      "source_pdf": "蓝德_保障性住房租赁_10.pdf",
+      "pdf_sha256": "35f47684c1172be7c66836d1d36dd687509701d367493c93aa144f42cc7659dc",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_120",
+      "source_pdf": "蓝德_保障性住房租赁_12.pdf",
+      "pdf_sha256": "f70e7190d728040ea032bbac1ac1407090bfdcad8f0f9923b3346b516468778c",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_121",
+      "source_pdf": "蓝德_保障性住房租赁_2.pdf",
+      "pdf_sha256": "0228e70e33e744f2134e71ecb8bcf6b611be8daf6cfcf9a01be45a56e8bc2ee9",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_122",
+      "source_pdf": "蓝德_保障性住房租赁_4.pdf",
+      "pdf_sha256": "17ed86d2d3da725cbcd70b65dc658aac75d20003e073e700e3e8a2a71cf71f37",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_123",
+      "source_pdf": "蓝德_办公用房管理_1.pdf",
+      "pdf_sha256": "aee9fe6b997e3687a9af441f2dbfe06fd42b38d76e2dff5dc291560446d4e1f6",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_124",
+      "source_pdf": "蓝德_办公用房管理_13.pdf",
+      "pdf_sha256": "253ea714934bd83ec5d4f2686890f1717b3cc131fd9489e4438148c99c49c93b",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_125",
+      "source_pdf": "蓝德_办公用房管理_14.pdf",
+      "pdf_sha256": "c66d5a4e7ca2fb69de2e548b5b2eb77ca651a74ab8033919ef94fcfe6a56f3fd",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_126",
+      "source_pdf": "蓝德_办公用房管理_2.pdf",
+      "pdf_sha256": "cc08bbe01f43e735204d8259ce274a5d0aead1fd149fd5d6e2757d278ba7b7f7",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_127",
+      "source_pdf": "蓝德_办公用房管理_3.pdf",
+      "pdf_sha256": "188ad544b2f480ca5134bf3be737a8ad6a395cbf84045dbe9320787a0d6dab89",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_128",
+      "source_pdf": "蓝德_办公电脑配置标准_1.pdf",
+      "pdf_sha256": "465dda0b467368410bb3cc0061f56e37bf27a102cf678141a0becc0e521d43c3",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "bc_129",
+      "source_pdf": "蓝德_办公电脑配置标准_2.pdf",
+      "pdf_sha256": "5f84013b0e98b3699fc0417ea65ffeda5985d3ad208a8208e5173afc0115e6cc",
+      "pages": 1,
+      "appendix_pages": [],
+      "margin_pages": [
+        1
+      ]
+    }
+  ]
+}

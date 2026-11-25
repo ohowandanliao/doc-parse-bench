@@ -22,7 +22,9 @@ data/
 !/data/legacy/groundtruth/**
 !/artifacts/
 /artifacts/*
-!/artifacts/legacy-features-20261118/
-!/artifacts/legacy-features-20261118/**
 !/artifacts/legacy-features-20261119/
 !/artifacts/legacy-features-20261119/**
+!/artifacts/legacy-features-20261125/
+/artifacts/legacy-features-20261125/*
+!/artifacts/legacy-features-20261125/rubric-evaluation-gt.json
+!/artifacts/legacy-features-20261125/rubric-evaluation-sources.json

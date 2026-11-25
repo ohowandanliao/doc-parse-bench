@@ -8,7 +8,7 @@
 
 | 数据 | 当前范围 | SHA-256 / 状态 |
 | --- | --- | --- |
-| 旧 v2 `artifacts/legacy-features-20261118/records.json` | 历史版本，仅用于说明版本差异 | `13270f9d813497ebbabf5d0e665f77454ef4dcc0d9d6b39f968bc9a1e06a9179`；不得与当前分母混用 |
+| 11-18 结构投影 `ae06c24:artifacts/legacy-features-20261118/records.json` | 历史结构对照 | `13270f9d813497ebbabf5d0e665f77454ef4dcc0d9d6b39f968bc9a1e06a9179` |
 | v3 `records.json` | 129 篇、372 页；85 image、33 seal、73 chart | `a1384023b6bc67aba52b312091f7bd729c2fc0eba7940e745d422e56fd0c9b29`；本轮字节未变 |
 | 内容 `rubric-pilot-gt.json` | 98 条校准记录，含 13 条保护项 | `6d98b54495edc5f61422103a3a032a64ed93c72383a3df068e3c22238f610b72`；本轮字节未变 |
 

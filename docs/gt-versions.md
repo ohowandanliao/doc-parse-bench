@@ -5,8 +5,8 @@
 | 版本名 | 来源和路径 | 主要内容 | 用途 | 不用于 |
 | --- | --- | --- | --- | --- |
 | `legacy-129-markdown-v1` | `data/legacy/groundtruth/` | 129 个旧 Markdown；包含历史正文、旧标题、普通表格，以及部分图片/图表转录 | 历史 `legacy_compat` 复现；为图表候选内容提供来源证据 | 新版 TreeTitle-v2/AgentBuilder 主 GT；四功能结构分 |
-| `legacy-129-annotated-v2` | 原包 `legacy_129_pack_20261118.tar.gz`；解压后是 `runs/`、`annotations/`、`sources/` | 129 份、372 页的结构化 GT；机器标注结果叠加人工页面修订，标题、页码、块类型、层级、bbox 和阅读顺序更可靠 | 显式运行 129 份 AgentBuilder/TreeTitle-v2 的标题主 GT；也是四功能 GT 的结构来源 | 直接当作旧 Markdown 历史分；直接当作 chart 内容数值 GT |
-| `legacy-129-feature-v3` | 由 v1＋v2 生成到 `artifacts/legacy-features-20261118/` | 轻量包中的 129 条 `records.json`，把 v2 的结构位置与 v1 的旧内容候选对齐，并记录每个功能的有效分母和覆盖状态 | 只用于 `keep_appendix`、`keep_header_footer`、`image_analysis`、`chart_analysis` 四功能专项 | AgentBuilder、TreeTitle-v2、OmniDocBench、MPDocBench 三个基础榜 |
+| `legacy-129-annotated-v2` | 当前原包 `legacy_129_pack_20261119.tar.gz`；解压后是 `runs/`、`annotations/` | 129 份、372 页的结构化 GT；在 11-18 版基础上修订 6 篇、12 页的 image/chart 类型，标题、页码、块类型、层级、bbox 和阅读顺序更可靠 | 显式运行 129 份 AgentBuilder/TreeTitle-v2 的标题主 GT；也是四功能 GT 的结构来源 | 直接当作旧 Markdown 历史分；直接当作 chart 内容数值 GT |
+| `legacy-129-feature-v3` | 当前派生包 `artifacts/legacy-features-20261119/`。11-18 的历史基线可从提交 `ae06c24` 的 `artifacts/legacy-features-20261118/` 取回 | 轻量包中的 129 条 `records.json`，把 v2 的结构位置与 v1 的旧内容候选对齐，并记录每个功能的有效分母和覆盖状态；2026-11-23 人工复核修订 2 个 image/chart 类型，记录在 `manifest.json.manual_review` | 只用于 `keep_appendix`、`keep_header_footer`、`image_analysis`、`chart_analysis` 四功能专项 | AgentBuilder、TreeTitle-v2、OmniDocBench、MPDocBench 三个基础榜 |
 
 ## 版本关系
 
@@ -26,14 +26,18 @@ v2 是“新标注终态”，不是 v3。v3 是为了四个 PDF2Text 开关额�
 - 重新评估 129 的标题/AgentBuilder：选择 `legacy-129-annotated-v2`，显式准备对应的 pages/documents 和预测，运行 TreeTitle-v2/AgentBuilder；不要读取 v1 的 Markdown 作为标题 GT。
 - 测四个 PDF2Text 功能：先用 v1＋v2 生成 `legacy-129-feature-v3`，再运行 `docbench evaluate-features`；不要把四功能分并入 AgentBuilder。
 
+四功能正式计分使用 [11 月 25 日正式 GT](../artifacts/legacy-features-20261125/rubric-evaluation-gt.json) 和 [129 篇输入清单](../artifacts/legacy-features-20261125/rubric-evaluation-sources.json)。11 月 19 日目录的 `records.json` 提供结构来源，`rubric-pilot-gt.json` 用于复现历史校准和运行评分回归测试。
+
 生成 v3：
 
 ```bash
 .venv/bin/docbench build-feature-gt \
-  legacy_129_pack_20261118.tar.gz \
+  legacy_129_pack_20261119.tar.gz \
   data/legacy/groundtruth \
-  artifacts/legacy-features-20261118 \
-  --old-pdf-dir data/legacy/dataset/pdf/source
+  /tmp/legacy-features-rebuild \
+  --old-pdf-dir data/legacy/dataset/pdf/source \
+  --appendix-overrides configs/legacy-129-appendix-overrides.json \
+  --block-overrides configs/legacy-129-block-overrides.json
 ```
 
 `build-feature-gt` 默认只输出 `manifest.json`、`records.json` 和 `comparison.md`，因为 v2 原包已经保存完整结构来源；需要本地调试展开 JSON 时才加 `--include-structured`。输出 `manifest.json` 会记录 `gt_lineage`，说明 v1 是旧内容来源、v2 是结构主来源、v3 是专项派生版本。任何报告都应同时保存所选版本名和来源哈希，不能只写“129 GT”。

@@ -1,6 +1,6 @@
 # Legacy 129：下次评测材料要求
 
-本轮按用户要求收口：停止补取历史响应、补推父图／子图、补 GT 和继续补齐图片／印章分数。保留现有校准结果与缺项；图片／印章专项及四项总分仍为 `null`。本文是下次独立评测的数据交付契约，不是本轮的补采任务。
+本文约定 Legacy 129 四功能正式评测的采集与评分输入。正式 GT 使用 `split=evaluation`，附录按旧版 MinerU 的标题截断规则计分。已有回放与校准结果继续按各自的 GT 版本引用。
 
 ## 已提交的实现
 
@@ -16,6 +16,12 @@
 | `mineru_middle.py` | 129 专项 IR 中保留实际 subtype 及子图来源 metadata |
 
 四项公式、精确匹配与空值语义见 [评分交付口径](legacy129-scoring-contract.md)，完整证据字段见 [评分实现说明](feature-evaluation-129-rubric.md)。下次沿用同一公式；更改 GT、内容范围或归一化规则时必须单独标版本并对两版统一重评。
+
+## 正式 GT
+
+- 内网拉取包含正式 GT 的 `doc-parse-bench` 提交后，两版都使用 [11 月 25 日正式计分清单](../artifacts/legacy-features-20261125/rubric-evaluation-gt.json)。报告记录该提交和 GT 的 SHA-256。
+- 按 [129 篇输入清单](../artifacts/legacy-features-20261125/rubric-evaluation-sources.json) 核对待推理 PDF 的文档 ID、哈希、物理页数和附录截断范围。
+- 正式分母为附录截断 48 页、页眉页脚 800 块、图片／印章 89 个计分目标、图表 47 张及 312 个明示值。另核对 20 个保护项。
 
 ## 下次必须交付的原始材料
 
@@ -97,11 +103,12 @@ next-evaluation/
     evidence.json
 ```
 
-先生成空模板（这里是下次操作说明，本轮不执行）：
+为每个模型生成空模板。以下以 FT 为例。
 
 ```sh
 .venv/bin/python -m doc_parse_bench.feature_score_cli template \
-  --gt /path/to/frozen-gt.json --model 3.1-ft --stage final \
+  --gt artifacts/legacy-features-20261125/rubric-evaluation-gt.json \
+  --model 3.1-ft --stage final \
   --output /path/to/ft/evidence-blank.json
 ```
 
@@ -109,7 +116,8 @@ next-evaluation/
 
 ```sh
 .venv/bin/python -m doc_parse_bench.feature_score_cli score \
-  --gt /path/to/frozen-gt.json --pred /path/to/ft/evidence.json \
+  --gt artifacts/legacy-features-20261125/rubric-evaluation-gt.json \
+  --pred /path/to/ft/evidence.json \
   --output /path/to/new-empty-score-directory
 ```
 
@@ -117,7 +125,7 @@ next-evaluation/
 
 ## 下次什么条件下才能出总分
 
-当前结构 GT 为 129 篇／372 页、118 个图片与印章、73 个 chart；内容 pilot 为 17 个图片／印章主分目标及 11 图／78 明示值等校准范围。采集 129 篇不等于已有 129 全量内容 GT。
+当前结构 GT 为 129 篇、372 页。正式评测使用上文的计分分母。历史内容 pilot 的校准范围包括 17 个图片／印章计分目标、11 张图表及 78 个明示值。
 
 下次若沿用 `split=calibration`，仍只发布该范围内的分项及诊断。正式总分需要预先审核并冻结声明范围的 `evaluation` GT、两版对应的真实 `final` 成品和四项完整证据；不可只改 split 名称或用缺项的平均值凑总分。确认误删仍独立否决。没有新增上线质量阈值。
 
