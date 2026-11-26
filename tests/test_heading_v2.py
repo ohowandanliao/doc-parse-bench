@@ -1,5 +1,6 @@
 import pytest
 
+from doc_parse_bench import agentbuilder_v2
 from doc_parse_bench.agentbuilder_v2 import _checked_predictions
 from doc_parse_bench.heading import (
     compare_heading_trees,
@@ -8,6 +9,7 @@ from doc_parse_bench.heading import (
     gt_heading_tree,
     markdown_heading_tree,
 )
+from doc_parse_bench.io import read_json, write_json
 from doc_parse_bench.metrics import agentbuilder_v2_score
 
 
@@ -127,3 +129,87 @@ def test_retest_rejects_changed_input_including_previously_missing_pages(tmp_pat
         _checked_predictions(tmp_path, provenance, ["doc.md"], "gt")
     with pytest.raises(ValueError, match="GT 不一致"):
         _checked_predictions(tmp_path, provenance, ["doc.md"], "changed gt")
+
+
+@pytest.mark.parametrize("include_raw_model", [False, True])
+def test_rescore_evaluates_prepared_predictions_with_optional_mineru_raw(
+    tmp_path, monkeypatch, include_raw_model
+):
+    gt = tmp_path / "gt"
+    write_json(gt / "OmniDocBench/gt.json", [{"page_info": {"image_path": "doc__p0001.jpg"}}])
+    write_json(
+        gt / "MPDocBench/gt.json",
+        [
+            {
+                "page_info": {"image_path": "doc.pdf"},
+                "layout_dets": [
+                    {"anno_id": "title", "category_type": "title", "text": "Full title", "order": 1}
+                ],
+                "extra": {
+                    "relation": [
+                        {
+                            "source_anno_id": "root",
+                            "target_anno_id": "title",
+                            "relation_type": "parent_son",
+                        }
+                    ]
+                },
+            }
+        ],
+    )
+    title_gt = gt / "MPDocBench/markdown/doc.md"
+    title_gt.parent.mkdir()
+    title_gt.write_text("# Full title", encoding="utf-8")
+
+    def make_predictions(directory, text):
+        omni = directory / "OmniDocBench"
+        omni.mkdir(parents=True)
+        (omni / "doc__p0001.md").write_text(text, encoding="utf-8")
+        mp = directory / "MPDocBench"
+        mp.mkdir()
+        (mp / "doc.md").write_text("# Full title", encoding="utf-8")
+
+    make_predictions(tmp_path / "ovis", "Original page")
+    inputs = tmp_path / "inputs.json"
+    settings = {
+        "base_directory": ".",
+        "gt": "gt",
+        "models": [{"model": "OvisOCR2", "predictions": "ovis"}],
+    }
+    if include_raw_model:
+        settings["pdf2text_config"] = "p2t.json"
+        settings["models"].append({"model": "MinerU-3.x", "raw": "raw"})
+    write_json(inputs, settings)
+
+    exported = []
+
+    def export(raw, config, directory, *, include_documents):
+        assert raw == tmp_path / "raw"
+        assert config == tmp_path / "p2t.json"
+        assert include_documents
+        exported.append(raw)
+        make_predictions(directory, "Restored page")
+        return {"restored_tables": 2}
+
+    def evaluate(backend, gold, predictions, report, **options):
+        assert backend == "OmniDocBench"
+        assert gold == gt / "OmniDocBench/gt.json"
+        assert options["title_gt"] == gt / "OmniDocBench/markdown"
+        text = (predictions / "doc__p0001.md").read_text(encoding="utf-8")
+        assert text == ("Original page" if report.parent.name == "OvisOCR2" else "Restored page")
+        write_json(report / "provenance.json", {"provided": 1, "expected": 1})
+        return {"text_accuracy": 0.9, "table_teds": 0.8, "reading_order_accuracy": 0.7, "title": 0}
+
+    monkeypatch.setattr(agentbuilder_v2, "export_mineru_predictions", export)
+    monkeypatch.setattr(agentbuilder_v2, "evaluate", evaluate)
+    result = agentbuilder_v2.rescore_agentbuilder(inputs, tmp_path / "output")
+
+    rows = {row["model"]: row for row in read_json(tmp_path / "output/summary.json")}
+    assert result["models"] == len(settings["models"])
+    assert len(exported) == int(include_raw_model)
+    assert rows["OvisOCR2"]["restored_tables"] is None
+    if include_raw_model:
+        assert rows["MinerU-3.x"]["restored_tables"] == 2
+    for row in rows.values():
+        assert row["title_tree_v2"] == 1
+        assert row["agentbuilder_v2_overall"] == pytest.approx(0.82)

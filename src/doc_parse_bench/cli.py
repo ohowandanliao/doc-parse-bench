@@ -136,6 +136,12 @@ def build_parser() -> argparse.ArgumentParser:
         exporter.add_argument("--chart-policy", choices=["native", "chart-table"], default="native")
         if name == "export-pred":
             exporter.add_argument("--context", choices=["native", "conservative"], default="native")
+    mineru_pages = sub.add_parser("export-mineru-omni", help="恢复原页表格片段并导出 Omni 逐页预测")
+    mineru_pages.add_argument("raw", type=Path, help="MinerU 3.x 原始 JSON 文件或目录")
+    mineru_pages.add_argument("output", type=Path)
+    mineru_pages.add_argument(
+        "--pdf2text-config", type=Path, required=True, help="原评测的后处理配置 JSON"
+    )
     for command, historical_default, help_text in (
         ("prepare-markdown", False, "独立处理 Markdown；图片替换与 details 清洗分别选择"),
         ("prepare-legacy", True, "历史 fix 预设；默认同时替换图片和清洗 details"),
@@ -196,9 +202,9 @@ def build_parser() -> argparse.ArgumentParser:
     collect.add_argument("reports", type=Path, nargs="+")
     collect.add_argument("--output", type=Path, required=True)
     rescore = sub.add_parser(
-        "rescore-agentbuilder", help="复测旧标题分和总分，生成 AgentBuilder-v2"
+        "rescore-agentbuilder", help="评测预测结果或复测冻结的 AgentBuilder-v2 报告"
     )
-    rescore.add_argument("--inputs", type=Path, required=True, help="冻结输入及历史报告清单 JSON")
+    rescore.add_argument("--inputs", type=Path, required=True, help="评测输入清单 JSON")
     rescore.add_argument("--output", type=Path, required=True, help="新的结果目录")
     compare = sub.add_parser("compare-xlsx", help="将已完成的旧版跑分与 XLSX 逐列对账")
     compare.add_argument("workbook", type=Path)
@@ -304,6 +310,10 @@ def main(argv=None):
         elif args.command == "export-pred":
             result = export_predictions(args.source, args.output, args.chart_policy, args.context)
             result.pop("context_events", None)
+        elif args.command == "export-mineru-omni":
+            from .mineru_page_export import export_mineru_predictions
+
+            result = export_mineru_predictions(args.raw, args.pdf2text_config, args.output)
         elif args.command in {"prepare-markdown", "prepare-legacy"}:
             result = prepare_legacy(
                 args.source,

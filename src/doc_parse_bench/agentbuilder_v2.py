@@ -5,6 +5,7 @@ import importlib.util
 from pathlib import Path
 from statistics import mean
 
+from .backends.runner import evaluate
 from .heading import (
     TITLE_TREE_VERSION,
     compare_heading_trees,
@@ -21,6 +22,7 @@ from .metrics import (
     extract_title_lines,
     normalize_report_metrics,
 )
+from .mineru_page_export import export_mineru_predictions
 
 
 def _checked_predictions(directory, provenance, expected, gt_hash):
@@ -94,19 +96,144 @@ def _write_csv(path, rows):
         writer.writerows(rows)
 
 
+def _evaluate_models(
+    inputs: Path,
+    settings: dict,
+    root: Path,
+    gt: Path,
+    gold_trees: dict,
+    gt_self: list,
+    output: Path,
+) -> dict:
+    models = {safe_name(config["model"]): config for config in settings["models"]}
+    if not models or len(models) != len(settings["models"]):
+        raise ValueError("评测模型列表为空或含重复名称")
+    for model, config in models.items():
+        if bool(config.get("raw")) == bool(config.get("predictions")):
+            raise ValueError(f"{model} 需要指定 raw 或 predictions 路径之一")
+        if config.get("raw") and not settings.get("pdf2text_config"):
+            raise ValueError(f"{model} 的 MinerU 原始响应需要 pdf2text_config")
+    omni_gt = gt / "OmniDocBench/gt.json"
+    page_names = [Path(sample["page_info"]["image_path"]).stem for sample in read_json(omni_gt)]
+    page_documents = {name.rsplit("__p", 1)[0] for name in page_names}
+    if (
+        not page_names
+        or len(page_names) != len(set(page_names))
+        or page_documents != set(gold_trees)
+    ):
+        raise ValueError("OmniDocBench 页面和 MPDocBench 标题的 GT 文档范围不一致")
+
+    output = fresh_directory(output)
+    write_json(output / "gt_self_check.json", gt_self)
+    allow_missing = settings.get("allow_missing", False)
+    rows = []
+    for model, config in models.items():
+        directory = output / model
+        restored_tables = None
+        if config.get("raw"):
+            prepared = directory / "prepared"
+            export = export_mineru_predictions(
+                root / config["raw"],
+                root / settings["pdf2text_config"],
+                prepared,
+                include_documents=True,
+            )
+            restored_tables = export["restored_tables"]
+        else:
+            prepared = root / config["predictions"]
+        if any(not (prepared / backend).is_dir() for backend in ("OmniDocBench", "MPDocBench")):
+            raise ValueError(
+                f"{model} 的预测目录需要 OmniDocBench 和 MPDocBench 子目录：{prepared}"
+            )
+        report = directory / "OmniDocBench"
+        metrics = evaluate(
+            "OmniDocBench",
+            omni_gt,
+            prepared / "OmniDocBench",
+            report,
+            title_gt=gt / "OmniDocBench/markdown",
+            allow_missing=allow_missing,
+            exact_teds=settings.get("exact_teds", True),
+        )
+        document_scores = []
+        for name, tree in sorted(gold_trees.items()):
+            path = prepared / "MPDocBench" / f"{safe_name(name)}.md"
+            if path.is_file():
+                prediction = path.read_text(encoding="utf-8")
+                prediction_hash = sha256(path)
+            elif allow_missing:
+                prediction = ""
+                prediction_hash = None
+            else:
+                raise ValueError(f"{model} 缺少全文预测：{name}")
+            document_scores.append(
+                {
+                    "document": name,
+                    "prediction_sha256": prediction_hash,
+                    **compare_heading_trees(tree, markdown_heading_tree(prediction)),
+                }
+            )
+        title_tree = mean(item["title_tree_v2"] for item in document_scores)
+        v2_metrics = {
+            "text_accuracy": metrics.get("text_accuracy"),
+            "table_teds": metrics.get("table_teds"),
+            "reading_order_accuracy": metrics.get("reading_order_accuracy"),
+            "title_tree_v2": title_tree,
+        }
+        total = agentbuilder_v2_score(v2_metrics, "OmniDocBench")
+        coverage = read_json(report / "provenance.json")
+        row = {
+            "model": model,
+            "documents": len(gold_trees),
+            "provided_pages": coverage["provided"],
+            "expected_pages": coverage["expected"],
+            "restored_tables": restored_tables,
+            **v2_metrics,
+            "agentbuilder_v2_overall": total,
+        }
+        rows.append(row)
+        write_json(directory / "documents.json", document_scores)
+        write_json(directory / "metrics.json", row)
+
+    rows.sort(
+        key=lambda row: (
+            row["agentbuilder_v2_overall"] is None,
+            -(row["agentbuilder_v2_overall"] or 0),
+            row["model"],
+        )
+    )
+    write_json(output / "summary.json", rows)
+    _write_csv(output / "summary.csv", rows)
+    write_json(
+        output / "verification.json",
+        {
+            "agentbuilder_version": "AgentBuilder-v2",
+            "metric_version": TITLE_TREE_VERSION,
+            "weights": AGENTBUILDER_V2_WEIGHTS,
+            "inputs_sha256": sha256(inputs),
+            "gt_sha256": {
+                backend: sha256(gt / backend / "gt.json")
+                for backend in ("OmniDocBench", "MPDocBench")
+            },
+        },
+    )
+    return {
+        "models": len(rows),
+        "documents_per_model": len(gold_trees),
+        "summary": str(output / "summary.json"),
+    }
+
+
 def rescore_agentbuilder(inputs: Path, output: Path) -> dict:
-    """Reuse verified Omni content scores; recompute old/new heading scores and totals."""
+    """Evaluate predictions or reproduce archived AgentBuilder-v2 scores."""
     inputs = inputs.resolve()
     settings = read_json(inputs)
     root = (inputs.parent / settings["base_directory"]).resolve()
     gt = root / settings["gt"]
-    originals = read_json(root / settings["scores"])
-    gold = {
-        Path(sample["page_info"]["image_path"]).stem: sample
-        for sample in read_json(gt / "MPDocBench/gt.json")
-    }
-    pages = sorted(p.name for p in (gt / "OmniDocBench/markdown").glob("*.md"))
-    gold_page_text = {name: (gt / "OmniDocBench/markdown" / name).read_text() for name in pages}
+    gold_samples = read_json(gt / "MPDocBench/gt.json")
+    gold = {Path(sample["page_info"]["image_path"]).stem: sample for sample in gold_samples}
+    if len(gold) != len(gold_samples):
+        raise ValueError("MPDocBench GT 含重复文档")
     gold_trees = {name: gt_heading_tree(sample) for name, sample in gold.items()}
     gt_self = []
     for name in sorted(gold):
@@ -115,6 +242,14 @@ def rescore_agentbuilder(inputs: Path, output: Path) -> dict:
         gt_self.append({"document": name, **result})
         if result["title_tree_v2"] != 1:
             raise ValueError(f"GT 标题适配自比较不满分：{name}")
+    if "scores" not in settings:
+        return _evaluate_models(inputs, settings, root, gt, gold_trees, gt_self, output)
+    if any("raw" in config for config in settings["models"]):
+        raise ValueError("原始响应评测清单中的 raw 与归档复测的 scores 不能同时设置")
+
+    originals = read_json(root / settings["scores"])
+    pages = sorted(p.name for p in (gt / "OmniDocBench/markdown").glob("*.md"))
+    gold_page_text = {name: (gt / "OmniDocBench/markdown" / name).read_text() for name in pages}
     native, native_source = _native_head_metric(root)
     output = fresh_directory(output)
     write_json(output / "gt_self_check.json", gt_self)
