@@ -7,7 +7,10 @@ import json
 import shutil
 from pathlib import Path
 
-from doc_parse_bench.feature_rubric import evaluate_feature_rubric
+from doc_parse_bench.feature_evaluation.feature_rubric import (
+    RUBRIC_VERSION,
+    evaluate_feature_rubric,
+)
 from doc_parse_bench.io import fresh_directory, sha256, write_json
 
 README = """# Legacy 129 离线评分包
@@ -22,28 +25,19 @@ python3 selftest.py
 
 输出目录必须为空或不存在，避免混入历史结果。`reference-scores/` 是随包参考结果。
 
-内网实际成品的空证据模板：
+校准范围的空证据模板。
 
 ```sh
-python3 score.py template --gt gt/rubric-pilot-gt.json --model 3.1-ft --stage final --output /tmp/ft-blank.json
+python3 score.py template --gt gt/rubric-pilot-gt.json --model 3.1-ft --output /tmp/ft-blank.json
 ```
 
-模板所有 case 均为空，不能直接当作失败预测；填入实际来源对齐证据后才评。
-评分器不会从任意 Markdown 自动判定字段归属或推断 subtype。字段 schema、确认空输出、证据不足、同次开关配对和范围见 `docs/feature-evaluation-129-rubric.md`。
+模板包含 case ID 与空的预测字段，填入经来源对齐的实际证据后评分。字段规则和同次开关配对见 `docs/inputs.md`，计算公式见 `docs/scoring.md`。
+`gt/records.json` 是旧 v3 结构目标，`gt/rubric-pilot-gt.json` 冻结历史校准的分母。此包用于复算校准分项。
 
-`docs/legacy129-scoring-contract.md` 是本轮收敛说明：公式、GT 是否改过、归一化规则和复算结果。
-`gt/records.json` 是完整 v3 结构目标；`rubric-pilot-gt.json` 是内容校准范围，二者不可互换。
-本包的 pilot GT 仍为 calibration；即使 evidence 标成 final，也不会产生正式总分。
-不能把 split 改名代替正式评价清单审核，也不能将未采到的字段填零来凑总分。
-
-现有校准分：附录两版 76.89；页眉页脚两版 81.48；图表 FT 70.51、Origin 54.22，仅 11 图/78 明示值。
+校准结果中，两版的附录均为 76.89，页眉页脚均为 81.48，图表均命中 78/78 个明示值。Origin 的风能图有列名冲突。
 图片与印章专项和总分仍为 null，逐例分数和缺证据清单已输出。历史标题重排未执行，正式目标配置仍为 MinerU3/relevel_titles=true/title_rules=false。
 
-`MANIFEST.json` 记录包内哈希。`code/doc_parse_bench/` 是仓库同名文件的原样复制，评分逻辑与 docbench 入口一致。
-本包提供离线评分与现有历史证据，不包含新增内网推理结果或已验收的 P2T 适配代码。
-
-本轮已停止补证据、补 GT 和补推，现有 null 原样保留。
-下次评测需要提供的原始服务响应、成品、资产、来源映射及配置，见 `docs/legacy129-next-evaluation-inputs.md`。
+`MANIFEST.json` 记录包内哈希。`code/doc_parse_bench/feature_evaluation/` 为仓库评分源码的快照。
 """
 
 SELFTEST = '''"""Verify bundled hashes and reproduce the calibration scores without dependencies."""
@@ -55,7 +49,7 @@ from tempfile import TemporaryDirectory
 
 root = Path(__file__).resolve().parent
 sys.path.insert(0, str(root / "code"))
-from doc_parse_bench.feature_rubric import evaluate_feature_rubric
+from doc_parse_bench.feature_evaluation.feature_rubric import evaluate_feature_rubric
 
 manifest = json.loads((root / "MANIFEST.json").read_text(encoding="utf-8"))
 for row in manifest["files"]:
@@ -63,12 +57,17 @@ for row in manifest["files"]:
     assert path.is_file(), row["path"]
     assert hashlib.sha256(path.read_bytes()).hexdigest() == row["sha256"], row["path"]
 with TemporaryDirectory(prefix="legacy129-scorer-") as tmp:
-    for model, chart in [("3.1-ft", 70.51282051282051), ("3.1-origin", 54.21686746987952)]:
+    for model in ("3.1-ft", "3.1-origin"):
         result = evaluate_feature_rubric(
             root / "gt/rubric-pilot-gt.json", root / "evidence" / (model + ".json"),
             Path(tmp) / model,
         )
-        assert abs(result["features"]["chart"]["score"] - chart) < 1e-9
+        assert result["rubric_version"] == manifest["rubric_version"]
+        chart = result["features"]["chart"]
+        assert chart["score"] == 100 and chart["matched_values"] == 78
+        assert chart["header_conflict_cases"] == (
+            ["bc_091:candidate.block.p1.0004"] if model == "3.1-origin" else []
+        )
         assert abs(result["features"]["appendix"]["score"] - 76.89102564102564) < 1e-9
         assert abs(result["features"]["header_footer"]["score"] - 81.48148148148148) < 1e-9
         assert result["features"]["image"]["score"] is None
@@ -87,20 +86,23 @@ def main() -> None:
     root = args.root.resolve()
     output = fresh_directory(args.output)
     package = output / "code/doc_parse_bench"
-    package.mkdir(parents=True)
+    features = package / "feature_evaluation"
+    features.mkdir(parents=True)
+    source = root / "src/doc_parse_bench"
+    for name in ("__init__.py", "io.py"):
+        shutil.copy2(source / name, package / name)
     for name in (
         "__init__.py",
-        "io.py",
         "feature_contract.py",
         "feature_rubric.py",
         "feature_score_cli.py",
     ):
-        shutil.copy2(root / "src/doc_parse_bench" / name, package / name)
+        shutil.copy2(source / "feature_evaluation" / name, features / name)
     (output / "score.py").write_text(
         '"""Offline legacy129 scorer; no model calls or third-party dependencies."""\n'
         "import sys\nfrom pathlib import Path\n"
         'sys.path.insert(0, str(Path(__file__).resolve().parent / "code"))\n'
-        "from doc_parse_bench.feature_score_cli import main\n\nmain()\n",
+        "from doc_parse_bench.feature_evaluation.feature_score_cli import main\n\nmain()\n",
         encoding="utf-8",
     )
     (output / "README.md").write_text(README, encoding="utf-8")
@@ -109,14 +111,10 @@ def main() -> None:
         destination = output / "gt" / name
         destination.parent.mkdir(exist_ok=True)
         shutil.copy2(root / "artifacts/legacy-features-20261119" / name, destination)
-    for name in (
-        "legacy129-scoring-contract.md",
-        "feature-evaluation-129-rubric.md",
-        "legacy129-next-evaluation-inputs.md",
-    ):
+    for name in ("scoring.md", "inputs.md", "annotation.md"):
         destination = output / "docs" / name
         destination.parent.mkdir(exist_ok=True)
-        shutil.copy2(root / "docs" / name, destination)
+        shutil.copy2(root / "docs/feature-evaluation" / name, destination)
     shutil.copy2(
         root / "experiments/legacy129-subimage-20261123/agentbuilder-impact-check-20261124.json",
         output / "docs/agentbuilder-impact-check-20261124.json",
@@ -135,7 +133,7 @@ def main() -> None:
         output / "MANIFEST.json",
         {
             "schema_version": "doc-parse-bench.legacy129-scoring-bundle.v1",
-            "rubric_version": "legacy129-content-v1",
+            "rubric_version": RUBRIC_VERSION,
             "files": [
                 {
                     "path": str(path.relative_to(output)),
@@ -146,9 +144,7 @@ def main() -> None:
                 if path.is_file()
             ],
             "new_model_calls": 0,
-            "current_round_status": (
-                "closed_without_evidence_backfill; input requirements documented for next evaluation"
-            ),
+            "current_round_status": "calibration_replay",
         },
     )
     print(json.dumps({"output": str(output)}, ensure_ascii=False))

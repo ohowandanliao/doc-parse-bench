@@ -2,7 +2,7 @@
 
 本页保留 V2 历史结果；线上候选与原包规则、全拆的比较见 [P2T 前置拆分规则与复评](split-policy.md)。
 
-2026-11-24 已把现有分散证据合并为 [同一份校准评分报告](../../artifacts/legacy129-subimage-20261123/calibration-scores-20261124/summary.md)，原 GT 不变。评分代码、分母、缺证据语义与内网离线用法见 [收敛口径](../../docs/legacy129-scoring-contract.md)；该报告沿用本页历史分数，未宣称新父图补偿已完成或正式总分已出。
+2026-11-24 的分散证据已合并为[校准评分报告](../../artifacts/legacy129-subimage-20261123/calibration-scores-20261124/summary.md)。现行口径见[四功能评分](../../docs/feature-evaluation/scoring.md)。本页后续数字记录早期计分探索。
 
 使用修订版 v3 和内容校准 GT，不改分母、不用 Origin 答案补 GT。复核时从 `4-1统计图1.pdf` 第 1 页直接提取内嵌原图，确认 2020 年地区生产总值是 `72798` 亿元，修正 `rubric-pilot-gt.json` 中的 `72978`，两版同口径重算。这次将可对齐的实际 IR 和 Markdown 证据写入 `evaluate-feature-rubric` 的输入；图表按 `(系列, 类别, 数值, 单位)` 算内容 F1，图片 subtype 不通过则该图为 0。数值是百分制回放校准分，不是 129 篇全面内容验收或正式 RSI。
 

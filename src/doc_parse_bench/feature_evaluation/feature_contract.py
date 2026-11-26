@@ -1,4 +1,4 @@
-"""Shared, dependency-free identifiers for the legacy-129 feature scorers."""
+"""Shared feature names and capture pairs for PDF2Text evaluation."""
 
 FEATURE_GT_VERSION = "legacy-129-feature-v3"
 FEATURES = ("appendix", "header_footer", "image", "chart")

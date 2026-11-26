@@ -2,11 +2,11 @@
 
 更新时间：2026-11-24。本文把现有代码、分母、GT 和真实响应的状态分开，避免把校准数字扩成 FT 全量质量分。
 
-本轮收敛实现和统一报告见 [评分交付口径](../../docs/legacy129-scoring-contract.md)。GT 两个哈希未变，新增标准库评分包和逐例缺证据清单。校准图片中 18 个非保护记录包含 1 个仅诊断的 other，实际主分目标为 17 个；这不是全量 118 块的内容 GT。
+现行公式见[四功能评分](../../docs/feature-evaluation/scoring.md)。本页记录 11 月 24 日校准阶段，18 个非保护图片记录中包含 1 个诊断项与 17 个主分目标。
 
 ## 当前可以复现的范围
 
-`src/doc_parse_bench/feature_rubric.py` 已实现首轮口径：固定 GT 与证据 schema；附录按页锚点和开关残留判定；页眉页脚按块做开启正确且关闭无残留的 F1；图片先判 `sub_type`，类型错或确证缺标签的单图主分为 0，再按字段／关系计内容；图表按 `(series, category, value, unit)` 计明示值。缺证据和确认空输出有不同状态，四项不齐时 `overall` 保持 `null`。
+首轮口径固定 GT 与证据 schema。附录按页锚点和开关残留判定，页眉页脚按块计 F1，图片按 `sub_type`、字段与关系计内容，图表按 `(series, category, value, unit)` 匹配明示值。此后图表主分改用整列匹配，代码见 [feature_rubric.py](../../src/doc_parse_bench/feature_evaluation/feature_rubric.py)。
 
 当前修订 v3 的全量结构分母已经固定：129 篇、372 页；图片 85、印章 33，共 118 个图片／印章块；图表 73；页眉页脚结构标注 527 个边缘块和 273 个印刷页码。`records.json` SHA-256 为 `a1384023b6bc67aba52b312091f7bd729c2fc0eba7940e745d422e56fd0c9b29`。
 

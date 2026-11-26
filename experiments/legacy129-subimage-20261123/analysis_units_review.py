@@ -17,7 +17,7 @@ import pypdfium2 as pdfium
 from flowchart_relation_review import audit as audit_flowchart
 from markdown_it import MarkdownIt
 
-from doc_parse_bench.feature_eval import _iou
+from doc_parse_bench.feature_evaluation.feature_eval import _iou
 from doc_parse_bench.mineru_middle import extract_pdf_info
 
 EXPECTED_RECORDS_SHA = "a1384023b6bc67aba52b312091f7bd729c2fc0eba7940e745d422e56fd0c9b29"

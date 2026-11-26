@@ -12,11 +12,22 @@
 | `docbench evaluate`／`benchmark` | `backends/`、`benchmark.py` | 隔离运行原生指标，保存覆盖率、来源和分项 |
 | `docbench collect` | `benchmark.py`、`leaderboards.py`、`metrics.py` | 汇总已完成实验 |
 | `docbench rescore-agentbuilder` | `heading.py`、`agentbuilder_v2.py`、`metrics.py` | 文档标题树、新旧标题分及综合分的冻结输入复测 |
-| `docbench build-feature-ir`／`evaluate-feature-matrix` | `mineru_middle.py`、`feature_matrix.py` | 独立 129 PDF2Text 四功能 raw middle_json 回放与清除率；不进入主线榜单 |
+| `docbench build-feature-ir`／`evaluate-feature-matrix` | `mineru_middle.py`、`feature_evaluation/feature_matrix.py` | 129 raw middle_json 回放、清除率及结构诊断 |
+| `docbench evaluate-feature-rubric` | `feature_evaluation/feature_rubric.py`、`feature_evaluation/feature_score_cli.py` | 读取冻结 GT 和已对齐的证据，计算四项交付分及误删门槛 |
 
 以上文件均位于 `src/doc_parse_bench/`。对应回归测试在 `tests/`，标题指标重点看 `tests/test_heading_v2.py`。`run` 仍输出含历史页面 title 的 AgentBuilder；完整文档 TitleTree-v2 使用独立复测入口，并未自动替换所有旧榜。
 
 标题方向的方法依据是 [评分复核](标题评分复核_结合完整FastGPT与pdf2text代码_20261109.md)，简明输入与运行说明见 [AgentBuilder-v2](agentbuilder-v2.md)。后续研究需要区分已有树编辑方法的规范化修订与新增贡献：去掉 root 的分母已有 READoc 先例，结构分和 RAG 效用的关系仍需独立验证。
+
+## 四功能文件位置
+
+| 用途 | 位置 |
+| --- | --- |
+| 正式评分、结构回放 | [`src/doc_parse_bench/feature_evaluation/`](../src/doc_parse_bench/feature_evaluation/) |
+| 本轮批次复算与 GT 审阅 | [`src/doc_parse_bench/feature_evaluation/legacy129/`](../src/doc_parse_bench/feature_evaluation/legacy129/) |
+| 补标、评分和采集文档 | [四功能文档目录](feature-evaluation/README.md) |
+| Legacy 129 GT、输入和报告 | [实测文件位置](feature-evaluation/legacy129.md#文件位置) |
+| P2T 内部切分 | P2T 仓库的 `src/pdf2text/core/parse/mineru_subimages.py`，由同目录的 `mineru_client.py` 调用。[推理路由](feature-evaluation/inputs.md#推理路由) |
 
 ## 一次性内容的处理
 
@@ -45,7 +56,7 @@
 
 活动 GT 为 `annotated-20261111`（81 文档／597 页），以 `data/active_gt.json` 为准。旧 129 份的 PDF 在 `data/legacy/dataset/pdf/source/`，GT 在 `data/legacy/groundtruth/`。11 月初结果与该活动 GT 分开保存。
 
-129 GT 另按用途登记为三套：`legacy-129-markdown-v1`（旧 Markdown 历史兼容）、`legacy-129-annotated-v2`（机器标注＋人工修订，标题主 GT，用于显式 129 AgentBuilder/TreeTitle-v2）和 `legacy-129-feature-v3`（v1＋v2 的四功能派生 GT）。不要把 `legacy` 前处理 profile 与这三个 GT 版本混称；版本边界见 [129 GT 版本登记](gt-versions.md)。
+129 GT 的历史 Markdown、结构标注和专项派生视图各有独立版本。[129 GT 版本登记](feature-evaluation/legacy129-gt-versions.md)
 
 ## 验证
 

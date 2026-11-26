@@ -7,9 +7,14 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from doc_parse_bench.feature_eval import _iou
-from doc_parse_bench.feature_matrix import _chart_payload, _generated, _match
-from doc_parse_bench.feature_rubric import CONFIG, EVIDENCE_SCHEMA, _text, evaluate_feature_rubric
+from doc_parse_bench.feature_evaluation.feature_eval import _iou
+from doc_parse_bench.feature_evaluation.feature_matrix import _chart_payload, _generated, _match
+from doc_parse_bench.feature_evaluation.feature_rubric import (
+    CONFIG,
+    EVIDENCE_SCHEMA,
+    _text,
+    evaluate_feature_rubric,
+)
 from doc_parse_bench.io import fresh_directory, read_json, sha256, write_json
 from doc_parse_bench.schema import Block, Document
 

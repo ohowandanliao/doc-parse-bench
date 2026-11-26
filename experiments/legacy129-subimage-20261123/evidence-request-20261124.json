@@ -2,7 +2,7 @@
   "schema_version": "doc-parse-bench.legacy129-evidence-request.v1",
   "status": "withdrawn_by_user_20261124",
   "execute": false,
-  "withdrawal_note": "用户要求本轮停止补证据；本文件仅留作历史需求记录，不再执行取回或推理。下次材料要求见 docs/legacy129-next-evaluation-inputs.md。",
+  "withdrawal_note": "此清单已撤回，保留为历史记录。现行采集要求见 docs/feature-evaluation/inputs.md。",
   "request_kind": "recover_existing_historical_capture_first",
   "requested_model": "3.1-origin (2604 contrast)",
   "scope_note": "只导出现有历史 raw-B，不请求新增推理、不采集2605 base；若找不到请回报 missing，不用新结果覆盖历史文件。",

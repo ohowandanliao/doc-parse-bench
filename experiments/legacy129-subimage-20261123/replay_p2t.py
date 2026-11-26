@@ -18,7 +18,7 @@ from pdf2text.config.settings import MinerUConfig
 from pdf2text.core.parse import mineru_filters, mineru_subimages
 from pdf2text.core.parse.mineru_client import _replace_images_with_base64, render_mineru_markdown
 
-from doc_parse_bench.feature_matrix import (
+from doc_parse_bench.feature_evaluation.feature_matrix import (
     GROUPS,
     REPLAY_SCHEMA,
     _ground_truth,

@@ -1,31 +1,17 @@
-# Legacy 129：下次评测材料要求
+# 评测输入与推理配置
 
-本文约定 Legacy 129 四功能正式评测的采集与评分输入。正式 GT 使用 `split=evaluation`，附录按旧版 MinerU 的标题截断规则计分。已有回放与校准结果继续按各自的 GT 版本引用。
+各模型使用相同的 PDF 和冻结清单，以实际 P2T 成品评分。[评分口径](scoring.md)
 
-## 已提交的实现
+## 推理路由
 
-评分实现版本为 `legacy129-content-v1`，相关提交：`d6251ad`（评分及交接代码）、`79d8eed`（固定 v3 GT 和回放前置材料）、`c2b7a51`（复现结果及 session 边界）。
+- 2604 系列沿用原推理路径。
+- 2605 系列使用此前内网 P2T `68624-subimage-expand` 的 `sub_images` 改造。开启图片或图表分析时，根据复合图的实际结构选择整图或子图分析，沿用现有 MinerU 接口补请求。策略由 P2T 内部 `mineru_subimages.py` 执行。
 
-| 文件／入口 | 用途 |
-| --- | --- |
-| `src/doc_parse_bench/feature_rubric.py` | 附录、页眉页脚、图片／印章、图表的内容主分、分层汇总及误删门槛 |
-| `src/doc_parse_bench/feature_contract.py` | 专项名称、GT 版本、历史过滤配对名称 |
-| `src/doc_parse_bench/feature_score_cli.py` | 仅用 Python 标准库的 `score` 和空证据 `template` 命令 |
-| `docbench evaluate-feature-rubric` | 同一内容评分实现的仓库入口 |
-| `feature_eval.py` / `feature_matrix.py` | 原有结构、定位、非空及开关诊断；不替代内容分 |
-| `mineru_middle.py` | 129 专项 IR 中保留实际 subtype 及子图来源 metadata |
+同一 GT 和评分规则适用于两条推理路由。记录 checkpoint、P2T 代码指纹和实际补偿策略。评估切分策略带来的变化时，在同一个 2605 checkpoint 和相同开关配置下比较两次成品。
 
-四项公式、精确匹配与空值语义见 [评分交付口径](legacy129-scoring-contract.md)，完整证据字段见 [评分实现说明](feature-evaluation-129-rubric.md)。下次沿用同一公式；更改 GT、内容范围或归一化规则时必须单独标版本并对两版统一重评。
+## 采集材料
 
-## 正式 GT
-
-- 内网拉取包含正式 GT 的 `doc-parse-bench` 提交后，两版都使用 [11 月 25 日正式计分清单](../artifacts/legacy-features-20261125/rubric-evaluation-gt.json)。报告记录该提交和 GT 的 SHA-256。
-- 按 [129 篇输入清单](../artifacts/legacy-features-20261125/rubric-evaluation-sources.json) 核对待推理 PDF 的文档 ID、哈希、物理页数和附录截断范围。
-- 正式分母为附录截断 48 页、页眉页脚 800 块、图片／印章 89 个计分目标、图表 47 张及 312 个明示值。另核对 20 个保护项。
-
-## 下次必须交付的原始材料
-
-以下内容按 FT、Origin 分别保存，不能用 Origin 补 FT 的答案，也不新增 2605 base 任务。
+按模型分别保存下列评测证据，保留实际产出与对应的源块。
 
 | 材料 | 必须保留的内容 | 用途 |
 | --- | --- | --- |
@@ -75,7 +61,7 @@
 
 ## 交给评分器的 evidence
 
-原始材料齐全后，由评测适配层按源页／源块审核归属，生成每版一个 evidence JSON。它不是任意 Markdown 的自动打分入口，不能只提交最终分数或 TP/FP/FN。
+由评测适配层按源页和源块审核归属，生成每模型一份 `doc-parse-bench.feature-rubric-evidence.v1` JSON。`cases` 对象以冻结 GT 的 case `id` 为键，提交实际片段和审核范围内的错报。`captures[document_id][group]` 保存实际采集 ID 或哈希，用于检查同源的开关对照。
 
 | 范围 | evidence 字段 |
 | --- | --- |
@@ -84,12 +70,14 @@
 | 页眉页脚 | `on_blocks` 的实际片段／图像可访问性、`off_residual_ids` |
 | 图片／印章 | `fields` 的实际文本、字段 key 和独立输出 ID；图片另有实际 `sub_type/subtype_id`；无字照片另有 `image_available` |
 | 已冻结关系的流程图 | `relations` 的独立输出 ID、`from/to`；分支绑定原始证据另保留，当前实现不会自行扩展 GT 的关系范围 |
-| 图表 | `table_status` 及已解析 `values`：每项独立 ID、series、category、字符串 value、unit |
+| 图表 | `table_status` 及已解析 `values`。每项保留独立 `id`、实际 `column_id`、`series`、`category`、字符串 `value`、`unit` |
 | 保护项 | 同次开关对照的 `on_state/off_state`：complete、partial 或 missing |
 
 完整成品确认没有字段写 `fields: []`；确认缺图片标签写 `sub_type: null`；字段没有采到则省略。上述两种缺失不能互换。超时或未调用先保留工程状态，不自动解释成模型识别失败；确认最终交付缺失时可以按交付口径判失败，模型归因另报。
 
-建议目录：
+`column_id` 用实际表格标识与列号生成，一个数据列里的所有单元格共用该 ID。两个同名表头也各有列号。`series`、`unit` 记录各列实际声明的内容。旧证据可通过已记录的表格坐标或唯一的表头与单位识别数据列。
+
+一批评测的目录示例。
 
 ```text
 next-evaluation/
@@ -103,36 +91,13 @@ next-evaluation/
     evidence.json
 ```
 
-为每个模型生成空模板。以下以 FT 为例。
+为每个模型生成空模板。模板包含 case ID、配置和 GT 哈希，待补的预测字段为空。
 
 ```sh
-.venv/bin/python -m doc_parse_bench.feature_score_cli template \
-  --gt artifacts/legacy-features-20261125/rubric-evaluation-gt.json \
-  --model 3.1-ft --stage final \
-  --output /path/to/ft/evidence-blank.json
+.venv/bin/python -m doc_parse_bench.feature_evaluation.feature_score_cli template \
+  --gt /path/to/batch/rubric-evaluation-gt.json \
+  --model model-under-test --stage final \
+  --output /path/to/model/evidence-blank.json
 ```
 
-填入经来源核对的证据后评分：
-
-```sh
-.venv/bin/python -m doc_parse_bench.feature_score_cli score \
-  --gt artifacts/legacy-features-20261125/rubric-evaluation-gt.json \
-  --pred /path/to/ft/evidence.json \
-  --output /path/to/new-empty-score-directory
-```
-
-输出 metrics、逐例分数、缺证据清单、可读 report 和 provenance。输出目录使用新目录；不覆盖历史评分。打分入口不发起模型推理。
-
-## 下次什么条件下才能出总分
-
-当前结构 GT 为 129 篇、372 页。正式评测使用上文的计分分母。历史内容 pilot 的校准范围包括 17 个图片／印章计分目标、11 张图表及 78 个明示值。
-
-下次若沿用 `split=calibration`，仍只发布该范围内的分项及诊断。正式总分需要预先审核并冻结声明范围的 `evaluation` GT、两版对应的真实 `final` 成品和四项完整证据；不可只改 split 名称或用缺项的平均值凑总分。确认误删仍独立否决。没有新增上线质量阈值。
-
-## 与 AgentBuilder 的关系
-
-本次四功能评分是独立入口。AgentBuilder-v2 仍为 `30% 文本 + 30% 表格 + 30% 阅读顺序 + 10% TitleTree-v2`，不使用本专项的四项 25% 权重。
-
-AgentBuilder 的计分、标题、预测适配、GT 导出及原生后端代码与本轮评分改动前一致；已有 AgentBuilder 数据、GT 和报告不改写。本次发布的 feature-v3 是四功能专用快照，不切换 AgentBuilder 的活动 GT。共享 CLI 的变更限于 feature 子命令；`mineru_middle` 的新增字段保留用于专项回放，AgentBuilder 的现有预测导入与历史重评分路径不经过该模块。
-
-2026-11-24 影响核查：相关 59 项测试通过，保存的 15 个配置之历史 AgentBuilder 和 AgentBuilder-v2 聚合分逐项复算一致；核心源码也与保存报告的哈希匹配。结果目录 64 个文件在本次核验前后哈希不变。未重新跑完整原生后端；记录在仓库的 `experiments/legacy129-subimage-20261123/agentbuilder-impact-check-20261124.json`，离线评分包中位于 `docs/agentbuilder-impact-check-20261124.json`。
+填入复核后的证据，再使用[评分命令](scoring.md#可复现入口与输出)。

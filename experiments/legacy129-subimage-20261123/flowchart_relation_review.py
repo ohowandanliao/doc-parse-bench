@@ -8,7 +8,11 @@ import shutil
 from html import escape
 from pathlib import Path
 
-from doc_parse_bench.feature_rubric import CONFIG, EVIDENCE_SCHEMA, evaluate_feature_rubric
+from doc_parse_bench.feature_evaluation.feature_rubric import (
+    CONFIG,
+    EVIDENCE_SCHEMA,
+    evaluate_feature_rubric,
+)
 from doc_parse_bench.io import sha256
 
 # Manually source-aligned node identities for this one reviewed calibration case.

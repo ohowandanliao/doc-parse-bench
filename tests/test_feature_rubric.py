@@ -6,10 +6,11 @@ from pathlib import Path
 import pytest
 
 from doc_parse_bench.cli import main
-from doc_parse_bench.feature_rubric import (
+from doc_parse_bench.feature_evaluation.feature_rubric import (
     CONFIG,
     EVIDENCE_SCHEMA,
     GT_SCHEMA,
+    RUBRIC_VERSION,
     evaluate_feature_rubric,
     score_feature_rubric,
 )
@@ -184,7 +185,7 @@ def test_merged_crop_cannot_lend_the_same_output_fact_to_two_figures():
         score_feature_rubric(_gt([first, second]), evidence)
 
 
-def test_chart_uses_label_unit_and_exact_value_and_excludes_estimates():
+def test_chart_matches_exact_values_with_estimates_outside_the_gt_denominator():
     case = _case(
         "wind",
         "chart",
@@ -198,7 +199,7 @@ def test_chart_uses_label_unit_and_exact_value_and_excludes_estimates():
                 "table_status": "parsed",
                 "values": [
                     _point("７．４６０％", id="correct"),
-                    _point("11.15", series="理论蕴藏量", category="D-2", id="wrong-column"),
+                    _point("~11.15", category="D-2", id="approximate"),
                     _point("~1300", series="理论蕴藏量", unit="亿kWh", id="estimate"),
                 ],
             }
@@ -206,12 +207,126 @@ def test_chart_uses_label_unit_and_exact_value_and_excludes_estimates():
     )
     result = score_feature_rubric(_gt([case]), evidence)
     metrics = result["features"]["chart"]
-    assert (metrics["tp"], metrics["fp"], metrics["fn"], metrics["score"]) == (1, 1, 1, 50)
-    assert result["cases"]["wind"]["unscored_predictions"] == 1
-    evidence["cases"]["wind"] = {"table_status": "missing"}
-    result = score_feature_rubric(_gt([case]), evidence)
-    assert result["features"]["chart"]["fn"] == 2
-    assert result["features"]["chart"]["score"] == 0
+    assert metrics["score"] == 50
+    assert metrics["matched_values"] == 1
+    assert metrics["denominator"]["count"] == 2
+    assert result["cases"]["wind"]["unmatched_output_cells"] == 2
+
+
+@pytest.mark.parametrize(
+    ("unit", "cell", "hits"),
+    [
+        ("%", "12.5", 1),
+        ("%", "１２．５０ ％", 1),
+        ("%", "0.125", 0),
+        ("kg", "12.5", 1),
+        ("kg", "12.5%", 0),
+        ("", "12.5%", 0),
+    ],
+)
+def test_chart_treats_cell_percent_as_formatting_for_percentage_values_only(unit, cell, hits):
+    gt = _gt([_case("table", "chart", values=[_point("12.5", unit=unit)])])
+    predictions = [_point(cell, series="Value", unit="", id="cell")]
+    evidence = _evidence({"table": {"table_status": "parsed", "values": predictions}})
+    result = score_feature_rubric(gt, evidence)
+    assert result["features"]["chart"]["matched_values"] == hits
+
+
+@pytest.mark.parametrize(
+    ("first_column", "second_column", "hits"),
+    [(("90", "80"), ("12", "23"), 4), (("90", "23"), ("12", "80"), 2)],
+)
+def test_chart_aligns_reordered_columns_with_identical_headers(first_column, second_column, hits):
+    reference = [
+        _point(value, series=series, category=f"{year}年", unit=unit)
+        for series, unit, cells in (("Revenue", "USD", ("12", "23")), ("Mass", "kg", ("90", "80")))
+        for year, value in zip((2023, 2024), cells)
+    ]
+    predictions = [
+        _point(
+            value,
+            series="Value",
+            category=str(year),
+            unit="",
+            column_id=column_id,
+            id=f"{column_id}/{year}",
+        )
+        for column_id, cells in (("first", first_column), ("second", second_column))
+        for year, value in zip((2023, 2024), cells)
+    ]
+    gt = _gt([_case("table", "chart", values=reference)])
+    evidence = _evidence({"table": {"table_status": "parsed", "values": predictions}})
+    result = score_feature_rubric(gt, evidence)
+    metric = result["features"]["chart"]
+    assert (metric["matched_values"], metric["score"]) == (hits, 25 * hits)
+    assert metric["header_conflict_cases"] == []
+    matches = result["cases"]["table"]["column_matches"]
+    assert {match["column_id"] for match in matches} == {"first", "second"}
+
+
+def test_chart_maximizes_matches_across_columns():
+    categories = ("A", "B", "C", "D")
+    reference = [
+        _point(value, series=series, category=category, unit="kg")
+        for series, cells in (
+            ("North", ("10", "20", "30", "40")),
+            ("South", ("10", "20", "300", "400")),
+        )
+        for category, value in zip(categories, cells)
+    ]
+    predictions = [
+        _point(value, series="Value", category=category, unit="", id=f"table:{row}:{column}")
+        for column, cells in ((1, ("10", "20", "30", "400")), (2, ("50", "60", "30", "40")))
+        for row, (category, value) in enumerate(zip(categories, cells), start=1)
+    ]
+    gt = _gt([_case("table", "chart", values=reference)])
+    evidence = _evidence(
+        {"table": {"table_status": "parsed", "values": predictions, "block_id": "table"}}
+    )
+    result = score_feature_rubric(gt, evidence)
+    matches = result["cases"]["table"]["column_matches"]
+    assert {match["series"]: match["matched_values"] for match in matches} == {
+        "North": 2,
+        "South": 3,
+    }
+    assert result["features"]["chart"]["score"] == 62.5
+
+
+def test_chart_reports_the_conflicting_header_on_its_actual_column():
+    reference = [
+        _point("8.0", series="Efficiency", category="A"),
+        _point("19", series="Mass", category="A", unit="kg"),
+    ]
+    predictions = [
+        _point("８％", series="Mass (kg)", category="A", unit="kg", id="cell-1", column_id="1"),
+        _point("19", series="Efficiency", category="A", unit="%", id="cell-2", column_id="2"),
+        _point("~100", series="Estimate", category="A", unit="kg", id="cell-3", column_id="3"),
+    ]
+    gt = _gt([_case("table", "chart", values=reference)])
+    evidence = _evidence({"table": {"table_status": "parsed", "values": predictions}})
+    result = score_feature_rubric(gt, evidence)
+    metric = result["features"]["chart"]
+    assert (metric["score"], metric["parsed_tables"], metric["unmatched_output_cells"]) == (
+        100,
+        1,
+        1,
+    )
+    assert metric["header_conflict_cases"] == ["table"]
+    matches = {row["series"]: row for row in result["cases"]["table"]["column_matches"]}
+    assert matches["Efficiency"]["column_id"] == "1"
+    assert matches["Efficiency"]["header_conflicts"] == ["series", "unit"]
+    assert matches["Mass"]["column_id"] == "2"
+    assert matches["Mass"]["header_conflicts"] == ["series", "unit"]
+    predictions[1]["column_id"] = "1"
+    with pytest.raises(ValueError, match="同一输出列"):
+        score_feature_rubric(gt, evidence)
+
+
+@pytest.mark.parametrize(("observation", "score"), [({}, None), ({"table_status": "missing"}, 0)])
+def test_chart_distinguishes_missing_table_from_missing_evidence(observation, score):
+    gt = _gt([_case("table", "chart", values=[_point("5")])])
+    result = score_feature_rubric(gt, _evidence({"table": observation}))
+    assert result["features"]["chart"]["score"] == score
 
 
 def _complete_review():
@@ -338,6 +453,13 @@ def test_known_unapplied_target_configuration_cannot_be_relabelled_final():
 
 def test_cli_writes_frozen_gt_hash_per_case_and_summary(tmp_path, monkeypatch):
     gt, evidence = _complete_review()
+    gt["gt_version"] = "operations-manuals-2026-11"
+    document_ids = {"bc_003": "manual-a", "bc_022": "manual-z"}
+    for case in gt["cases"]:
+        case["document_id"] = document_ids[case["document_id"]]
+    evidence["captures"] = {
+        document_ids[document]: groups for document, groups in evidence["captures"].items()
+    }
     gt_path, evidence_path = tmp_path / "truth.json", tmp_path / "evidence.json"
     output = tmp_path / "scores"
     write_json(gt_path, gt)
@@ -361,9 +483,15 @@ def test_cli_writes_frozen_gt_hash_per_case_and_summary(tmp_path, monkeypatch):
     assert not output.exists()
     write_json(evidence_path, evidence | {"gt_sha256": sha256(gt_path)})
     main()
-    assert read_json(output / "metrics.json")["overall"] == 100
-    assert read_json(output / "per_case.json")["chart"]["tp"] == 1
-    assert read_json(output / "provenance.json")["gt_sha256"] == sha256(gt_path)
+    metrics = read_json(output / "metrics.json")
+    provenance = read_json(output / "provenance.json")
+    assert metrics["overall"] == 100
+    assert metrics["rubric_version"] == provenance["rubric_version"] == RUBRIC_VERSION
+    chart = read_json(output / "per_case.json")["chart"]
+    assert chart["document_id"] == "manual-z"
+    assert chart["matched_values"] == 1
+    assert provenance["gt_version"] == gt["gt_version"]
+    assert provenance["gt_sha256"] == sha256(gt_path)
     assert read_json(output / "pending_cases.json") == {}
     assert "四项等权总分：**100.00**" in (output / "report.md").read_text()
     assert read_json(output / "metrics.json")["features"]["header_footer"]["denominator"] == {
@@ -373,11 +501,17 @@ def test_cli_writes_frozen_gt_hash_per_case_and_summary(tmp_path, monkeypatch):
     }
 
 
-def test_standalone_cli_runs_without_site_packages_and_template_does_not_invent_output(tmp_path):
+@pytest.mark.parametrize(
+    "module",
+    ["doc_parse_bench.feature_evaluation.feature_score_cli", "doc_parse_bench.feature_score_cli"],
+)
+def test_standalone_cli_runs_without_site_packages_and_template_does_not_invent_output(
+    tmp_path, module
+):
     root = Path(__file__).resolve().parents[1]
     cases = root / "tests/fixtures/feature_rubric_129"
     environment = os.environ | {"PYTHONPATH": str(root / "src")}
-    command = [sys.executable, "-S", "-m", "doc_parse_bench.feature_score_cli"]
+    command = [sys.executable, "-S", "-m", module]
     subprocess.run(
         command
         + [
@@ -395,7 +529,8 @@ def test_standalone_cli_runs_without_site_packages_and_template_does_not_invent_
         text=True,
     )
     metrics = read_json(tmp_path / "scores/metrics.json")
-    assert metrics["features"]["chart"]["score"] == pytest.approx(66.6666666667)
+    assert metrics["rubric_version"] == RUBRIC_VERSION
+    assert metrics["features"]["chart"]["score"] == 50
     assert metrics["overall"] is None
     subprocess.run(
         command
@@ -420,11 +555,11 @@ def test_standalone_cli_runs_without_site_packages_and_template_does_not_invent_
 
 
 @pytest.mark.parametrize(
-    ("model", "chart_score", "image_scored"),
-    [("3.1-ft", 70.51282051282051, 7), ("3.1-origin", 54.21686746987952, 5)],
+    ("model", "image_scored", "chart_conflicts"),
+    [("3.1-ft", 7, []), ("3.1-origin", 5, ["bc_091:candidate.block.p1.0004"])],
 )
-def test_saved_pilot_replays_keep_historical_scores_and_missing_evidence(
-    tmp_path, model, chart_score, image_scored
+def test_saved_pilot_replays_score_with_current_rubric(
+    tmp_path, model, image_scored, chart_conflicts
 ):
     root = Path(__file__).resolve().parents[1]
     gt = root / "artifacts/legacy-features-20261119/rubric-pilot-gt.json"
@@ -435,8 +570,10 @@ def test_saved_pilot_replays_keep_historical_scores_and_missing_evidence(
     assert sha256(gt) == "6d98b54495edc5f61422103a3a032a64ed93c72383a3df068e3c22238f610b72"
     assert result["features"]["appendix"]["score"] == pytest.approx(76.89102564102564)
     assert result["features"]["header_footer"]["score"] == pytest.approx(81.48148148148148)
-    assert result["features"]["chart"]["score"] == pytest.approx(chart_score)
-    assert result["features"]["chart"]["denominator"]["count"] == 78
+    chart = result["features"]["chart"]
+    assert chart["score"] == 100
+    assert chart["matched_values"] == chart["denominator"]["count"] == 78
+    assert chart["header_conflict_cases"] == chart_conflicts
     assert result["features"]["image"]["scored"] == image_scored
     assert result["features"]["image"]["score"] is None
     assert result["overall"] is None

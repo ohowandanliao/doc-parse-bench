@@ -1,4 +1,4 @@
-"""Score source-aligned, reviewed evidence for the legacy 129 feature evaluation."""
+"""Score reviewed feature evidence against a frozen GT manifest."""
 
 import re
 import unicodedata
@@ -7,12 +7,12 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from statistics import mean
 
-from .feature_contract import FEATURE_GT_VERSION, FEATURES, PAIRS
-from .io import fresh_directory, read_json, sha256, write_json
+from ..io import fresh_directory, read_json, sha256, write_json
+from .feature_contract import FEATURES, PAIRS
 
 GT_SCHEMA = "doc-parse-bench.feature-rubric-gt.v1"
 EVIDENCE_SCHEMA = "doc-parse-bench.feature-rubric-evidence.v1"
-RUBRIC_VERSION = "legacy129-content-v1"
+RUBRIC_VERSION = "legacy129-content"
 CONFIG = {"mineru_provider": "mineru3", "relevel_titles": True, "title_rules": False}
 IMAGE_GROUPS = ("text_image", "flowchart", "natural_image", "seal")
 EDGE_TYPES = {"header", "footer", "page_number", "header_image", "footer_image"}
@@ -36,21 +36,22 @@ def _text(value: str) -> str:
     return "".join(unicodedata.normalize("NFKC", value).split())
 
 
-def _number(point: dict, *, truth: bool = False) -> Decimal | str:
+def _number(point: dict, *, truth: bool = False) -> tuple[Decimal | str, bool]:
     value = point["value"]
     if not isinstance(value, str):
         raise ValueError("图表数值须以字符串提供")
     normalized = unicodedata.normalize("NFKC", value).strip()
-    if _text(point["unit"]) == "%" and normalized.endswith("%"):
+    percent = normalized.endswith("%")
+    if percent and (not truth or _text(point["unit"]) == "%"):
         normalized = normalized[:-1].rstrip()
     if DECIMAL_VALUE.fullmatch(normalized):
         try:
-            return Decimal(normalized)
+            return Decimal(normalized), percent
         except InvalidOperation:
             pass
     if truth:
         raise ValueError(f"明示值 GT 不是有限十进制数：{value!r}")
-    return normalized
+    return normalized, percent
 
 
 def _f1(tp: int, fp: int, fn: int) -> float | None:
@@ -281,8 +282,165 @@ def _chart_slot(row: dict) -> tuple[str, str, str]:
     return _text(row["series"]), _text(row["category"]), _text(row["unit"])
 
 
+def _maximum_weight_pairs(weights: list[list[int]]) -> list[tuple[int, int]]:
+    """Find a maximum weight one-to-one assignment with the Hungarian algorithm."""
+    if not weights or not weights[0]:
+        return []
+    actual_columns = len(weights[0])
+    column_count = max(actual_columns, len(weights))
+    row_potential = [0] * (len(weights) + 1)
+    column_potential = [0] * (column_count + 1)
+    owners = [0] * (column_count + 1)
+    for row in range(1, len(weights) + 1):
+        owners[0] = row
+        current = 0
+        predecessor = [0] * (column_count + 1)
+        distances = [float("inf")] * (column_count + 1)
+        visited = [False] * (column_count + 1)
+        while True:
+            visited[current] = True
+            active_row = owners[current]
+            step, next_column = float("inf"), 0
+            for candidate in range(1, column_count + 1):
+                if visited[candidate]:
+                    continue
+                weight = (
+                    weights[active_row - 1][candidate - 1] if candidate <= actual_columns else 0
+                )
+                cost = -weight - row_potential[active_row] - column_potential[candidate]
+                if cost < distances[candidate]:
+                    distances[candidate] = cost
+                    predecessor[candidate] = current
+                if distances[candidate] < step:
+                    step, next_column = distances[candidate], candidate
+            for candidate, seen in enumerate(visited):
+                if seen:
+                    row_potential[owners[candidate]] += step
+                    column_potential[candidate] -= step
+                else:
+                    distances[candidate] -= step
+            current = next_column
+            if not owners[current]:
+                break
+        while current:
+            previous = predecessor[current]
+            owners[current] = owners[previous]
+            current = previous
+    return [
+        (row - 1, column - 1)
+        for column, row in enumerate(owners[1 : actual_columns + 1], start=1)
+        if row and weights[row - 1][column - 1]
+    ]
+
+
+def _chart_category(category: str) -> str:
+    return re.sub(r"^([0-9]{4})年$", r"\1", category)
+
+
+def _observed_chart_columns(observed: dict) -> dict:
+    points = observed.get("values") or []
+    column_ids = [point.get("column_id") for point in points]
+    if any("column_id" in point for point in points):
+        if any(not isinstance(column_id, str) or not column_id.strip() for column_id in column_ids):
+            raise ValueError("各数据项须提供其实际输出列的 column_id")
+    elif observed.get("block_id"):
+        prefix = f"{observed['block_id']}:"
+        positions = [
+            re.fullmatch(r"[0-9]+:([0-9]+)", point["id"][len(prefix) :])
+            if point["id"].startswith(prefix)
+            else None
+            for point in points
+        ]
+        if all(positions):
+            column_ids = [f"{prefix}{position[1]}" for position in positions]
+
+    columns = {}
+    for point, column_id in zip(points, column_ids):
+        series, category, unit = _chart_slot(point)
+        header = series, unit
+        column_header, bare_cells, percent_cells = columns.setdefault(
+            column_id or header, (header, Counter(), Counter())
+        )
+        if header != column_header:
+            raise ValueError(f"同一输出列的表头和单位须一致：{column_id}")
+        number, percent = _number(point)
+        cells = percent_cells if percent else bare_cells
+        cells[_chart_category(category), number] += 1
+    return columns
+
+
+def _chart_column_values(expected: dict, unscored_slots: set, observed: dict) -> dict:
+    truth = defaultdict(Counter)
+    for (series, category, unit), value in expected.items():
+        truth[series, unit][_chart_category(category), value] += 1
+    predicted = _observed_chart_columns(observed)
+    known_headers = set(truth) | {(series, unit) for series, unit, _ in unscored_slots}
+    known_series = {series for series, _ in known_headers if series}
+    series_with_unit = {
+        f"{series}({unit})": series for series, unit in sorted(known_headers) if series and unit
+    }
+
+    def header_conflicts(
+        expected_header: tuple[str, str], actual_header: tuple[str, str]
+    ) -> list[str]:
+        expected_series, expected_unit = expected_header
+        actual_series, actual_unit = actual_header
+        recognized_series = (
+            actual_series if actual_series in known_series else series_with_unit.get(actual_series)
+        )
+        conflicts = []
+        if recognized_series and recognized_series != expected_series:
+            conflicts.append("series")
+        if expected_unit and actual_unit and actual_unit != expected_unit:
+            conflicts.append("unit")
+        return conflicts
+
+    source_headers = list(truth)
+    output_ids = list(predicted)
+    overlaps, conflicts, weights = [], [], []
+    for source in source_headers:
+        row_hits, row_conflicts, row_weights = [], [], []
+        for output_id in output_ids:
+            actual_header, bare_cells, percent_cells = predicted[output_id]
+            actual_values = bare_cells + percent_cells if source[1] == "%" else bare_cells
+            hits = sum((truth[source] & actual_values).values())
+            issues = header_conflicts(source, actual_header)
+            row_hits.append(hits)
+            row_conflicts.append(issues)
+            row_weights.append(hits * (len(source_headers) + 1) + int(bool(hits) and not issues))
+        overlaps.append(row_hits)
+        conflicts.append(row_conflicts)
+        weights.append(row_weights)
+
+    matches = []
+    for source_index, output_index in _maximum_weight_pairs(weights):
+        source = source_headers[source_index]
+        output_id = output_ids[output_index]
+        actual_header, _, _ = predicted[output_id]
+        matches.append(
+            {
+                "series": source[0],
+                "unit": source[1],
+                "column_id": output_id if isinstance(output_id, str) else None,
+                "predicted_series": actual_header[0],
+                "predicted_unit": actual_header[1],
+                "matched_values": overlaps[source_index][output_index],
+                "expected_values": sum(truth[source].values()),
+                "header_conflicts": conflicts[source_index][output_index],
+            }
+        )
+    hits = sum(match["matched_values"] for match in matches)
+    return {
+        "score": 100 * hits / len(expected) if expected else None,
+        "matched_values": hits,
+        "expected_values": len(expected),
+        "unmatched_output_cells": len(observed.get("values") or []) - hits,
+        "column_matches": matches,
+    }
+
+
 def _chart(case: dict, observed: dict) -> dict | None:
-    expected = {_chart_slot(point): _number(point, truth=True) for point in case["values"]}
+    expected = {_chart_slot(point): _number(point, truth=True)[0] for point in case["values"]}
     if len(expected) != len(case["values"]):
         raise ValueError("同一源图的系列、类别和单位不可重复标值")
     unscored_slots = {
@@ -294,11 +452,10 @@ def _chart(case: dict, observed: dict) -> dict | None:
         for slot in case.get("unscored", [])
     }
 
-    def unscored(slot: tuple[str, str, str]) -> bool:
-        series, category, unit = slot
-        return (series, unit, None) in unscored_slots or (series, unit, category) in unscored_slots
-
-    if any(unscored(slot) for slot in expected):
+    if any(
+        (series, unit, None) in unscored_slots or (series, unit, category) in unscored_slots
+        for series, category, unit in expected
+    ):
         raise ValueError("图表的明示值范围和不评分范围重叠")
     status = observed.get("table_status")
     if status is None:
@@ -310,12 +467,7 @@ def _chart(case: dict, observed: dict) -> dict | None:
         return None
     if status != "parsed" and points:
         raise ValueError("未交付可解析表格，不能提供已解析的数据项")
-    submitted = [(_chart_slot(point), _number(point)) for point in points or []]
-    scored = [(slot, number) for slot, number in submitted if not unscored(slot)]
-    return _counts(expected.items(), scored) | {
-        "table_status": status,
-        "unscored_predictions": len(submitted) - len(scored),
-    }
+    return _chart_column_values(expected, unscored_slots, observed) | {"table_status": status}
 
 
 def _protection(observed: dict) -> str:
@@ -349,8 +501,8 @@ def _validate_case(case: dict) -> None:
     document = case["document_id"]
     page = case["page"]
     feature = case["feature"]
-    if not re.fullmatch(r"bc_[0-9]{3}", document) or not 1 <= int(document[3:]) <= 129:
-        raise ValueError(f"不属于 legacy-129 的文档：{document}")
+    if not isinstance(document, str) or not document.strip():
+        raise ValueError("需要稳定、非空的 document_id")
     if type(page) is not int or page < 1 or feature not in FEATURES:
         raise ValueError("需要从 1 开始的物理页码和有效的专项名")
     protected = case.get("protected", False)
@@ -469,6 +621,22 @@ def _summaries(rows: dict) -> dict:
                 summary["score"], summary["planned"], summary["scored"]
             )
             summary["score_basis"] = "document_macro_mean"
+        elif feature == "chart":
+            hits = sum(row["matched_values"] for row in scored)
+            summary.update(
+                score_basis="explicit_value_recall",
+                matched_values=hits,
+                parsed_tables=sum(row["table_status"] == "parsed" for row in scored),
+                unmatched_output_cells=sum(row["unmatched_output_cells"] for row in scored),
+                header_conflict_cases=[
+                    case_id
+                    for case_id, row in rows.items()
+                    if any(match["header_conflicts"] for match in row.get("column_matches", []))
+                ],
+            )
+            if planned and len(scored) == len(planned):
+                summary["score"] = 100 * hits / sum(row["expected_values"] for row in scored)
+                summary["score_status"] = "scored"
         elif planned and len(planned) == len(scored):
             summary.update(_micro(scored))
             summary["score_status"] = _score_status(
@@ -501,11 +669,13 @@ def _subtype_summary(rows: list[dict]) -> dict:
 
 
 def score_feature_rubric(gt: dict, evidence: dict) -> dict:
-    """Aggregate one version against a frozen set of reviewed legacy-129 cases."""
-    if gt.get("schema_version") != GT_SCHEMA or gt.get("gt_version") != FEATURE_GT_VERSION:
-        raise ValueError(f"需要 {FEATURE_GT_VERSION} 的人工复核计分清单")
+    """Aggregate one version against a frozen set of reviewed cases."""
+    if gt.get("schema_version") != GT_SCHEMA:
+        raise ValueError(f"需要 {GT_SCHEMA} 格式的计分清单")
+    if not isinstance(gt.get("gt_version"), str) or not gt["gt_version"].strip():
+        raise ValueError("需要非空的 GT 版本名 gt_version")
     if evidence.get("schema_version") != EVIDENCE_SCHEMA:
-        raise ValueError("不是 129 专项计分证据")
+        raise ValueError(f"需要 {EVIDENCE_SCHEMA} 格式的计分证据")
     split = gt["split"]
     if split not in {"calibration", "evaluation"}:
         raise ValueError("GT split 应为 calibration 或 evaluation")
@@ -676,6 +846,7 @@ def evaluate_feature_rubric(gt_path: Path, evidence_path: Path, output: Path) ->
             "gt_sha256": gt_hash,
             "evidence_sha256": sha256(evidence_path),
             "config": evidence["config"],
+            "gt_version": gt["gt_version"],
             "gt_schema": GT_SCHEMA,
             "evidence_schema": EVIDENCE_SCHEMA,
             "rubric_version": RUBRIC_VERSION,
@@ -691,7 +862,7 @@ def evaluate_feature_rubric(gt_path: Path, evidence_path: Path, output: Path) ->
 
 def _report(metrics: dict, rows: dict) -> str:
     lines = [
-        f"# {metrics['model']} · legacy 129 专项评分",
+        f"# {metrics['model']} · 四功能专项评分",
         "",
         f"证据阶段 `{metrics['stage']}`，GT split `{metrics['split']}`。分数为 0–100；coverage 仅表示评分证据覆盖，不能当成质量分。",
         "",
@@ -705,6 +876,17 @@ def _report(metrics: dict, rows: dict) -> str:
             f"| {name} | {score} | {denominator['count']} {denominator['unit']} | "
             f"{summary['scored']} / {summary['planned']} | {summary['score_status']} |"
         )
+    chart = metrics["features"]["chart"]
+    if chart["planned"]:
+        lines.extend(
+            [
+                "",
+                f"图表明示值命中 {chart['matched_values']} / {chart['denominator']['count']}，"
+                f"可解析表格 {chart['parsed_tables']} / {chart['planned']}。",
+                f"待复核的列名或单位冲突共 {len(chart['header_conflict_cases'])} 张图。",
+            ]
+        )
+        lines.extend(f"- `{case_id}`" for case_id in chart["header_conflict_cases"])
     overall = "null" if metrics["overall"] is None else f"{metrics['overall']:.2f}"
     lines.extend(
         [

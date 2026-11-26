@@ -1,6 +1,6 @@
 import pytest
 
-from doc_parse_bench.feature_eval import (
+from doc_parse_bench.feature_evaluation.feature_eval import (
     FEATURE_GT_SCHEMA,
     FEATURE_SUBSET_SCHEMA,
     _apply_appendix_override,

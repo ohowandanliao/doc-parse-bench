@@ -13,7 +13,7 @@ import json
 import shutil
 from pathlib import Path
 
-from doc_parse_bench.feature_rubric import (
+from doc_parse_bench.feature_evaluation.feature_rubric import (
     CONFIG,
     EVIDENCE_SCHEMA,
     RUBRIC_VERSION,
@@ -173,7 +173,7 @@ def _summary_markdown(output: Path, gt_path: Path, metrics: dict[str, dict]) -> 
     lines = [
         "# Legacy 129 校准评分报告",
         "",
-        "本报告只重用已保存的 replay 证据，不新增模型请求。GT 和四项评分口径没有在本次合成中改动。",
+        "本报告用已保存的 replay 证据和冻结 GT 计算四项校准分。",
         "",
         "- GT：`gt/rubric-pilot-gt.json`",
         f"- GT SHA-256：`{sha256(gt_path)}`",
@@ -208,7 +208,7 @@ def _summary_markdown(output: Path, gt_path: Path, metrics: dict[str, dict]) -> 
         "",
         "- 附录分数为 76.89，按 4 篇文档的页级开关结果做文档宏平均；FT 与 Origin 相同。",
         "- 页眉页脚分数为 81.48，按已完整核对的 4 页、14 个边缘块做微平均；FT 与 Origin 相同。",
-        "- 图表分数为 FT 70.51、Origin 54.22，范围是 11 张图、78 个明示值。",
+        "- 图表按整列对齐后的明示值命中率计分。逐图表头冲突见各模型的评分报告。",
         "- 图片与印章专项仍是 `pending_evidence`：已有 6 个图片控制 case 和 1 个流程图关系 case，缺少完整的文字图、照片、印章分层证据，不能平均成图片专项分。",
         "- 误删 gate 与质量分独立；校准中已确认的保护项仍按 `deletion_on`／`deletion_off` 单列。",
         "",

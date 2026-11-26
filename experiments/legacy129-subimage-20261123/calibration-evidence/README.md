@@ -6,4 +6,4 @@
 
 `stage=replay`、实际未执行标题重排；FT 部分视觉交付来自历史 V2 候选，Origin 部分沿用历史 IR。它们不是新父图补偿后的最终成品。未覆盖的 case 仍由完整 GT 留在分母中，不能剔除以生成总分。
 
-使用方法见 [固定评分口径](../../../docs/legacy129-scoring-contract.md)。复算不需要重新访问模型，也不需要其它 artifacts；只需本目录 evidence、已记录的 pilot GT 和仓库评分模块。
+复算使用本目录 evidence、已记录的 pilot GT 和仓库评分模块。[评分口径](../../../docs/feature-evaluation/scoring.md)

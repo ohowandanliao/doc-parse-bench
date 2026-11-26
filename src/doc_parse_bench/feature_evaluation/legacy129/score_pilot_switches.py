@@ -7,17 +7,17 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from doc_parse_bench.feature_eval import _iou
-from doc_parse_bench.feature_matrix import PAIRS
-from doc_parse_bench.feature_rubric import (
+from ...io import fresh_directory, read_json, sha256, write_json
+from ...schema import Block, Document, Page
+from ..feature_contract import PAIRS
+from ..feature_eval import _iou
+from ..feature_rubric import (
     CONFIG,
     EDGE_TYPES,
     EVIDENCE_SCHEMA,
     _text,
     evaluate_feature_rubric,
 )
-from doc_parse_bench.io import fresh_directory, read_json, sha256, write_json
-from doc_parse_bench.schema import Block, Document, Page
 
 
 def _image(block: Block) -> bool:

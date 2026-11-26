@@ -19,11 +19,10 @@ from collections import Counter
 from contextlib import contextmanager
 from pathlib import Path
 
-from .annotations import import_annotations
-from .feature_contract import FEATURE_GT_VERSION
-from .io import fresh_directory, read_json, sha256, write_json
-from .markdown import parse_markdown
-from .schema import (
+from ..annotations import import_annotations
+from ..io import fresh_directory, read_json, sha256, write_json
+from ..markdown import parse_markdown
+from ..schema import (
     MARGINAL_TYPES,
     SCHEMA_VERSION,
     VISUAL_TYPES,
@@ -32,6 +31,7 @@ from .schema import (
     Page,
     load_documents,
 )
+from .feature_contract import FEATURE_GT_VERSION
 
 FEATURE_GT_SCHEMA = "doc-parse-bench.feature-gt.v1"
 FEATURE_EVAL_SCHEMA = "doc-parse-bench.feature-eval.v1"
@@ -523,7 +523,9 @@ def build_feature_ground_truth(
     }
     summary["coverage"] = {
         "appendix": {
-            "status": "mixed_reviewed_and_boundary_proxy" if overrides else "supported_boundary_proxy",
+            "status": "mixed_reviewed_and_boundary_proxy"
+            if overrides
+            else "supported_boundary_proxy",
             "documents": int(new_summary["appendix_documents"]),
             "pages": sum(
                 len(record["new_gt"]["appendix"]["pages"])
@@ -636,7 +638,8 @@ def _comparison_markdown(manifest: dict) -> str:
         "",
         "## 结论",
         "",
-        "新结构化 GT 作为标题、附录、页眉页脚和视觉块位置的主 GT。它有人工整页快照和标题同步修订，能保留页码、块类型、层级、顺序和坐标。" + appendix_rule,
+        "新结构化 GT 作为标题、附录、页眉页脚和视觉块位置的主 GT。它有人工整页快照和标题同步修订，能保留页码、块类型、层级、顺序和坐标。"
+        + appendix_rule,
         "",
         "旧 Markdown 作为视觉内容的来源审计：它有图片占位符和混合的表格转录，但没有可靠的页眉/页脚类型；其中表格未逐项标注为 chart，不能直接当作精确 chart-content GT。",
         "",
@@ -662,7 +665,7 @@ def _comparison_markdown(manifest: dict) -> str:
         "- `image_analysis`：主分母统计 image＋seal，并分别报告两类；seal 是 image 的视觉子类型，不是独立开关。图片占位符本身不代表图内文字已识别。",
         "- `chart_analysis`：同时报告 chart 定位和有实际文本/表格内容的 chart；当前旧内容是候选 GT，未审核前不宣称精确内容分。",
         "",
-        "详细 per-document 记录见 `records.json`。运行方式见项目中的 `docs/feature-evaluation.md`。",
+        "详细记录见 `records.json`。运行方式见 `docs/feature-evaluation/legacy129-structure.md`。",
         "",
     ]
     return "\n".join(lines)

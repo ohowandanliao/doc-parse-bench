@@ -2,7 +2,7 @@
 
 日常评测固定同一数据版本、文件范围和输入处理规则，在同批模型预测上一起运行两个原生后端，生成三个独立榜。完整指标定义只在 [评分细则](metrics-comparison.md) 维护；后续数据与图表专项方案见 [数据集与评测设计](dataset-evaluation-design.md)。
 
-129 份文档有三套不可互换的 GT：旧 Markdown `legacy-129-markdown-v1` 只用于历史兼容；机器标注叠加人工修订的结构 GT `legacy-129-annotated-v2` 用于显式 129 AgentBuilder/TreeTitle-v2 评测；由两者生成的 `legacy-129-feature-v3` 只用于 PDF2Text 四功能专项。完整登记见 [129 GT 版本登记](gt-versions.md)。
+129 份文档的旧 Markdown `legacy-129-markdown-v1` 用于历史兼容，`legacy-129-annotated-v2` 用于显式 129 AgentBuilder/TreeTitle-v2 评测，`legacy-129-feature-v3` 提供四功能结构视图。各版本来源和正式内容计分清单见 [129 GT 版本登记](feature-evaluation/legacy129-gt-versions.md)。
 
 ## 输入与模型适配
 
@@ -46,13 +46,13 @@ docbench rescore-agentbuilder \
 
 **当前 standard 仍可能保留适配器生成的 visual_details，尚未实现严格的基础／图表附加内容分流。** 不因关闭 legacy 就宣称图表内容完全不影响匹配。今后投影规则改变时生成新基线，保留旧分数和输入记录。
 
-针对 PDF2Text 的 `keep_appendix`、`keep_header_footer`、`image_analysis`、`chart_analysis`，使用独立的[四项能力评测](feature-evaluation.md)。该模式固定同一批 PDF 和模型，只比较显式开关矩阵，不把能力分数混入三个基础榜。
+PDF2Text 的 `keep_appendix`、`keep_header_footer`、`image_analysis` 和 `chart_analysis` 使用独立的[四功能评测](feature-evaluation/README.md)。分数基于同一批 PDF 的冻结 GT 和实际成品。已评样本见 [Legacy 129 实测](feature-evaluation/legacy129.md)。
 
 ## 图表内容不等于图像定位
 
 Omni、MP 的默认端到端流程不以 figure 内部文字或数据表作为内容识别真值；MP 的 FigureF1 评图像页码和位置。旧 129 则把部分图表转录混入普通 table，属于不同任务定义，不能直接合并其分数。
 
-当前存在 `augment-charts`、`--chart-policy chart-table` 等开发转换工具；它们可以准备人工审核的数据表或增强输出，**不等于已实现独立图表专项评分**。专项条件、缺失处理和三榜附加方式统一见 [图表专项](dataset-evaluation-design.md#3-图表专项)。不再以旧 postprocess 作为新专项的必经步骤。
+`augment-charts` 和 `--chart-policy chart-table` 用于准备数据表或增强输出。经过来源核对的成品可交给 `docbench evaluate-feature-rubric` 计算图表明示值命中率。[图表评分口径](feature-evaluation/scoring.md#图表明示值命中率)
 
 ## 缺失、版本与产物
 

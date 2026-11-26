@@ -11,11 +11,11 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from markdown_it import MarkdownIt
 
-from doc_parse_bench.feature_eval import _iou
-from doc_parse_bench.feature_matrix import _match
-from doc_parse_bench.feature_rubric import CONFIG, EVIDENCE_SCHEMA, evaluate_feature_rubric
-from doc_parse_bench.io import fresh_directory, read_json, sha256, write_json
-from doc_parse_bench.schema import Block, Document
+from ...io import fresh_directory, read_json, sha256, write_json
+from ...schema import Block, Document
+from ..feature_eval import _iou
+from ..feature_matrix import _match
+from ..feature_rubric import CONFIG, EVIDENCE_SCHEMA, evaluate_feature_rubric
 
 HEADER_WITH_UNIT = re.compile(r"(.*?)\s*\(([^()]*)\)")
 BARE_UNITS = {"万人", "缺陷数/千功能点"}
@@ -61,6 +61,7 @@ def chart_observation(block: Block, markdown: MarkdownIt) -> dict:
             points.append(
                 {
                     "id": f"{block.id}:{row_number}:{column}",
+                    "column_id": f"{block.id}:{column}",
                     "series": series,
                     "category": category,
                     "unit": unit,

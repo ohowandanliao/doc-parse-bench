@@ -1,9 +1,9 @@
-# 129 四功能专项评测
+# Legacy 129 结构回放
 
-这是一条独立的评测入口，专门检查 PDF2Text 的 `keep_appendix`、`keep_header_footer`、`image_analysis` 和 `chart_analysis`。它不读取、不修改 TreeTitle-v2、AgentBuilder-v2、OmniDocBench 或 MPDocBench 的分数。
+本文记录 129 历史结构投影和开关回放入口，输出定位、非空和清除率诊断。正式内容分见[统一评分口径](scoring.md)。
 
 当前 129 份 `3.1-ft` 与 `3.1-origin` 结果、指标解释、image/chart 合并诊断和
-image 覆盖率案例见 [2026-11-20 结果报告](feature-evaluation-129-20261119.md)。
+image 覆盖率案例见 [11 月 20 日报告](legacy129-20261120.md)。
 
 这条专项只使用 129 份旧 PDF；当前 81 份 `annotated-20261111` GT 不参与。
 
@@ -12,8 +12,8 @@ image 覆盖率案例见 [2026-11-20 结果报告](feature-evaluation-129-202611
 | 版本 | 路径 | 数量 | 本专项中的角色 |
 | --- | --- | ---: | --- |
 | `legacy-129-markdown-v1` | `data/legacy/groundtruth/` | 129 个 Markdown | 旧内容来源；图表转录只作为候选证据 |
-| `legacy-129-annotated-v2` | `legacy_129_pack_20261118.tar.gz` | 129 份、372 页 | 机器标注＋人工页面修订后的结构主 GT；标题更准确，可显式用于 129 的 AgentBuilder/TreeTitle-v2 |
-| `legacy-129-feature-v3` | `artifacts/legacy-features-20261118/` | 129 条记录 | v1＋v2 的四功能专项派生 GT，只用于四个 PDF2Text 开关 |
+| `legacy-129-annotated-v2` | `legacy_129_pack_20261119.tar.gz` | 129 份、372 页 | 当前机器标注＋人工页面修订后的结构主 GT；相对 11-18 版修订 6 篇、12 页的 image/chart 类型，可显式用于 129 的 AgentBuilder/TreeTitle-v2 |
+| `legacy-129-feature-v3` | `artifacts/legacy-features-20261119/` | 129 条记录；2026-11-23 人工复核后修订 2 个 image/chart 类型，修订记录见 `manifest.json.manual_review` | 当前 v1＋新 v2 的四功能专项派生 GT，只用于四个 PDF2Text 开关；11-18 版目录是历史基线 |
 
 旧目录另有 `data/legacy/unpaired_groundtruth/Handwriting document.md`，没有对应 PDF，不进入 129 对评测。v3 是由 v1 和 v2 生成的评测视图，不是第三次独立人工标注，也不替代 v2 的 AgentBuilder/TreeTitle-v2 GT。
 
@@ -21,24 +21,28 @@ image 覆盖率案例见 [2026-11-20 结果报告](feature-evaluation-129-202611
 
 ```bash
 .venv/bin/docbench build-feature-gt \
-  legacy_129_pack_20261118.tar.gz \
+  legacy_129_pack_20261119.tar.gz \
   data/legacy/groundtruth \
-  artifacts/legacy-features-20261118 \
-  --old-pdf-dir data/legacy/dataset/pdf/source
+  /tmp/legacy-features-rebuild \
+  --old-pdf-dir data/legacy/dataset/pdf/source \
+  --appendix-overrides configs/legacy-129-appendix-overrides.json \
+  --block-overrides configs/legacy-129-block-overrides.json
 ```
 
 `manifest.json` 保存来源哈希、页数对账和覆盖状态；`comparison.md` 是对账说明；`records.json` 是逐文档输入。v3 默认是轻量包，不重复保存 v2 的完整结构 JSON；新结构化包共有 314 页人工 patch、58 页机器链路终态，完整结构仍在 v2 原包中。需要本地展开副本时，在生成命令后加 `--include-structured`。当前导入审计保留 1 条已知无效关系记录，不影响四功能块统计。
 
 ## GT 质量边界
 
-当前 129 专项统计：新结构化 GT 有 593 个 title、801 个边缘块（header/footer 528、页码 273）、135 个 image/seal（image 102、seal 33）、56 个 chart；旧 Markdown 有 580 个 heading、104 个图片引用、57 个图片占位符、304 个混合表格，12 个文档含图表内容候选。
+当前 129 专项统计：v3 有 593 个 title、800 个边缘块（页眉页脚 527，含 1 个页眉图片；页码 273）、118 个 image/seal（image 85、seal 33）、73 个 chart；旧 Markdown 有 580 个 heading、104 个图片引用、57 个图片占位符、304 个混合表格，12 个文档含图表内容候选。
 
-- `keep_appendix`：按最新 PDF2Text 代码的 `_find_appendix_page` 规则计算：标题开头是 `附录`/`Appendix`，且 0-based `page_idx` 位于文档后半段；`附件` 不算。当前新版 GT 命中 4 个文档、48 个附录页；旧 Markdown 只作交叉核对。
-- `keep_header_footer`：新版 GT 提供 header/footer、page number 类型。评分是保留/文本代理；旧 Markdown 没有可靠类型，不能宣称严格页眉页脚内容准确率。
-- `image_analysis`：按你的口径，image 与 seal 一起进入主分母，并拆出两类诊断。旧 Markdown 证明部分视觉块存在，但没有逐图图内文字准确率 GT，所以只评保留/输出代理。
-- `chart_analysis`：新版 GT 提供 56 个 chart 位置；旧 Markdown 的 12 个候选文档确实包含图表相关转录和表格，但普通表格与 chart 没有稳定一对一关系。可以报告候选范围内的内容输出代理，不能把它叫严格图表数值准确率。
+- `keep_appendix`：已复核的 4 篇用 `--appendix-overrides` 中的物理页段（从 1 开始，含首尾），展开写入 `new_gt.appendix.pages`。从真实附录标题起默认算到文末，明确例外单列：`bc_003` 第 15–34 页，第 35 页参考文献保留；`bc_010` 第 13–25 页，参考文献随附录；`bc_016` 第 26–31 页；`bc_017` 第 26–37 页，第 38 页发布单位简介保留。未复核的记录仍用原 PDF2Text 截断规则作代理；当前 v3 共 4 篇、51 个附录页。
+- `keep_header_footer`：文字与页码按同页、同类型和文本匹配。矩阵评测对页眉页脚图片单列开启召回和关闭残留，按同页、框交并比至少 0.5 匹配；仅有覆盖标志的文字框不算交付图片，开关两组都缺图也不算清除成功。
+- `image_analysis`：按你的口径，image 与 seal 一起进入主分母，并拆出两类诊断。匹配块有非空 `generated_spans` 就算“转出了内容”；严格 OCR 字符准确率另行标记为未评。
+- `chart_analysis`：新版 GT 提供 73 个 chart 位置；匹配块有非空 Markdown/HTML 表格就算“转出了表格”；严格图表数值准确率另行标记为未评。
 
-没有对应 GT 内容的指标必须是 `unavailable`，不能把缺 GT 当成模型得分 0。`manifest.json` 的 `summary.coverage` 和评分输出的 `feature_coverage` 记录这个边界。
+严格内容正确率没有 GT 时标为 `unavailable`，但“是否产出非空内容”的
+`content_output_recall` 可以计分；`on_output_coverage` 作为兼容别名保留，不能把缺少严格 GT 当成该能力的 0 分。`manifest.json`
+的 `summary.coverage` 和评分输出的 `feature_coverage` 记录这个边界。
 
 ## 最新 PDF2Text 与 raw middle_json
 
@@ -56,7 +60,7 @@ POST http://<p2t-host>:<port>/v1/pdfparse
 
 本项目提供的 `tools/collect_mineru_middle_json.py` 只负责第二步。它不会调用 P2T，也不会改变模型输出；它复刻 P2T 内部发送给 MinerU 的字段：`return_middle_json=true`、`return_images=true`、`image_analysis` 和 `backend`。
 
-本次代码依据的源码快照与原 ZIP 已整理在本机 `archives/pdf2text-feature-20261119/`；ZIP SHA-256 为 `cfd0415069c6b9365e71aa2288452764446841ec47a59181409eb7488a9be450`。该目录是参考材料，不会被评测器作为依赖导入。
+历史回放使用 `1806ec1`。版本、校验和及重评证据见 [129 子图补偿复评](../../experiments/legacy129-subimage-20261123/README.md)。
 
 本轮标题规则实验和四功能实验都固定：
 
@@ -113,24 +117,31 @@ python3 tools/collect_mineru_middle_json.py \
 
 ### 本地离线回放
 
-把 raw 目录和 PDF2Text 源码拿回本地后，使用 1806ec1 中的 `mineru_filters.py`：
+把 raw 目录和对应的 PDF2Text 内容过滤源码拿回本地；`--pdf2text-source` 指向提供 `apply_content_filters` 的快照：
 
 ```bash
 .venv/bin/docbench build-feature-ir \
-  --gt artifacts/legacy-features-20261118 \
+  --gt artifacts/legacy-features-20261119 \
   --raw-off /data/feature-raw/A \
   --raw-on /data/feature-raw/B \
-  --pdf2text-source archives/pdf2text-feature-20261119/source-ditto/pdf2text-78712-pdf-rule-toggle-test-1806ec1/src \
+  --pdf2text-source /path/to/pdf2text/source \
   --model mineru3 \
   --output /tmp/feature-ir
 
 .venv/bin/docbench evaluate-feature-matrix \
-  --gt artifacts/legacy-features-20261118 \
+  --gt artifacts/legacy-features-20261119 \
   --pred /tmp/feature-ir \
   --output /tmp/feature-scores
 ```
 
+如果只有已保存的 IR、没有 raw middle_json，而 v2/v3 只是经过审阅的 GT 修订，
+可以显式使用 `--allow-gt-revision` 重评；评分 provenance 会同时保存 IR 原始 GT
+哈希和本次使用的 GT 哈希。没有这个开关时，哈希不一致会拒绝评分，避免误把不同
+数据集混在一起。重新生成 IR 时不需要这个开关。
+
 `build-feature-ir` 会生成五组公开结果：`off`、`appendix`、`header_footer`、`image`、`chart`，以及一个内部的 `controls/image_off`。后者使用 B 的同一份识别结果但关闭 image/chart 内容，用来计算 image 的成对清除率，不增加推理次数。
+
+只有 B 时可传 `--visual-only` 并省略 `--raw-off`，只生成后三个视觉组；附录和页眉页脚不出分。非空率是回归诊断，不代表 subtype、文字或数据正确率。
 
 每组都是一份 PDF 一个 IR 文档。全量时是五组各 129 份；使用 smoke 子集时，先对 union 中的 PDF 生成 IR，再由评分器按各功能子集聚合。
 
@@ -154,14 +165,14 @@ python3 tools/collect_mineru_middle_json.py \
 
 ```bash
 .venv/bin/docbench evaluate-features \
-  --gt artifacts/legacy-features-20261118 \
+  --gt artifacts/legacy-features-20261119 \
   --pred predictions/base \
   --subset-manifest /tmp/feature-subset.json \
   --subset-name union \
   --output /tmp/feature-scores/base
 
 .venv/bin/docbench evaluate-features \
-  --gt artifacts/legacy-features-20261118 \
+  --gt artifacts/legacy-features-20261119 \
   --pred predictions/appendix \
   --subset-manifest /tmp/feature-subset.json \
   --subset-name appendix \
@@ -170,7 +181,10 @@ python3 tools/collect_mineru_middle_json.py \
 
 子集清单和预测结果属于一次性实验材料，不需要提交到仓库。评分器会把子集名称、清单哈希和实际分母写入 `provenance.json`；不要用 `--allow-missing` 代替子集选择，因为那会把未运行的文档当成空预测。
 
-矩阵主指标是开关清除率：附录页、边缘块、生成 image span、chart body 分别按过滤前单元统计。image/chart 的输出覆盖率只说明模型是否产生了可清除内容，不宣称图内文字或图表数值准确率。
+矩阵主指标是开关清除率：附录页、边缘块、生成 image span、chart body 分别按过滤前单元统计。
+按本次能力口径，image/chart 的 `content_output_recall` 同时作为“能否转出内容”的分数；
+`on_output_coverage` 是兼容字段；
+它不包含图内文字或图表数值的严格正确性判断。
 
 评分器还会在 `metrics.json` 中写入独立的 `combined_visual` 诊断：以
 `chart_analysis=true` 的视觉输出为唯一预测集合，分别给出类型严格和只看视觉

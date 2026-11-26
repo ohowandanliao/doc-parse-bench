@@ -11,9 +11,9 @@ from .charts import augment_charts
 from .compatibility import prepare_legacy
 from .compatibility.cleaning import CleaningOptions
 from .exporters import export_gt, export_predictions
-from .feature_eval import build_feature_ground_truth, evaluate_features
-from .feature_matrix import build_feature_ir, evaluate_feature_matrix
-from .feature_rubric import evaluate_feature_rubric
+from .feature_evaluation.feature_eval import build_feature_ground_truth, evaluate_features
+from .feature_evaluation.feature_matrix import build_feature_ir, evaluate_feature_matrix
+from .feature_evaluation.feature_rubric import evaluate_feature_rubric
 from .history import compare_workbook
 from .pipeline import run as run_profile
 from .predictions import MODELS, import_predictions
@@ -120,7 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="允许用审阅后的 GT 重评已有 IR；输出 provenance 会记录旧/新 GT 哈希",
     )
-    rubric = sub.add_parser("evaluate-feature-rubric", help="按复核证据计算 129 专项交付分")
+    rubric = sub.add_parser("evaluate-feature-rubric", help="按复核证据计算四功能专项交付分")
     rubric.add_argument("--gt", type=Path, required=True, help="冻结的专项计分 GT JSON")
     rubric.add_argument("--pred", type=Path, required=True, help="单版来源对齐的输出证据 JSON")
     rubric.add_argument("--output", type=Path, required=True)

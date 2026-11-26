@@ -10,7 +10,7 @@ from urllib.parse import quote
 
 from markdown_it import MarkdownIt
 
-from doc_parse_bench.feature_eval import _iou
+from doc_parse_bench.feature_evaluation.feature_eval import _iou
 from doc_parse_bench.io import read_json
 from doc_parse_bench.schema import Document
 

@@ -6,7 +6,7 @@
 
 ## 日常使用
 
-选择数据版本、文件范围和模型结果，一次运行生成三个榜。活动 GT 为 `annotated-20261111`，81 份／597 页，路径索引在 `data/active_gt.json`；129 份材料另有三套明确版本，见 [129 GT 版本登记](docs/gt-versions.md)。常规评测不要求额外跑 legacy 开／关两组。
+选择数据版本、文件范围和模型结果，一次运行生成三个榜。活动 GT 为 `annotated-20261111`，81 份／597 页，路径索引在 `data/active_gt.json`。129 份材料的三个版本见 [129 GT 版本登记](docs/feature-evaluation/legacy129-gt-versions.md)。
 
 ```bash
 git submodule update --init --recursive
@@ -31,7 +31,7 @@ docbench run configs/standard.yaml
 
 完整公式、缺失分项和聚合方式见 [评分细则](docs/metrics-comparison.md)。自建数据上的分数不等于官方原始测试集成绩。
 
-**严格的图表内容正确率专项仍未实现。** 它需要对应的图内文字／数据 GT，只有图片框或图注不够；模型须提供实际内容，不限定 JSON、Markdown 或 details，也不限定 MinerU。四项能力模式会报告 chart 定位和内容输出代理，但旧 129 的 chart 内容仍是候选 GT，不能替代人工复核后的严格分数。详见 [图表专项规则](docs/dataset-evaluation-design.md#3-图表专项)。
+图表内容专项按整列匹配计算明示值命中率，使用经复核的 GT 和来源对齐的模型成品。`content_output_recall` 用于诊断是否实际交付了内容。[图表评分口径](docs/feature-evaluation/scoring.md#图表明示值命中率)
 
 当前 standard 只是关闭历史清洗，仍可能保留 `visual_details`；严格的基础内容与图表附加内容分流尚待实现，现有分数保留其实际输入口径。
 
@@ -59,7 +59,7 @@ docbench run configs/historical-reproduction.yaml
 
 图片替换与 details 处理可以独立选择；它们不负责开启模型 `chart_analysis`，也不是图表专项开关。原始 postprocess 的行为见 [Markdown 前处理](docs/markdown-preprocessing.md)。
 
-旧 129 的 `keep_appendix`、`keep_header_footer`、`image_analysis`、`chart_analysis` 能力评测见 [四项能力评测](docs/feature-evaluation.md)。
+`keep_appendix`、`keep_header_footer`、`image_analysis`、`chart_analysis` 使用独立的 [四功能评测](docs/feature-evaluation/README.md)。从 v2 给新文档补图表与图片 GT 见[补标流程](docs/feature-evaluation/annotation.md)，已评模型见 [Legacy 129 实测](docs/feature-evaluation/legacy129.md)。
 
 ## 文档与材料
 
@@ -70,12 +70,12 @@ docbench run configs/historical-reproduction.yaml
 - [数据集与评测设计](docs/dataset-evaluation-design.md)：最终方向、129 迁移及图表专项条件。
 - [评分细则](docs/metrics-comparison.md)：三个榜的指标、权重与聚合定义。
 - [数据质量](docs/quality.md)、[数据契约](docs/data-contract.md)、[标注版本管理](docs/annotation-workflow.md)：数据事实、格式与发布。
-- [129 GT 版本登记](docs/gt-versions.md)：旧 Markdown、机器标注＋人工修订结构 GT、四功能派生 GT 的边界和用途。
+- [129 GT 版本登记](docs/feature-evaluation/legacy129-gt-versions.md)涵盖旧 Markdown、结构标注和四功能派生 GT。
 - [模型适配](docs/model-adapters.md)、[MPDocBench](docs/MPDocBench.md)、[架构](docs/architecture.md)：转换与运行细节。
 - [验收记录](docs/validation.md)、[输出异常](docs/output-quality.md)、[截断重跑](docs/inference.md)：验证范围和已知限制。
 - [原始材料清单](archives/README.md)：81／129 原包、标注来源与缺失情况。
-- [四项能力评测](docs/feature-evaluation.md)：新旧 129 GT 对账、生成命令和独立分数口径。
+- [四功能评测](docs/feature-evaluation/README.md)包含补标、评分及历史复算。
 
-`data/annotations/` 保存 81 份标注，`data/predictions/` 保存模型结果，`data/legacy/` 保存旧 129 材料，`archives/` 保存原包，`artifacts/` 保存运行结果；这些目录不随源码上传。
+`data/annotations/` 保存 81 份标注，`data/predictions/` 保存模型结果，`data/legacy/` 保存旧 129 材料。`archives/` 的原包和 `artifacts/` 的运行产物留在本机，仓库发布指定的 GT 和来源清单。
 
 开发检查：`pytest -q`、`ruff check src tests`、`ruff format --check src tests`。

@@ -3,9 +3,11 @@
 from collections import Counter
 from pathlib import Path
 
-from .feature_contract import FEATURES, PAIRS
+from ..io import fresh_directory, read_json, safe_name, sha256, write_json
+from ..mineru_middle import apply_pdf2text_filters, extract_pdf_info, pdf_info_to_document
+from ..schema import MARGINAL_TYPES, Block, Document
+from .feature_contract import FEATURE_GT_VERSION, FEATURES, PAIRS
 from .feature_eval import (
-    FEATURE_GT_VERSION,
     MARGINAL_IMAGE_TYPES,
     _iou,
     _rate,
@@ -13,9 +15,6 @@ from .feature_eval import (
     _select_feature_records,
     _similarity,
 )
-from .io import fresh_directory, read_json, safe_name, sha256, write_json
-from .mineru_middle import apply_pdf2text_filters, extract_pdf_info, pdf_info_to_document
-from .schema import MARGINAL_TYPES, Block, Document
 
 VISUAL_FEATURES = ("image", "chart")
 REPLAY_SCHEMA = "doc-parse-bench.feature-replay.v1"
@@ -153,7 +152,7 @@ def build_feature_ir(
         }
         for doc_id in subsets["union"]
     }
-    from .mineru_middle import load_pdf2text_filters
+    from ..mineru_middle import load_pdf2text_filters
 
     filters = load_pdf2text_filters(pdf2text_source)
     output = fresh_directory(output)
@@ -217,7 +216,11 @@ def build_feature_ir(
     if visual_only:
         provenance["scope"] = "visual_only"
     write_json(output / "manifest.json", provenance)
-    return {"output": str(output), "documents": len(paths), "raw_documents": len(directories) * len(paths)}
+    return {
+        "output": str(output),
+        "documents": len(paths),
+        "raw_documents": len(directories) * len(paths),
+    }
 
 
 def _blocks(document: Document, types: set[str]) -> list[tuple[int, Block]]:

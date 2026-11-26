@@ -5845,34 +5845,34 @@
       ],
       "values": [
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P90",
           "value": "2.08",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P75",
           "value": "1.45",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P50",
           "value": "0.85",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P25",
           "value": "0.52",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P10",
           "value": "0.28",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         }
       ],
       "scope_note": "仅录入图中明确印出的分位数数值。"
@@ -6023,6 +6023,53 @@
       ],
       "values": [
         {
+          "series": "交付质量",
+          "category": "P90",
+          "value": "80.07",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P75",
+          "value": "31.56",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P50",
+          "value": "10.20",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P25",
+          "value": "3.65",
+          "unit": "缺陷数/千功能点"
+        },
+        {
+          "series": "交付质量",
+          "category": "P10",
+          "value": "1.23",
+          "unit": "缺陷数/千功能点"
+        }
+      ],
+      "scope_note": "仅录入图中明确印出的分位数数值。"
+    },
+    {
+      "id": "bc_016:candidate.block.p12.0009",
+      "document_id": "bc_016",
+      "source_pdf": "4-1统计图3.pdf",
+      "page": 12,
+      "feature": "chart",
+      "source_id": "candidate.block.p12.0009",
+      "bbox": [
+        0.23126511,
+        0.50798176,
+        0.76309428,
+        0.77080958
+      ],
+      "values": [
+        {
           "series": "工程活动工作量分布",
           "category": "需求",
           "value": "12.98",
@@ -6054,53 +6101,6 @@
         }
       ],
       "scope_note": "图例类别与扇区内百分比均有明确文字标注。"
-    },
-    {
-      "id": "bc_016:candidate.block.p12.0009",
-      "document_id": "bc_016",
-      "source_pdf": "4-1统计图3.pdf",
-      "page": 12,
-      "feature": "chart",
-      "source_id": "candidate.block.p12.0009",
-      "bbox": [
-        0.23126511,
-        0.50798176,
-        0.76309428,
-        0.77080958
-      ],
-      "values": [
-        {
-          "series": "应用软件运维费用占比",
-          "category": "P90",
-          "value": "25.66",
-          "unit": "%"
-        },
-        {
-          "series": "应用软件运维费用占比",
-          "category": "P75",
-          "value": "14.55",
-          "unit": "%"
-        },
-        {
-          "series": "应用软件运维费用占比",
-          "category": "P50",
-          "value": "9.95",
-          "unit": "%"
-        },
-        {
-          "series": "应用软件运维费用占比",
-          "category": "P25",
-          "value": "6.53",
-          "unit": "%"
-        },
-        {
-          "series": "应用软件运维费用占比",
-          "category": "P10",
-          "value": "2.42",
-          "unit": "%"
-        }
-      ],
-      "scope_note": "仅录入图中明确印出的分位数百分比。"
     },
     {
       "id": "bc_016:p13:margins",
@@ -7954,34 +7954,34 @@
       ],
       "values": [
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P90",
           "value": "2.06",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P75",
           "value": "1.42",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P50",
           "value": "0.81",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P25",
           "value": "0.48",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         },
         {
-          "series": "缺陷密度",
+          "series": "应用软件运维生产率",
           "category": "P10",
           "value": "0.23",
-          "unit": "缺陷数/功能点"
+          "unit": "人时/功能点"
         }
       ],
       "scope_note": "仅录入图中明确印出的分位数数值。"

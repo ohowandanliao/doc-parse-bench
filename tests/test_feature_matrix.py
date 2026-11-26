@@ -3,7 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from doc_parse_bench.feature_matrix import _header_footer, build_feature_ir, evaluate_feature_matrix
+from doc_parse_bench.feature_evaluation.feature_matrix import (
+    _header_footer,
+    build_feature_ir,
+    evaluate_feature_matrix,
+)
 from doc_parse_bench.io import read_json, write_json
 from doc_parse_bench.schema import Block, Document, Page
 

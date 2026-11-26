@@ -37,6 +37,7 @@ flowchart LR
 | `charts.py` | 统一图表增强扩展，JSON provider／人工确认 sidecar |
 | `exporters.py` | 两种官方 GT 格式及两种预测格式 |
 | `metrics.py` | 历史 title、指标提取、明确命名的汇总 |
+| `feature_evaluation/`、`mineru_middle.py` | PDF2Text 四功能正式计分、结构化回放和批次证据，及共用的 MinerU IR 转换 |
 | `backends/worker.py` | 进程内注册及调用上游数据集／指标类 |
 | `backends/runner.py` | 覆盖率、配置、隔离运行、日志和报告 |
 | `backends/exact_teds.py` | 复用上游树结构和代价的精确动态规划，避免大表格长时间停滞 |

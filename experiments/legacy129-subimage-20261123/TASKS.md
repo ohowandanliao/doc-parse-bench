@@ -1,10 +1,6 @@
 # 129 专项：FT 能力评测与 P2T 适配任务
 
-更新时间：2026-11-24。当前阶段：评分实现已提交，本轮不再补证据或继续补齐图片分；下次统一评测另按材料要求采集。另一个 session 的 P2T 工程适配按用户确认的 MinerU 3.3.1 代码逻辑推进，采集包的 3.1.14 版本来源仍如实保留。
-
-本轮新增指示：用户要求先收敛评分逻辑、整理提交并清理部分 artifacts；另开 session 负责 P2T 代码适配，本 session 不与其同时编辑 P2T 工作副本。评分交付见 [固定口径](../../docs/legacy129-scoring-contract.md)，GT 和正式拆保策略没有因此被重新定义。
-
-最新收口要求：停止本轮补证据、补 GT、补推及继续补齐图片／印章分数，现有校准分数和 null 缺项保留。以下未完成的正式评价目标移交下次统一评测，不作为本轮继续补采的任务。下次提交材料见 [数据交付要求](../../docs/legacy129-next-evaluation-inputs.md)；另一个 session 的 P2T 工程适配范围继续独立。
+本页记录 2026-11-24 的实验任务和校准范围。后续内网 P2T 的实现及正式评分见 [Legacy 129 实测](../../docs/feature-evaluation/legacy129.md)。
 
 ## 已确认的目标和范围
 
@@ -37,9 +33,9 @@
 
 最新审阅入口：[父图／子图与全拆 HTML](../../artifacts/legacy129-subimage-20261123/analysis-units-review-20261124/review.html)。目录包含 4 张父图输入、建议读取的 14 张子图及完整 27 份历史响应；`analysis-plan.json` 明确仅用于审阅，不自动发起推理。
 
-已完成桌面／手机浏览器检查：10 case、27 子图卡片、48 图片无损坏，父／子图筛选、搜索、锚点及子框开关正常；150 个本地引用全部存在，响应与输入哈希匹配，GT 哈希未变。可转交[离线审阅 ZIP](../../artifacts/legacy129-subimage-20261123/legacy129-analysis-units-review-20261124.zip)；后续顺序与复现见[推进记录](review-progress-20261124.md)。
+桌面和手机浏览器检查覆盖 10 个 case、27 张子图卡片、48 张图片和 150 条本地引用。复现步骤见[推进记录](review-progress-20261124.md)。
 
-内网适配交接已整理为[单独文件夹](../../artifacts/legacy129-subimage-20261123/p2t-inner-handoff-20261124/)和[交接 ZIP](../../artifacts/legacy129-subimage-20261123/p2t-inner-handoff-20261124.zip)，包含 fixed-layout 只读探测脚本、P2T 参考代码、伪代码、补偿设计、验收清单和相对原 ZIP 的候选 patch。建议先探测内网服务接口，再决定是否让内网 AI 适配。
+[早期交接目录](../../artifacts/legacy129-subimage-20261123/p2t-inner-handoff-20261124/)包含 fixed-layout 只读探测脚本、P2T 参考代码、补偿设计和候选 patch。
 
 ### 2. 正确处理子图并测准 FT
 
@@ -84,5 +80,5 @@
 - 2026-11-24（继续）：按用户确认以 3.3.1 逻辑推进；生成父子图审阅 HTML、原生／原 P2T／原包源码摘录和可复用输入；新增 `bc_108` 关系校准证据。P2T 相关 45 项测试通过（复用既有临时虚拟环境，不安装依赖）；正式策略、chart-only 候选语义和最终成品总分仍待收敛。
 - 2026-11-24（bug 归因）：确认 `image_block` 复合图在 3.3.1 `prepare_for_extract` 中父容器与覆盖子块同时被排除，且没有替代分析路径；这不是所有 2605 输出都被跳过，而是复合图内容分析缺口。新增 [bug 补偿方案](bug-compensation-plan-20261124.md) 和 [skip 审计](../../artifacts/legacy129-subimage-20261123/image-block-skip-audit.json)。补偿采用每个复合框单一分析单位（父图或子图），优先 fixed-layout，crop-as-page 仅作带 unresolved 记录的过渡。
 - 2026-11-24（评分交付）：GT 字节与当前两个哈希不变；复算附录 76.89/76.89、页眉页脚 81.48/81.48、图表 70.51/54.22。图片主分可评分 7/17、5/17 是证据覆盖量，图片专项及正式总分仍为 null。新增标准库 CLI、空证据模板、分数报告及缺证据清单；P2T 适配由另一个 session 继续，不将历史候选变成最终实现。
-- 2026-11-24（提交与复现）：`d6251ad` 提交评分及专项交接材料，`79d8eed` 提交当前 v3 GT 原样快照、subtype 透传及回放测试。工作区全量 117 tests 通过；临时检出提交内容的 38 项专项测试和标准库评分包构建／自检通过。中间回放 2,602 个文件经 CRC+SHA 核验归档，净减少约 89.4 MiB；[产物索引](artifacts-index.md) 保留恢复方法。[新 session prompt](p2t-next-session-prompt.md) 限定 P2T 适配边界。
-- 2026-11-24（本轮收口）：用户要求停止补证据；上一轮历史响应取回清单标记 withdrawn/execute=false。新增 [下次评测材料要求](../../docs/legacy129-next-evaluation-inputs.md) 并同步交接包，不改当前 GT、evidence 或分数。AgentBuilder/TitleTree 相关 59 项回归通过，历史 15 个配置的两套聚合分均与存档一致，核心源码与旧版本／保存报告哈希相同；[影响核查](agentbuilder-impact-check-20261124.json) 记录验证范围，未运行完整原生后端重评。
+- 2026-11-24（提交与复现）：`d6251ad` 提交评分及专项交接材料，`79d8eed` 提交 v3 GT 原样快照、subtype 透传及回放测试。工作区 117 项测试通过，临时检出的 38 项专项测试和离线评分包自检通过。[产物索引](artifacts-index.md)
+- 2026-11-24（本轮收口）：历史响应取回清单标记为 `withdrawn`。AgentBuilder/TitleTree 相关 59 项回归通过，历史 15 个配置的两套聚合分均与存档一致。[影响核查](agentbuilder-impact-check-20261124.json) · [评测输入](../../docs/feature-evaluation/inputs.md)
