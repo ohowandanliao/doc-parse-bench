@@ -124,6 +124,14 @@ def build_parser() -> argparse.ArgumentParser:
     rubric.add_argument("--gt", type=Path, required=True, help="冻结的专项计分 GT JSON")
     rubric.add_argument("--pred", type=Path, required=True, help="单版来源对齐的输出证据 JSON")
     rubric.add_argument("--output", type=Path, required=True)
+    legacy129 = sub.add_parser("evaluate-legacy129", help="从新模型的 Legacy 129 成品核对证据并计分")
+    legacy129.add_argument("--zip", type=Path, required=True, help="含七组 P2T 成品的 ZIP")
+    legacy129.add_argument("--model", required=True, help="成品 ZIP 中的模型目录名")
+    legacy129.add_argument("--model-name", help="报告展示名称")
+    legacy129.add_argument("--reviewed-evidence", type=Path, help="本批成品对应的已复核证据")
+    legacy129.add_argument("--gt", type=Path, help="四功能专项 GT，默认使用冻结的 Legacy 129 GT")
+    legacy129.add_argument("--sources", type=Path, help="对应 PDF 来源清单，默认使用 Legacy 129 清单")
+    legacy129.add_argument("--output", type=Path, required=True)
     pred = sub.add_parser("import-pred", help="模型输出转统一结构")
     pred.add_argument("source", type=Path)
     pred.add_argument("output", type=Path)
@@ -297,6 +305,23 @@ def main(argv=None):
             )
         elif args.command == "evaluate-feature-rubric":
             result = evaluate_feature_rubric(args.gt, args.pred, args.output)
+        elif args.command == "evaluate-legacy129":
+            from zipfile import BadZipFile
+
+            from .feature_evaluation.legacy129.score_batch import evaluate_legacy129_batch
+
+            try:
+                result = evaluate_legacy129_batch(
+                    args.zip,
+                    args.model,
+                    args.output,
+                    model_name=args.model_name,
+                    reviewed_path=args.reviewed_evidence,
+                    gt_path=args.gt,
+                    sources_path=args.sources,
+                )
+            except (AssertionError, BadZipFile) as error:
+                raise ValueError(f"Legacy 129 成品或证据校验失败 {error}") from error
         elif args.command == "import-pred":
             result = import_predictions(args.source, args.output, args.model, args.document_map)
             result = {k: v for k, v in result.items() if k != "sources"}

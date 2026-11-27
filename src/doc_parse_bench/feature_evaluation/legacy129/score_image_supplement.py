@@ -122,12 +122,19 @@ def image_hashes(block, assets):
     }
 
 
-def literal_text(block, final):
-    fragments = [
+def body_fragments(block):
+    return [
         (index, span.get("content") or span.get("text") or span.get("html"))
         for index, span in enumerate(body_spans(block))
     ]
-    return [(index, text) for index, text in fragments if text and visible_text(text) in final]
+
+
+def literal_text(block, final):
+    return [
+        (index, text)
+        for index, text in body_fragments(block)
+        if text and visible_text(text) in final
+    ]
 
 
 def graph_labels(source):

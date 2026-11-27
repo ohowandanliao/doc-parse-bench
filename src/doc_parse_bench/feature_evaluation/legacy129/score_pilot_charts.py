@@ -24,6 +24,13 @@ ROW_LABELS = {"category", "group", "year", "类别", "年份", "支出类别"}
 
 def chart_observation(block: Block, markdown: MarkdownIt) -> dict:
     payload = block.html or block.text
+    if not payload.strip() and block.type == "chart":
+        payload = "\n".join(
+            span["html"]
+            for child in block.metadata.get("chart_body", [])
+            for span in child["spans"]
+            if span.get("html")
+        )
     if not payload.strip():
         return {"table_status": "missing", "block_id": block.id}
     tables = BeautifulSoup(markdown.render(payload), "html.parser").find_all("table")

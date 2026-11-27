@@ -67,7 +67,7 @@ def state(page, case, rendered):
     return "partial" if hits else "missing"
 
 
-def margin(case, on, off, off_raw, rendered):
+def margin(case, on, off, off_raw, rendered, *, historical=False):
     original = {
         (block["index"], tuple(block["bbox"])): block["type"]
         for key in ("preproc_blocks", "discarded_blocks")
@@ -81,8 +81,12 @@ def margin(case, on, off, off_raw, rendered):
             raw_type = original.get((block.metadata["native_index"], box))
             if raw_type:
                 block.metadata["raw_type"] = raw_type
-    if case["id"] == "bc_020:p1:margins":
-        combined = next(block for block in on.blocks if block.text == "GEOCHEMICAL EXPLORATION")
+    combined = None
+    if historical and case["id"] == "bc_020:p1:margins":
+        combined = next(
+            (block for block in on.blocks if block.text == "GEOCHEMICAL EXPLORATION"), None
+        )
+    if combined is not None:
         references = [
             row
             for row in case["blocks"]
@@ -108,7 +112,7 @@ def margin(case, on, off, off_raw, rendered):
     return observed
 
 
-def collect(archive, model, docs, gt_cases, chart_source):
+def collect(archive, model, docs, gt_cases, chart_source, *, model_name=None, strict=True):
     observations, captures, diagnostics = {}, {}, Counter()
     by_doc = defaultdict(list)
     for case in gt_cases:
@@ -119,7 +123,10 @@ def collect(archive, model, docs, gt_cases, chart_source):
         prefix = f"{model}/documents/{doc_id}"
         manifest = json.loads(archive.read(f"{prefix}/document.json"))
         assert manifest["status"] == "ok"
-        for key in ("source_pdf", "pdf_sha256", "appendix_pages", "margin_pages"):
+        input_keys = ("source_pdf", "pdf_sha256")
+        if strict:
+            input_keys += ("appendix_pages", "margin_pages")
+        for key in input_keys:
             assert manifest[key] == document[key], (model, doc_id, key)
         assert manifest["source_pages"] == document["pages"]
         pages, final, rendered, raws, metadata = {}, {}, {}, {}, {}
@@ -128,15 +135,29 @@ def collect(archive, model, docs, gt_cases, chart_source):
             meta = json.loads(archive.read(f"{group_path}/meta.json"))
             assert meta["document_id"] == doc_id and meta["variant"] == group
             assert meta["relevel_applied"] and meta["filters"]["title_rules"] is False
+            filters = meta["filters"]
+            image_analysis = "true" if group in {"image_only", "both_on"} else "false"
+            if (
+                filters["image_analysis"] != image_analysis
+                or filters["chart_analysis"] is not (group in {"chart_only", "both_on"})
+                or filters["keep_appendix"] is not (group != "appendix_off")
+                or filters["keep_header_footer"] is not (group == "header_footer_on")
+            ):
+                raise ValueError(f"{doc_id}/{group} 的成品开关与评测口径不符")
             raw = archive.read(f"{group_path}/middle_json.json")
             markdown = archive.read(f"{group_path}/final.md")
             assert digest(raw).hexdigest() == meta["middle_json_sha256"]
             assert digest(markdown).hexdigest() == meta["markdown_sha256"]
             physical_pages = set(range(1, document["pages"] + 1))
-            if group == "appendix_off":
+            if group == "appendix_off" and strict:
                 physical_pages.difference_update(document["appendix_pages"])
-            raw_pages = {page["page_idx"] + 1: page for page in json.loads(raw)["pdf_info"]}
-            assert raw_pages.keys() == physical_pages and meta["pages"] == len(physical_pages)
+            raw_page_list = json.loads(raw)["pdf_info"]
+            raw_pages = {page["page_idx"] + 1: page for page in raw_page_list}
+            assert meta["pages"] == len(raw_pages) == len(raw_page_list)
+            if group == "appendix_off" and not strict:
+                assert raw_pages.keys() <= physical_pages
+            else:
+                assert raw_pages.keys() == physical_pages
             metadata[group] = meta
             if group not in {"both_off", "appendix_off", "header_footer_on", "both_on"}:
                 continue
@@ -161,7 +182,9 @@ def collect(archive, model, docs, gt_cases, chart_source):
             assert metadata[group]["filters"] == baseline["filters"] | {filter_name: toggled}
             captures[doc_id][feature] = capture
         diagnostics["documents"] += 1
-        diagnostics["appendix_cut_pages"] += len(document["appendix_pages"])
+        diagnostics["appendix_cut_pages"] += len(
+            raws["both_off"].keys() - raws["appendix_off"].keys()
+        )
 
         images = [
             case
@@ -199,36 +222,52 @@ def collect(archive, model, docs, gt_cases, chart_source):
                         for side, group in (("on", on), ("off", off))
                     }
                 else:
-                    observations[case_id] = margin(
-                        case, pages[on][number], pages[off][number], raws[off][number], rendered[on]
-                    )
-            elif feature == "chart" and case_id in chart_observations:
+                    try:
+                        observations[case_id] = margin(
+                            case,
+                            pages[on][number],
+                            pages[off][number],
+                            raws[off][number],
+                            rendered[on],
+                            historical=strict,
+                        )
+                    except (ValueError, AssertionError):
+                        if strict:
+                            raise
+            elif feature == "chart" and not case.get("protected") and case_id in chart_observations:
                 observed = chart_observations[case_id]
+                if observed.get("table_status") == "missing" and "block_id" not in observed:
+                    observations[case_id] = observed
+                    continue
                 block = next(
                     block
                     for block in pages["both_on"][number].blocks
                     if block.id == observed["block_id"]
                 )
-                assert block.type == "chart" and _text(observed["payload"]) in _text(
-                    final["both_on"]
-                )
-                assert observed["values"] == chart_observation(block, MARKDOWN)["values"]
+                assert block.type == "chart"
+                actual = chart_observation(block, MARKDOWN)
+                assert all(observed.get(field) == value for field, value in actual.items())
+                if "payload" in actual:
+                    assert _text(actual["payload"]) in _text(final["both_on"])
                 observations[case_id] = observed
 
-    assert len(observations) == 400, (model, len(observations))
-    return {
+    if strict:
+        assert len(observations) == 400, (model, len(observations))
+    evidence = {
         "schema_version": EVIDENCE_SCHEMA,
-        "model": MODELS[model],
+        "model": MODELS[model] if model_name is None else model_name,
         "stage": "final",
         "relevel_applied": True,
-        "gt_sha256": sha256(GT),
+        "gt_sha256": chart_source["gt_sha256"] if not strict else sha256(GT),
         "config": CONFIG,
         "cases": observations,
         "captures": captures,
-        "chart_source_gt_sha256": chart_source.get(
+    }
+    if strict:
+        evidence["chart_source_gt_sha256"] = chart_source.get(
             "chart_source_gt_sha256", chart_source["gt_sha256"]
-        ),
-    }, diagnostics
+        )
+    return evidence, diagnostics
 
 
 def text_score(score):
@@ -485,7 +524,9 @@ td {{ vertical-align:top; }}
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--zip", type=Path, required=True)
-    parser.add_argument("--chart-evidence", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--chart-evidence", type=Path, default=OUTPUT, help="含两版已复核图表观测的证据目录"
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     output = fresh_directory(args.output)
